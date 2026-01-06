@@ -6,54 +6,184 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 
 <style>
-body { background:#0f0f0f; color:#fff; }
-.match-card { background:#1a1a1a; transition:.3s }
-.match-card:hover { transform: translateY(-5px); }
-.live-badge { background:red; animation:pulse 1.5s infinite; }
-@keyframes pulse {
-  0%{box-shadow:0 0 0 0 rgba(255,0,0,.7)}
-  70%{box-shadow:0 0 0 15px rgba(255,0,0,0)}
-  100%{box-shadow:0 0 0 0 rgba(255,0,0,0)}
+body {
+  background:#0b0b0b;
+  color:#fff;
+}
+
+.match-card {
+  background:#161616;
+  border:2px solid #e11d48;
+  border-radius:16px;
+  overflow:hidden;
+}
+
+.match-img {
+  width:100%;
+  height:auto;
+  display:block;
+}
+
+.live-badge {
+  position:absolute;
+  top:12px;
+  left:12px;
+  background:#dc2626;
+  padding:4px 10px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:700;
+}
+
+.option-btn {
+  width:100%;
+  padding:14px;
+  border-radius:12px;
+  font-weight:700;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+}
+
+.primary { background:#7c3aed; }
+.fancode { background:#4f46e5; }
+.bd { background:#374151; }
+.dai { background:#d97706; }
+
+.option-btn:hover {
+  opacity:0.9;
+}
+
+.hidden-options {
+  display:none;
 }
 </style>
 </head>
 
 <body>
-<div class="max-w-7xl mx-auto p-4">
-<h1 class="text-3xl font-bold text-center mb-8">FanCode Live Matches</h1>
-<div id="matches" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+<div class="max-w-5xl mx-auto px-4 py-8">
+  <h1 class="text-3xl font-bold text-center mb-8">Fancode Live - @shwe7ank</h1>
+
+  <div id="matches" class="space-y-8"></div>
 </div>
 
 <script>
 const DATA_URL = "https://raw.githubusercontent.com/Jitendra-unatti/fancode/refs/heads/main/data/fancode.json";
+const WATCH_PAGE = "watch.html";
 
 fetch(DATA_URL)
-.then(r=>r.json())
-.then(data=>{
-  const box=document.getElementById("matches");
-  data.matches.forEach(m=>{
-    const live = (m.status||"").toUpperCase()==="LIVE" || (m.streamingStatus||"").toUpperCase()==="STARTED";
-    const card=document.createElement("div");
-    card.className="match-card rounded-xl overflow-hidden shadow";
+.then(r => r.json())
+.then(data => {
+  const matches = data.matches || [];
+  const container = document.getElementById("matches");
 
-    card.innerHTML=`
-      <img src="${m.image||'https://www.fancode.com/skillup-uploads/cms-media/Cricket_Fallback_Old_match-card.jpg'}"
-           class="w-full h-48 object-cover">
+  matches.forEach(match => {
+    const isLive =
+      (match.status || "").toUpperCase() === "LIVE" ||
+      (match.streamingStatus || "").toUpperCase() === "STARTED";
+
+    if (!isLive) return;
+
+    const img =
+      match.image ||
+      match.image_cdn?.APP ||
+      match.image_cdn?.PLAYBACK ||
+      "https://www.fancode.com/skillup-uploads/cms-media/Cricket_Fallback_Old_match-card.jpg";
+
+    const card = document.createElement("div");
+    card.className = "match-card";
+
+    card.innerHTML = `
+      <div class="relative">
+        <img src="${img}" class="match-img">
+        <span class="live-badge">LIVE</span>
+      </div>
+
       <div class="p-4">
-        <h2 class="text-lg font-semibold">${m.title||"Match"}</h2>
-        <p class="text-gray-400 text-sm">${m.tournament||""}</p>
-        ${live?'<span class="inline-block mt-2 px-3 py-1 text-xs rounded-full live-badge">LIVE</span>':''}
-        <a href="watch.html?id=${m.match_id}"
-           class="block mt-4 bg-red-600 hover:bg-red-700 text-center py-2 rounded">
-           Watch Now
-        </a>
-      </div>`;
-    box.appendChild(card);
+        <h2 class="text-xl font-semibold">${match.title}</h2>
+        <p class="text-gray-400 text-sm mt-1">
+          ${match.tournament || ""} • ${match.language || "english"}
+        </p>
+        <p class="text-gray-500 text-sm">
+          Start: ${match.startTime || ""}
+        </p>
+
+        <button class="w-full mt-4 bg-red-600 hover:bg-red-700 py-3 rounded-xl font-bold"
+          onclick="toggleOptions(this)">
+          <i class="fas fa-tv mr-2"></i> Watch Now
+        </button>
+
+        <div class="hidden-options mt-4 space-y-3">
+          ${buildBtn(match, "Primary_Playback_URL", "Primary", "primary")}
+          ${buildBtn(match, "fancode_cdn", "FanCode CDN", "fancode")}
+          ${buildBtn(match, "fancode_bd_cdn", "FanCode BD CDN", "bd")}
+          ${buildBtn(match, "dai_google_cdn", "DAI Google", "dai")}
+        </div>
+      </div>
+    `;
+    container.appendChild(card);
   });
 });
+
+function buildBtn(match, key, label, cls) {
+  const url = match.STREAMING_CDN?.[key];
+  if (!url || url === "Unavailable") return "";
+  return `
+    <a href="watch.html?id=${match.match_id}&cdn=${key}"
+      class="option-btn ${cls}">
+      <i class="fas fa-play"></i> ${label}
+    </a>
+  `;
+}
+
+function toggleOptions(btn) {
+  const options = btn.nextElementSibling;
+  options.style.display = options.style.display === "block" ? "none" : "block";
+  btn.innerHTML = options.style.display === "block"
+    ? `<i class="fas fa-chevron-up mr-2"></i> Hide Options`
+    : `<i class="fas fa-tv mr-2"></i> Watch Now`;
+}
 </script>
+
+        <script>
+let lastMatchHash = "";
+
+async function refreshMatches() {
+  try {
+    const res = await fetch(DATA_URL + "?t=" + Date.now());
+    const data = await res.json();
+
+    const liveMatches = (data.matches || [])
+      .filter(m =>
+        (m.status || "").toUpperCase() === "LIVE" ||
+        (m.streamingStatus || "").toUpperCase() === "STARTED"
+      )
+      .map(m => m.match_id)
+      .join(",");
+
+    // If LIVE matches changed → reload page
+    if (lastMatchHash && lastMatchHash !== liveMatches) {
+      location.reload();
+    }
+
+    lastMatchHash = liveMatches;
+
+  } catch (e) {
+    console.warn("Auto refresh failed", e);
+  }
+}
+
+// First capture
+setTimeout(refreshMatches, 3000);
+
+// Every 60 seconds
+setInterval(refreshMatches, 60000);
+</script>
+
 </body>
 </html>
