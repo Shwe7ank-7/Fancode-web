@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Live Stream</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/plyr@3.6.12/dist/plyr.css">
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1.1.4/dist/hls.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/plyr@3.6.12/dist/plyr.min.js"></script>
+
+<style>
+body{margin:0;background:#000;color:#fff;font-family:Arial}
+
+/* Telegram Pop-up */
+#popup{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.85);
+display:flex;justify-content:center;align-items:center;z-index:1000}
+.popup-content{background:#FFD700;color:#000;padding:25px;text-align:center;
+border-radius:12px;width:360px;animation:bounce .6s ease-out}
+.popup-content button{width:100%;padding:12px;margin-top:10px;border-radius:8px;font-weight:bold}
+.join-btn{background:#000;color:#FFD700}
+.close-btn{background:#555;color:#fff}
+@keyframes bounce{
+0%{transform:translateY(-50px);opacity:0}
+100%{transform:none;opacity:1}
+}
+
+.player{max-width:960px;margin:auto;padding:10px}
+.lang-bar{display:flex;gap:10px;justify-content:center;margin:10px}
+.lang-btn{padding:8px 14px;border:2px solid #fff;border-radius:20px;cursor:pointer}
+.lang-btn.active{background:#fff;color:#000}
+</style>
+</head>
+
+<body>
+
+<!-- TELEGRAM POPUP -->
+<div id="popup">
+  <div class="popup-content">
+    <h2>Support Us!</h2>
+    <p>Join Telegram for updates</p>
+    <button class="join-btn" onclick="window.open('https://t.me/+uMLMcSi1UwNlODU1','_blank')">Join Now</button>
+    <button class="close-btn" onclick="document.getElementById('popup').style.display='none'">Already Joined</button>
+  </div>
+</div>
+
+<div class="player">
+  <video id="video" controls playsinline></video>
+
+  <!-- LANGUAGE BUTTON -->
+  <div class="lang-bar">
+    <div class="lang-btn active" id="lang-en">English</div>
+    <div class="lang-btn" id="lang-hi">Hindi</div>
+  </div>
+</div>
+
+<script>
+const DATA_URL="https://raw.githubusercontent.com/Jitendra-unatti/fancode/refs/heads/main/data/fancode.json";
+const params=new URLSearchParams(location.search);
+const id=params.get("id");
+let lang="english";
+
+document.getElementById("lang-en").onclick=()=>switchLang("english");
+document.getElementById("lang-hi").onclick=()=>switchLang("hindi");
+
+function switchLang(l){
+ lang=l;
+ document.querySelectorAll(".lang-btn").forEach(b=>b.classList.remove("active"));
+ document.getElementById(l==="hindi"?"lang-hi":"lang-en").classList.add("active");
+ loadStream();
+}
+
+let hls,player;
+
+async function loadStream(){
+ const res=await fetch(DATA_URL);
+ const data=await res.json();
+ const matches=data.matches.filter(m=>m.match_id==id);
+ if(!matches.length)return alert("Stream not found");
+
+ let match=matches.find(m=>m.language?.toLowerCase()===lang)||matches[0];
+ let source=
+   match.adfree_stream||
+   match.dai_stream||
+   match.STREAMING_CDN?.Primary_Playback_URL||
+   match.STREAMING_CDN?.cloudfront_cdn;
+
+ const video=document.getElementById("video");
+
+ if(hls){hls.destroy()}
+ if(Hls.isSupported()){
+   hls=new Hls({maxMaxBufferLength:120});
+   hls.loadSource(source);
+   hls.attachMedia(video);
+   hls.on(Hls.Events.MANIFEST_PARSED,()=>{
+     player=new Plyr(video);
+     video.play();
+   });
+ }else{
+   video.src=source;
+   player=new Plyr(video);
+ }
+}
+
+// AUTO REFRESH EVERY 15 MIN
+setInterval(loadStream,900000);
+
+loadStream();
+</script>
+</body>
+</html>
