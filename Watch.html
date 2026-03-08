@@ -65,81 +65,97 @@ video{width:100%;height:auto;background:#000}
 </div>
 
 <script>
-const JSON_URL = "https://raw.githubusercontent.com/Jitendra-unatti/fancode/refs/heads/main/data/fancode.json";
-const params = new URLSearchParams(location.search);
-const matchId = params.get("id");
-const preferredCDN = params.get("cdn");
+const JSON_URL="https://raw.githubusercontent.com/Jitendra-unatti/fancode/refs/heads/main/data/fancode.json";
 
-const video = document.getElementById("player");
-const overlay = document.getElementById("matchOverlay");
+const params=new URLSearchParams(location.search);
+const matchId=params.get("id");
 
-async function getSources(){
-  const res = await fetch(JSON_URL);
-  const data = await res.json();
-  const match = data.matches.find(m => String(m.match_id) === matchId);
-  if(!match) throw "Match not found";
+const video=document.getElementById("player");
+const overlay=document.getElementById("matchOverlay");
 
-  overlay.innerHTML = `
-    <strong>${match.title}</strong><br>
-    ${match.tournament} • LIVE
-  `;
+async function getMatch(){
 
-  return [
-    match.STREAMING_CDN?.Primary_Playback_URL,
-    match.STREAMING_CDN?.fancode_cdn,
-    match.STREAMING_CDN?.dai_google_cdn,
-    match.STREAMING_CDN?.cloudfront_cdn,
-    match.STREAMING_CDN?.sony_cdn
-  ].filter(Boolean);
+ const res=await fetch(JSON_URL);
+ const data=await res.json();
+
+ const match=data.matches.find(m=>String(m.match_id)===matchId);
+
+ if(!match) throw "Match not found";
+
+ overlay.innerHTML=`
+ <strong>${match.title}</strong><br>
+ ${match.tournament} • LIVE
+ `;
+
+ return match;
+}
+
+function startPlayer(masterText){
+
+ const blob=new Blob([masterText],{type:"application/vnd.apple.mpegurl"});
+ const url=URL.createObjectURL(blob);
+
+ if(Hls.isSupported()){
+
+ const hls=new Hls({
+   lowLatencyMode:true,
+   backBufferLength:30
+ });
+
+ hls.loadSource(url);
+ hls.attachMedia(video);
+
+ hls.on(Hls.Events.MANIFEST_PARSED,()=>{
+
+   const qualities=hls.levels.map(l=>l.height).filter(Boolean);
+
+   new Plyr(video,{
+     controls:['play','progress','mute','volume','settings','fullscreen'],
+     quality:{
+       default:Math.max(...qualities),
+       options:qualities,
+       forced:true,
+       onChange:q=>{
+         hls.levels.forEach((l,i)=>{
+           if(l.height===q) hls.currentLevel=i;
+         });
+       }
+     }
+   });
+
+   video.play().catch(()=>video.muted=true);
+
+ });
+
+ hls.on(Hls.Events.ERROR,(e,d)=>{
+   if(d.fatal){
+     location.reload();
+   }
+ });
+
+ }
 }
 
 async function play(){
-  const sources = await getSources();
-  let index = 0;
 
-  function tryPlay(url){
-    if(Hls.isSupported()){
-      const hls = new Hls({
-        lowLatencyMode:true,
-        backBufferLength:30
-      });
-      hls.loadSource(url);
-      hls.attachMedia(video);
+ const match=await getMatch();
 
-      hls.on(Hls.Events.MANIFEST_PARSED,()=>{
-        const qualities = hls.levels.map(l=>l.height).filter(Boolean);
-        new Plyr(video,{
-          controls:['play','progress','mute','volume','settings','fullscreen'],
-          quality:{
-            default:Math.max(...qualities),
-            options:qualities,
-            forced:true,
-            onChange:q=>{
-              hls.levels.forEach((l,i)=>{
-                if(l.height===q) hls.currentLevel=i;
-              });
-            }
-          }
-        });
-        video.play().catch(()=>video.muted=true);
-      });
+ const masterPlaylist=match.auto_streams?.[0]?.auto;
 
-      hls.on(Hls.Events.ERROR,(e,d)=>{
-        if(d.fatal){
-          index++;
-          if(index<sources.length) tryPlay(sources[index]);
-        }
-      });
-    }
-  }
+ if(!masterPlaylist){
+   alert("Stream not available yet");
+   return;
+ }
 
-  tryPlay(sources[index]);
+ startPlayer(masterPlaylist);
+
 }
 
 play();
 
-/* auto soft refresh every 6 min */
+/* auto refresh every 6 minutes */
 setInterval(()=>location.reload(),360000);
+
 </script>
 
 </body>
