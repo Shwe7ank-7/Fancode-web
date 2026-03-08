@@ -1,6 +1,18 @@
-export default async (request) => {
+export default async (request, context) => {
   const url = new URL(request.url);
   const target = url.searchParams.get("url");
+
+  // Handle CORS preflight
+  if (request.method === "OPTIONS") {
+    return new Response(null, {
+      status: 204,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "*",
+      }
+    });
+  }
 
   if (!target) {
     return new Response("Missing ?url= param", { status: 400 });
@@ -8,60 +20,67 @@ export default async (request) => {
 
   let targetUrl;
   try {
-    targetUrl = new URL(decodeURIComponent(target));
+    targetUrl = decodeURIComponent(target);
+    new URL(targetUrl); // validate
   } catch {
     return new Response("Invalid URL", { status: 400 });
   }
 
-  // Only allow FanCode CDN
-  const allowed = [
-    "fancode.com",
-    "flive.fancode.com",
-    "in-mc-flive.fancode.com",
-    "bd-mc-flive.fancode.com",
-    "cloudfront.net"
-  ];
-  const isAllowed = allowed.some(d => targetUrl.hostname.endsWith(d));
-  if (!isAllowed) {
-    return new Response("Forbidden domain", { status: 403 });
-  }
-
-  const upstream = await fetch(targetUrl.toString(), {
-    headers: {
-      "User-Agent": "ReactNativeVideo/9.3.0 (Linux;Android 13) AndroidXMedia3/1.6.1",
-      "Referer":    "https://fancode.com/",
-      "Origin":     "https://fancode.com",
-    }
-  });
-
-  const contentType = upstream.headers.get("content-type") || "";
-  const isPlaylist  = contentType.includes("mpegurl") || targetUrl.pathname.endsWith(".m3u8");
-
-  if (isPlaylist) {
-    let text = await upstream.text();
-    // Rewrite all absolute https:// URLs in playlist to go through this proxy
-    text = text.replace(/(https:\/\/[^\s"]+)/g, (match) =>
-      `/proxy?url=${encodeURIComponent(match)}`
-    );
-    return new Response(text, {
-      status: upstream.status,
+  try {
+    const upstream = await fetch(targetUrl, {
+      method: "GET",
       headers: {
-        "Content-Type":                "application/vnd.apple.mpegurl",
-        "Access-Control-Allow-Origin": "*",
-        "Cache-Control":               "no-cache",
+        "User-Agent": "ReactNativeVideo/9.3.0 (Linux;Android 13) AndroidXMedia3/1.6.1",
+        "Referer":    "https://fancode.com/",
+        "Origin":     "https://fancode.com",
+        "Accept":     "*/*",
       }
     });
-  }
 
-  // .ts segments — pass through
-  return new Response(upstream.body, {
-    status: upstream.status,
-    headers: {
-      "Content-Type":                contentType || "video/mp2t",
-      "Access-Control-Allow-Origin": "*",
-      "Cache-Control":               "no-cache",
+    const isPlaylist = targetUrl.includes(".m3u8");
+
+    if (isPlaylist) {
+      let text = await upstream.text();
+
+      // Get base URL for relative paths
+      const base = new URL(targetUrl);
+      const basePath = base.origin + base.pathname.substring(0, base.pathname.lastIndexOf("/") + 1);
+
+      // Rewrite absolute https:// URLs
+      text = text.replace(/(https:\/\/[^\s\r\n"]+)/g, (match) =>
+        `/proxy?url=${encodeURIComponent(match)}`
+      );
+
+      // Rewrite relative URLs (like 240p.m3u8 or seg001.ts)
+      text = text.replace(/^([^#\r\n][^\r\n]*)$/gm, (line) => {
+        if (line.startsWith("http") || line.startsWith("/proxy")) return line;
+        return `/proxy?url=${encodeURIComponent(basePath + line)}`;
+      });
+
+      return new Response(text, {
+        status: 200,
+        headers: {
+          "Content-Type":                "application/vnd.apple.mpegurl",
+          "Access-Control-Allow-Origin": "*",
+          "Cache-Control":               "no-store",
+        }
+      });
     }
-  });
+
+    // Binary segments (.ts, .aac, etc.)
+    const contentType = upstream.headers.get("content-type") || "video/mp2t";
+    return new Response(upstream.body, {
+      status: upstream.status,
+      headers: {
+        "Content-Type":                contentType,
+        "Access-Control-Allow-Origin": "*",
+        "Cache-Control":               "no-store",
+      }
+    });
+
+  } catch (err) {
+    return new Response("Proxy error: " + err.message, { status: 502 });
+  }
 };
 
 export const config = { path: "/proxy" };
