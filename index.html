@@ -2,136 +2,177 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Fancode - @Shwe7ank</title>
+<title>Fancode Live</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
-
 <style>
-
-body{
-margin:0;
-background:#0f0f0f;
-color:#fff;
-font-family:system-ui;
-}
-
-.container{
-max-width:700px;
-margin:auto;
-padding:15px;
-}
-
-.card{
-background:#1a1a1a;
-border-radius:14px;
-margin-bottom:18px;
-overflow:hidden;
-border:2px solid #e50914;
-}
-
-.card img{
-width:100%;
-display:block;
-}
-
-.card-body{
-padding:15px;
-}
-
-.title{
-font-size:18px;
-font-weight:700;
-margin-bottom:6px;
-}
-
-.meta{
-opacity:.8;
-font-size:14px;
-margin-bottom:10px;
-}
-
-.btn{
-display:block;
-width:100%;
-background:#e50914;
-color:#fff;
-text-align:center;
-padding:12px;
-border-radius:8px;
-margin-top:8px;
-text-decoration:none;
-font-weight:700;
-}
-
-.live{
-position:absolute;
-background:#e50914;
-padding:4px 8px;
-border-radius:6px;
-font-size:12px;
-top:10px;
-left:10px;
-}
-
-.img-wrap{
-position:relative;
-}
-
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0f0f0f;color:#fff;font-family:system-ui,-apple-system,sans-serif}
+header{background:#111;border-bottom:2px solid #e50914;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
+.logo{font-size:1.2rem;font-weight:800}.logo span{color:#e50914}
+.tg-btn{background:#e50914;color:#fff;border:0;border-radius:7px;padding:7px 14px;font-size:.8rem;font-weight:700;cursor:pointer;text-decoration:none}
+#filter-bar{display:flex;gap:8px;padding:12px 14px;overflow-x:auto;background:#111;border-bottom:1px solid #1e1e1e;scrollbar-width:none}
+#filter-bar::-webkit-scrollbar{display:none}
+.filter-btn{background:#1e1e1e;color:#aaa;border:1px solid #2a2a2a;border-radius:20px;padding:6px 16px;font-size:.82rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .2s;flex-shrink:0}
+.filter-btn:hover{background:#2a2a2a;color:#fff}
+.filter-btn.active{background:#e50914;color:#fff;border-color:#e50914}
+.container{max-width:720px;margin:auto;padding:10px 14px 30px}
+.toprow{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+#match-count{font-size:.82rem;color:#666}
+#refresh-btn{background:#1e1e1e;color:#888;border:1px solid #2a2a2a;border-radius:7px;padding:6px 14px;font-size:.8rem;cursor:pointer}
+#refresh-btn:hover{background:#2a2a2a;color:#fff}
+.card{background:#1a1a1a;border-radius:14px;margin-bottom:16px;overflow:hidden;border:1.5px solid #2a2a2a;transition:border-color .2s,transform .15s}
+.card:hover{border-color:#e50914;transform:translateY(-2px)}
+.img-wrap{position:relative;overflow:hidden}
+.card img{width:100%;display:block;aspect-ratio:16/9;object-fit:cover;background:#111}
+.live-badge{position:absolute;top:10px;left:10px;background:#e50914;color:#fff;padding:3px 9px;border-radius:5px;font-size:.72rem;font-weight:800;letter-spacing:.5px;display:flex;align-items:center;gap:5px}
+.live-dot{width:7px;height:7px;background:#fff;border-radius:50%;animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.upcoming-badge{position:absolute;top:10px;left:10px;background:rgba(0,0,0,.7);color:#bbb;padding:3px 9px;border-radius:5px;font-size:.72rem;font-weight:700;backdrop-filter:blur(4px)}
+.sport-tag{position:absolute;top:10px;right:10px;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);color:#fff;padding:3px 9px;border-radius:5px;font-size:.72rem;font-weight:700}
+.card-body{padding:13px 15px 15px}
+.title{font-size:1rem;font-weight:700;margin-bottom:4px;line-height:1.3}
+.meta{color:#888;font-size:.82rem;margin-bottom:12px;line-height:1.7}
+.quality-pills{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
+.qpill{background:#222;border:1px solid #333;color:#aaa;border-radius:4px;padding:2px 8px;font-size:.72rem;font-weight:600}
+.btn{display:block;width:100%;background:#e50914;color:#fff;text-align:center;padding:11px;border-radius:8px;text-decoration:none;font-weight:700;font-size:.95rem;transition:background .2s}
+.btn:hover{background:#c0070f}
+.btn.disabled{background:#2a2a2a;color:#666;cursor:not-allowed;pointer-events:none}
+#loader{text-align:center;padding:60px 20px;color:#555}
+.spinner{width:36px;height:36px;border:3px solid #222;border-top-color:#e50914;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 14px}
+@keyframes spin{to{transform:rotate(360deg)}}
+#empty{display:none;text-align:center;padding:50px 20px;color:#555;font-size:.95rem}
 </style>
 </head>
-
 <body>
 
-<div class="container" id="matches"></div>
+<header>
+  <div class="logo">Fan<span>Code</span> Shwe7ank</div>
+  <a class="tg-btn" href="https://t.me/+tze-BpoZ4v01N2M1" target="_blank">📲 Telegram</a>
+</header>
+
+<div id="filter-bar">
+  <button class="filter-btn active" data-sport="all">🏠 All</button>
+</div>
+
+<div class="container">
+  <div class="toprow">
+    <div id="match-count"></div>
+    <button id="refresh-btn" onclick="loadMatches(true)">🔄 Refresh</button>
+  </div>
+  <div id="loader"><div class="spinner"></div>Loading matches…</div>
+  <div id="matches"></div>
+  <div id="empty">No matches found.</div>
+</div>
 
 <script>
+const JSON_URL = "https://raw.githubusercontent.com/Jitendra-unatti/fancode/refs/heads/main/data/fancode.json";
+const WATCH    = "watch.html";
+const QUALITY_ORDER = ["240p","360p","480p","540p","720p","1080p"];
+const SPORT_EMOJI   = {cricket:"🏏",football:"⚽",tennis:"🎾",kabaddi:"🤼",basketball:"🏀",hockey:"🏑"};
 
-const JSON_URL="https://raw.githubusercontent.com/Jitendra-unatti/fancode/refs/heads/main/data/fancode.json";
+function extractQualities(autoStreams){
+  if(!autoStreams?.length) return [];
+  const text = autoStreams[0].auto || "";
+  const qs = [], re = /(\d+p)\.m3u8/gi;
+  let m;
+  while((m = re.exec(text)) !== null){
+    const q = m[1].toLowerCase();
+    if(!qs.includes(q)) qs.push(q);
+  }
+  return qs.sort((a,b) => QUALITY_ORDER.indexOf(a) - QUALITY_ORDER.indexOf(b));
+}
 
-async function loadMatches(){
+let allMatches = [], activeFilter = "all";
 
-const res=await fetch(JSON_URL);
-const data=await res.json();
+function renderMatches(list){
+  const container = document.getElementById("matches");
+  const empty     = document.getElementById("empty");
+  const countEl   = document.getElementById("match-count");
+  container.innerHTML = "";
 
-const container=document.getElementById("matches");
+  const filtered = activeFilter === "all"
+    ? list
+    : list.filter(m => (m.category||"").toLowerCase() === activeFilter.toLowerCase());
 
-data.matches.forEach(match=>{
+  countEl.textContent = filtered.length
+    ? `${filtered.length} match${filtered.length>1?"es":""} · ${activeFilter==="all"?"All sports":activeFilter}`
+    : "";
 
-const card=document.createElement("div");
-card.className="card";
+  if(!filtered.length){ empty.style.display="block"; return; }
+  empty.style.display = "none";
 
-card.innerHTML=`
+  filtered.forEach(match => {
+    const isLive    = match.status==="LIVE" && match.streamingStatus==="STARTED";
+    const qualities = extractQualities(match.auto_streams);
+    const sport     = match.category || "Other";
 
-<div class="img-wrap">
-${match.status==="LIVE"?'<div class="live">LIVE</div>':''}
-<img src="${match.image}">
-</div>
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <div class="img-wrap">
+        ${isLive
+          ? `<div class="live-badge"><span class="live-dot"></span>LIVE</div>`
+          : `<div class="upcoming-badge">🕐 ${match.startTime||"Upcoming"}</div>`}
+        <span class="sport-tag">${sport}</span>
+        <img src="${match.image}" alt="${match.title}" loading="lazy" onerror="this.style.background='#111'">
+      </div>
+      <div class="card-body">
+        <div class="title">${match.title}</div>
+        <div class="meta">${match.tournament}<br>${match.startTime}<br>${match.language||""}</div>
+        ${qualities.length ? `<div class="quality-pills">${qualities.map(q=>`<span class="qpill">${q.toUpperCase()}</span>`).join("")}</div>` : ""}
+        ${isLive
+          ? `<a class="btn" href="${WATCH}?id=${match.match_id}">▶ Watch Now</a>`
+          : `<a class="btn disabled">⏳ Not Started Yet</a>`}
+      </div>`;
+    container.appendChild(card);
+  });
+}
 
-<div class="card-body">
+function buildFilterBar(list){
+  const bar    = document.getElementById("filter-bar");
+  bar.querySelectorAll("[data-sport]:not([data-sport='all'])").forEach(b=>b.remove());
+  [...new Set(list.map(m=>m.category||"Other"))].sort().forEach(sport=>{
+    const btn = document.createElement("button");
+    btn.className = "filter-btn";
+    btn.dataset.sport = sport;
+    btn.textContent = `${SPORT_EMOJI[sport.toLowerCase()]||"🎮"} ${sport}`;
+    bar.appendChild(btn);
+  });
+  bar.querySelectorAll(".filter-btn").forEach(btn=>{
+    btn.onclick = ()=>{
+      bar.querySelectorAll(".filter-btn").forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
+      activeFilter = btn.dataset.sport;
+      renderMatches(allMatches);
+    };
+  });
+}
 
-<div class="title">${match.title}</div>
-
-<div class="meta">
-${match.tournament}<br>
-${match.startTime}<br>
-${match.language}
-</div>
-
-<a class="btn" href="Watch.html?id=${match.match_id}">
-▶ Watch Now
-</a>
-
-</div>
-`;
-
-container.appendChild(card);
-
-});
-
+async function loadMatches(bust=false){
+  document.getElementById("loader").style.display = "block";
+  document.getElementById("matches").innerHTML    = "";
+  document.getElementById("empty").style.display  = "none";
+  document.getElementById("match-count").textContent = "";
+  try{
+    const res  = await fetch(JSON_URL + (bust?"?_="+Date.now():""));
+    if(!res.ok) throw new Error("HTTP "+res.status);
+    const data = await res.json();
+    allMatches = data.matches || [];
+    document.getElementById("loader").style.display = "none";
+    if(!allMatches.length){
+      document.getElementById("empty").style.display = "block";
+      document.getElementById("empty").textContent   = "No matches right now. Check back soon!";
+      return;
+    }
+    buildFilterBar(allMatches);
+    renderMatches(allMatches);
+  } catch(err){
+    document.getElementById("loader").innerHTML =
+      `<div style="color:#f55">⚠️ Failed to load matches.<br><small>${err.message}</small></div>`;
+  }
 }
 
 loadMatches();
-
 </script>
-
 </body>
 </html>
