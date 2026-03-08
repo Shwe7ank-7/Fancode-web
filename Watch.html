@@ -8,66 +8,58 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#0d1117;color:#fff;font-family:system-ui,-apple-system,sans-serif;min-height:100vh}
 
-#popup{position:fixed;inset:0;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;z-index:999}
+#popup{position:fixed;inset:0;background:rgba(0,0,0,.9);display:flex;align-items:center;justify-content:center;z-index:999}
 .popup-box{background:#FFD700;color:#000;padding:24px 20px;border-radius:14px;width:300px;text-align:center}
 .popup-box h3{font-size:1.2rem;margin-bottom:8px}
 .popup-box p{font-size:.9rem;margin-bottom:16px;opacity:.8}
 .popup-box button{display:block;width:100%;background:#000;color:#FFD700;border:0;border-radius:8px;padding:11px;margin:7px 0;font-weight:700;cursor:pointer;font-size:.95rem}
 
-#quality-page,#player-page{display:none}
-#quality-page.show,#player-page.show{display:block}
+#qpage,#ppage{display:none}
+#qpage.on,#ppage.on{display:block}
 
-/* quality page */
-.match-header{background:linear-gradient(135deg,#161b22,#1f2937);padding:20px 16px 24px;text-align:center;border-bottom:1px solid #30363d}
-.match-logo{width:80px;height:80px;border-radius:12px;object-fit:cover;margin:0 auto 12px;display:block;border:2px solid #30363d;background:#111}
-.match-name{font-size:1.15rem;font-weight:700;margin-bottom:4px;line-height:1.3}
-.match-tourn{font-size:.82rem;color:#8b949e;text-transform:uppercase;letter-spacing:.5px}
-.expire-info{font-size:.78rem;color:#f59e0b;margin-top:6px}
+.mheader{background:linear-gradient(135deg,#161b22,#1f2937);padding:20px 16px 24px;text-align:center;border-bottom:1px solid #30363d}
+.mlogo{width:80px;height:80px;border-radius:12px;object-fit:cover;margin:0 auto 12px;display:block;border:2px solid #30363d;background:#111}
+.mtitle{font-size:1.1rem;font-weight:700;margin-bottom:4px;line-height:1.3}
+.mtourn{font-size:.8rem;color:#8b949e;text-transform:uppercase;letter-spacing:.5px}
+.mexpire{font-size:.78rem;color:#f59e0b;margin-top:6px}
 
-.q-list{padding:16px}
-.q-label{font-size:.75rem;color:#8b949e;text-transform:uppercase;letter-spacing:.8px;font-weight:600;margin-bottom:10px}
-.q-item{display:flex;align-items:center;justify-content:space-between;background:#161b22;border:1px solid #30363d;border-radius:12px;padding:16px 18px;margin-bottom:10px;cursor:pointer;transition:all .2s}
-.q-item:hover,.q-item:active{background:#1f2937;border-color:#e50914;transform:translateX(4px)}
-.q-left{display:flex;align-items:center;gap:14px}
-.play-icon{width:36px;height:36px;background:#e50914;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.play-icon svg{margin-left:2px}
-.q-name{font-size:1rem;font-weight:600}
-.q-desc{font-size:.78rem;color:#8b949e;margin-top:2px}
-.q-badge{padding:4px 12px;border-radius:20px;font-size:.75rem;font-weight:700}
+.qlist{padding:16px}
+.qlabel{font-size:.75rem;color:#8b949e;text-transform:uppercase;letter-spacing:.8px;font-weight:600;margin-bottom:12px}
+.qitem{display:flex;align-items:center;justify-content:space-between;background:#161b22;border:1px solid #30363d;border-radius:12px;padding:16px 18px;margin-bottom:10px;cursor:pointer;transition:all .2s}
+.qitem:hover,.qitem:active{background:#1f2937;border-color:#e50914;transform:translateX(3px)}
+.qleft{display:flex;align-items:center;gap:14px}
+.pico{width:36px;height:36px;background:#e50914;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pico svg{margin-left:2px}
+.qn{font-size:1rem;font-weight:600}
+.qd{font-size:.78rem;color:#8b949e;margin-top:2px}
+.qbadge{padding:4px 12px;border-radius:20px;font-size:.75rem;font-weight:700}
 .b1080{background:#7c3aed;color:#fff}.b720{background:#059669;color:#fff}
 .b540,.b480{background:#2563eb;color:#fff}
 .b360{background:#d97706;color:#fff}.b240{background:#4b5563;color:#fff}
 
-/* player page */
-#player-page{background:#000;min-height:100vh}
-.topbar{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#111;border-bottom:1px solid #1e1e1e}
-.back-btn{background:#1e1e1e;color:#ccc;border:1px solid #2a2a2a;border-radius:8px;padding:6px 14px;font-size:.82rem;cursor:pointer}
-.back-btn:hover{background:#2a2a2a;color:#fff}
-.now-lbl{font-size:.88rem;color:#888}.now-lbl strong{color:#fff}
+#ppage{background:#000;min-height:100vh}
+.ptopbar{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#111;border-bottom:1px solid #1e1e1e}
+.backbtn{background:#1e1e1e;color:#ccc;border:1px solid #2a2a2a;border-radius:8px;padding:7px 16px;font-size:.85rem;cursor:pointer;font-weight:600}
+.backbtn:hover{background:#2a2a2a;color:#fff}
+.playlbl{font-size:.88rem;color:#888}.playlbl strong{color:#fff}
 
 #vwrap{width:100%;background:#000;position:relative}
+video{width:100%;display:block;background:#000;min-height:200px}
 
-/* Native video — full width, no height restriction */
-video{
-  width:100%;
-  display:block;
-  background:#000;
-}
-
-#vloader{
-  padding:40px 20px;
+#vloading{
+  position:absolute;inset:0;
   display:flex;flex-direction:column;
-  align-items:center;gap:14px;
-  background:#000;
+  align-items:center;justify-content:center;
+  background:rgba(0,0,0,.85);gap:16px;z-index:5;
 }
-.spin{width:40px;height:40px;border:4px solid #333;border-top-color:#e50914;border-radius:50%;animation:sp .8s linear infinite}
+.spin{width:42px;height:42px;border:4px solid #222;border-top-color:#e50914;border-radius:50%;animation:sp .8s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
-#vloader-txt{font-size:.9rem;color:#ccc;text-align:center}
+.spin-txt{font-size:.9rem;color:#ccc}
 
-#verr{display:none;margin:16px;padding:14px;background:#1a0000;border:1px solid #500;border-radius:8px;color:#f88;font-size:.85rem;line-height:1.7}
-#verr button{margin-top:10px;background:#e50914;color:#fff;border:0;border-radius:6px;padding:8px 16px;cursor:pointer;font-size:.85rem;display:block}
+#verr{display:none;margin:20px 16px;padding:16px;background:#1a0000;border:1px solid #600;border-radius:10px;color:#f88;font-size:.88rem;line-height:1.8}
+.rbtn{display:inline-block;margin-top:12px;background:#e50914;color:#fff;border:0;border-radius:7px;padding:9px 20px;cursor:pointer;font-size:.88rem;font-weight:600}
 
-#iloader{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 20px;gap:14px;color:#555;font-size:.9rem}
+#iloader{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 20px;gap:16px;color:#555;font-size:.9rem}
 </style>
 </head>
 <body>
@@ -83,45 +75,33 @@ video{
 
 <div id="iloader"><div class="spin"></div>Loading match…</div>
 
-<div id="quality-page">
-  <div class="match-header">
-    <img id="mlogo" class="match-logo" src="" alt="">
-    <div class="match-name" id="mname"></div>
-    <div class="match-tourn" id="mtourn"></div>
-    <div class="expire-info" id="mexpire"></div>
+<div id="qpage">
+  <div class="mheader">
+    <img id="mlogo" class="mlogo" src="" alt="">
+    <div class="mtitle" id="mtitle"></div>
+    <div class="mtourn" id="mtourn"></div>
+    <div class="mexpire" id="mexpire"></div>
   </div>
-  <div class="q-list">
-    <div class="q-label">Select Quality to Watch</div>
+  <div class="qlist">
+    <div class="qlabel">🎬 Select Quality</div>
     <div id="qitems"></div>
   </div>
 </div>
 
-<div id="player-page">
-  <div class="topbar">
-    <button class="back-btn" onclick="goBack()">← Quality</button>
-    <div class="now-lbl">Playing: <strong id="nowlbl"></strong></div>
+<div id="ppage">
+  <div class="ptopbar">
+    <button class="backbtn" onclick="goBack()">← Quality</button>
+    <div class="playlbl">Playing: <strong id="nowq"></strong></div>
   </div>
   <div id="vwrap">
-    <!--
-      KEY: We use a plain <video> tag with src set directly to the .m3u8 URL.
-      Native <video src> is NOT subject to CORS — the browser fetches it
-      transparently just like an image. This works on Android Chrome (which
-      supports HLS natively since Chrome 107) and iOS Safari.
-      No HLS.js needed, no proxy needed, no CORS issue.
-    -->
-    <video id="vid"
-      controls
-      autoplay
-      playsinline
-      webkit-playsinline
-      x-webkit-airplay="allow"
-      preload="none">
-    </video>
-    <div id="vloader"><div class="spin"></div><span id="vloader-txt">Loading stream…</span></div>
+    <video id="vid" controls playsinline webkit-playsinline preload="none"></video>
+    <div id="vloading"><div class="spin"></div><span class="spin-txt" id="vloadtxt">Loading…</span></div>
   </div>
   <div id="verr"></div>
 </div>
 
+<!-- HLS.js for browsers that don't support HLS natively (desktop Chrome, Firefox) -->
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.8/dist/hls.min.js"></script>
 <script>
 const JSON_URL = "https://raw.githubusercontent.com/Jitendra-unatti/fancode/refs/heads/main/data/fancode.json";
 const QORDER   = ["240p","360p","480p","540p","720p","1080p"];
@@ -131,6 +111,7 @@ const QBADGE   = {"1080p":"b1080","720p":"b720","540p":"b540","480p":"b480","360
 const params  = new URLSearchParams(location.search);
 const matchId = params.get("id");
 let   streams = [];
+let   hlsInst = null;
 const $       = id => document.getElementById(id);
 
 function parseMaster(text){
@@ -147,151 +128,150 @@ function parseMaster(text){
 }
 
 function goBack(){
-  $("player-page").classList.remove("show");
-  $("quality-page").classList.add("show");
+  $("ppage").classList.remove("on");
+  $("qpage").classList.add("on");
+  stopVideo();
+  $("vloading").style.display = "flex";
+  $("verr").style.display     = "none";
+}
+
+function stopVideo(){
   const v = $("vid");
   v.pause();
+  if(hlsInst){ hlsInst.destroy(); hlsInst = null; }
   v.removeAttribute("src");
   v.load();
 }
 
-function buildQualityPage(match){
+function buildQPage(match){
   $("mlogo").src = match.image || "";
-  $("mname").textContent  = match.title || "Live Match";
+  $("mtitle").textContent = match.title || "Live Match";
   $("mtourn").textContent = match.tournament || "";
-
-  // Show expiry time from JSON
   const exp = match.auto_streams?.[0]?.expire_date;
-  if(exp) $("mexpire").textContent = "⏱ Stream valid until: " + exp;
-
+  if(exp) $("mexpire").textContent = "⏱ Valid until: " + exp;
   const c = $("qitems");
   c.innerHTML = "";
   streams.forEach(s => {
     const d = document.createElement("div");
-    d.className = "q-item";
+    d.className = "qitem";
     d.innerHTML = `
-      <div class="q-left">
-        <div class="play-icon"><svg width="14" height="16" viewBox="0 0 14 16" fill="white"><path d="M0 0L14 8 0 16z"/></svg></div>
+      <div class="qleft">
+        <div class="pico"><svg width="13" height="15" viewBox="0 0 13 15" fill="white"><path d="M0 0L13 7.5 0 15z"/></svg></div>
         <div>
-          <div class="q-name">${s.quality.toUpperCase()}</div>
-          <div class="q-desc">${QDESC[s.quality]||""}</div>
+          <div class="qn">${s.quality.toUpperCase()}</div>
+          <div class="qd">${QDESC[s.quality]||""}</div>
         </div>
       </div>
-      <span class="q-badge ${QBADGE[s.quality]||"b240"}">${s.quality.toUpperCase()}</span>`;
-    d.onclick = () => startPlay(s);
+      <span class="qbadge ${QBADGE[s.quality]||"b240"}">${s.quality.toUpperCase()}</span>`;
+    d.onclick = () => play(s);
     c.appendChild(d);
   });
 }
 
 function showErr(msg){
-  $("vloader").style.display = "none";
-  $("verr").style.display    = "block";
-  $("verr").innerHTML = `⚠️ ${msg}<button onclick="goBack()">← Choose another quality</button>`;
+  $("vloading").style.display = "none";
+  $("verr").style.display     = "block";
+  $("verr").innerHTML = `⚠️ ${msg}<br><button class="rbtn" onclick="goBack()">← Choose another quality</button>`;
 }
 
-function startPlay(s){
-  $("quality-page").classList.remove("show");
-  $("player-page").classList.add("show");
-  $("verr").style.display    = "none";
-  $("vloader").style.display = "flex";
-  $("vloader-txt").textContent = "Loading " + s.quality.toUpperCase() + "…";
-  $("nowlbl").textContent    = s.quality.toUpperCase();
+function play(s){
+  $("qpage").classList.remove("on");
+  $("ppage").classList.add("on");
+  $("verr").style.display     = "none";
+  $("vloading").style.display = "flex";
+  $("vloadtxt").textContent   = "Loading " + s.quality.toUpperCase() + "…";
+  $("nowq").textContent       = s.quality.toUpperCase();
 
-  const video = $("vid");
+  stopVideo();
 
-  // Remove any previous source cleanly
-  video.pause();
-  video.removeAttribute("src");
-  video.load();
+  const vid = $("vid");
 
-  // Set source directly — native <video> bypasses CORS entirely
-  video.src = s.url;
+  /* ── HLS.js: works on desktop Chrome, Firefox, Android Chrome ── */
+  if(Hls.isSupported()){
+    hlsInst = new Hls({
+      enableWorker          : true,
+      lowLatencyMode        : true,
+      maxBufferLength       : 60,
+      maxMaxBufferLength    : 120,
+      manifestLoadingTimeOut: 15000,
+      levelLoadingTimeOut   : 15000,
+      fragLoadingTimeOut    : 20000,
+      manifestLoadingMaxRetry: 4,
+      levelLoadingMaxRetry  : 4,
+      fragLoadingMaxRetry   : 6,
+    });
 
-  video.onloadstart = () => {
-    $("vloader-txt").textContent = "Buffering…";
-  };
+    hlsInst.loadSource(s.url);
+    hlsInst.attachMedia(vid);
 
-  video.oncanplay = () => {
-    $("vloader").style.display = "none";
-    video.play().catch(() => {});
-  };
+    hlsInst.on(Hls.Events.MANIFEST_PARSED, () => {
+      $("vloading").style.display = "none";
+      vid.play().catch(()=>{});
+    });
 
-  // Also hide loader once playing starts
-  video.onplaying = () => {
-    $("vloader").style.display = "none";
-  };
+    hlsInst.on(Hls.Events.ERROR, (e, d) => {
+      if(!d.fatal) return;
+      if(d.type === Hls.ErrorTypes.NETWORK_ERROR){
+        // Could be CORS or expired token
+        showErr(
+          "Stream failed to load.<br>" +
+          "<small>This usually means the stream token has expired, or the CDN is blocking this request.<br>" +
+          "Make sure the JSON was updated today and try again.</small>"
+        );
+      } else if(d.type === Hls.ErrorTypes.MEDIA_ERROR){
+        hlsInst.recoverMediaError();
+      } else {
+        showErr("Playback error: " + d.details);
+      }
+    });
 
-  video.onerror = (e) => {
-    const code = video.error ? video.error.code : "?";
-    const msg  = video.error ? video.error.message : "Unknown error";
-    // MediaError codes: 1=aborted, 2=network, 3=decode, 4=src not supported
-    if(code === 4 || code === MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED){
-      showErr("Stream not supported by your browser. Try a lower quality.");
-    } else if(code === 2 || code === MediaError.MEDIA_ERR_NETWORK){
-      showErr("Network error — the stream token may have expired. Please go back to the home page and refresh.");
-    } else {
-      showErr(`Playback error (code ${code}): ${msg}`);
-    }
-  };
+  /* ── Native HLS: iOS Safari, macOS Safari ── */
+  } else if(vid.canPlayType("application/vnd.apple.mpegurl")){
+    vid.src = s.url;
+    vid.load();
 
-  // Timeout — if nothing loads in 15s, show error
-  const timeout = setTimeout(() => {
-    if(video.readyState < 2){
-      showErr("Stream timed out. Token may be expired — refresh the main page to get a fresh stream.");
-    }
-  }, 15000);
+    const timer = setTimeout(() => {
+      if(vid.readyState < 2) showErr("Stream timed out. Token may be expired.");
+    }, 15000);
 
-  video.oncanplay = () => {
-    clearTimeout(timeout);
-    $("vloader").style.display = "none";
-    video.play().catch(() => {});
-  };
+    vid.oncanplay = () => { clearTimeout(timer); $("vloading").style.display="none"; vid.play().catch(()=>{}); };
+    vid.onplaying = () => { clearTimeout(timer); $("vloading").style.display="none"; };
+    vid.onerror   = () => { clearTimeout(timer); showErr("Playback error (code " + (vid.error?.code||"?") + "). Try another quality."); };
+
+  } else {
+    showErr("Your browser does not support HLS streaming. Please use Chrome or Safari.");
+  }
 }
 
 async function init(){
-  if(!matchId){
-    $("iloader").innerHTML = "<div style='color:#f55'>⚠️ No match ID in URL.</div>";
-    return;
-  }
+  if(!matchId){ $("iloader").innerHTML="<div style='color:#f55'>⚠️ No match ID.</div>"; return; }
   try{
     const res  = await fetch(JSON_URL + "?_=" + Date.now());
     if(!res.ok) throw new Error("HTTP " + res.status);
     const data = await res.json();
-
     const match = data.matches.find(m => String(m.match_id) === matchId);
-    if(!match){
-      $("iloader").innerHTML = "<div style='color:#f55'>⚠️ Match not found or ended.</div>";
+    if(!match){ $("iloader").innerHTML="<div style='color:#f55'>⚠️ Match not found.</div>"; return; }
+
+    // Token expiry check
+    const cv = match.auto_streams?.[0]?.cookie_valid;
+    if(cv && Math.floor(Date.now()/1000) > parseInt(cv)){
+      $("iloader").innerHTML = `<div style="color:#f59e0b;text-align:center">
+        ⚠️ Stream token expired.<br><small style="color:#666">Refresh the home page to get fresh streams.</small><br><br>
+        <a href="/" style="color:#e50914;font-weight:700">← Back to Home</a></div>`;
       return;
     }
 
     const txt = match.auto_streams?.[0]?.auto;
-    if(!txt){
-      $("iloader").innerHTML = "<div style='color:#f55'>⚠️ No stream available for this match.</div>";
-      return;
-    }
-
-    // Check if token is still valid
-    const cookieValid = match.auto_streams?.[0]?.cookie_valid;
-    if(cookieValid){
-      const expiry = parseInt(cookieValid);
-      const now    = Math.floor(Date.now() / 1000);
-      if(now > expiry){
-        $("iloader").innerHTML = "<div style='color:#f55'>⚠️ Stream tokens have expired.<br><small>Please refresh the main page — the JSON needs to be updated with fresh tokens.</small></div>";
-        return;
-      }
-    }
+    if(!txt){ $("iloader").innerHTML="<div style='color:#f55'>⚠️ No stream available.</div>"; return; }
 
     streams = parseMaster(txt);
-    if(!streams.length){
-      $("iloader").innerHTML = "<div style='color:#f55'>⚠️ No stream qualities found.</div>";
-      return;
-    }
+    if(!streams.length){ $("iloader").innerHTML="<div style='color:#f55'>⚠️ No qualities found.</div>"; return; }
 
     $("iloader").style.display = "none";
-    buildQualityPage(match);
-    $("quality-page").classList.add("show");
+    buildQPage(match);
+    $("qpage").classList.add("on");
 
-  } catch(e){
+  }catch(e){
     $("iloader").innerHTML = `<div style="color:#f55">⚠️ ${e.message}</div>`;
   }
 }
