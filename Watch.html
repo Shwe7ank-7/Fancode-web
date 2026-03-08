@@ -65,6 +65,7 @@ video{width:100%;height:auto;background:#000}
 </div>
 
 <script>
+
 const JSON_URL="https://raw.githubusercontent.com/Jitendra-unatti/fancode/refs/heads/main/data/fancode.json";
 
 const params=new URLSearchParams(location.search);
@@ -73,88 +74,101 @@ const matchId=params.get("id");
 const video=document.getElementById("player");
 const overlay=document.getElementById("matchOverlay");
 
-async function getMatch(){
+async function loadMatch(){
 
  const res=await fetch(JSON_URL);
  const data=await res.json();
 
  const match=data.matches.find(m=>String(m.match_id)===matchId);
 
- if(!match) throw "Match not found";
-
- overlay.innerHTML=`
- <strong>${match.title}</strong><br>
- ${match.tournament} • LIVE
- `;
-
- return match;
-}
-
-function startPlayer(masterText){
-
- const blob=new Blob([masterText],{type:"application/vnd.apple.mpegurl"});
- const url=URL.createObjectURL(blob);
-
- if(Hls.isSupported()){
-
- const hls=new Hls({
-   lowLatencyMode:true,
-   backBufferLength:30
- });
-
- hls.loadSource(url);
- hls.attachMedia(video);
-
- hls.on(Hls.Events.MANIFEST_PARSED,()=>{
-
-   const qualities=hls.levels.map(l=>l.height).filter(Boolean);
-
-   new Plyr(video,{
-     controls:['play','progress','mute','volume','settings','fullscreen'],
-     quality:{
-       default:Math.max(...qualities),
-       options:qualities,
-       forced:true,
-       onChange:q=>{
-         hls.levels.forEach((l,i)=>{
-           if(l.height===q) hls.currentLevel=i;
-         });
-       }
-     }
-   });
-
-   video.play().catch(()=>video.muted=true);
-
- });
-
- hls.on(Hls.Events.ERROR,(e,d)=>{
-   if(d.fatal){
-     location.reload();
-   }
- });
-
- }
-}
-
-async function play(){
-
- const match=await getMatch();
-
- const masterPlaylist=match.auto_streams?.[0]?.auto;
-
- if(!masterPlaylist){
-   alert("Stream not available yet");
+ if(!match){
+   alert("Match not found");
    return;
  }
 
- startPlayer(masterPlaylist);
+ overlay.innerHTML=`<strong>${match.title}</strong><br>${match.tournament} • LIVE`;
+
+ const playlist=match.auto_streams?.[0]?.auto;
+
+ if(!playlist){
+   alert("Stream not available");
+   return;
+ }
+
+ createQualityButtons(playlist);
 
 }
 
-play();
+function createQualityButtons(text){
 
-/* auto refresh every 6 minutes */
-setInterval(()=>location.reload(),360000);
+ const container=document.createElement("div");
+ container.style.padding="20px";
+
+ const regex=/https.*?\.m3u8[^\n]*/g;
+
+ const urls=text.match(regex);
+
+ urls.forEach(url=>{
+
+   const q=url.match(/(\d+)p/);
+
+   if(!q) return;
+
+   const quality=q[1]+"p";
+
+   const btn=document.createElement("button");
+
+   btn.innerText="▶ "+quality;
+
+   btn.style.display="block";
+   btn.style.width="100%";
+   btn.style.margin="10px 0";
+   btn.style.padding="12px";
+   btn.style.background="#e50914";
+   btn.style.color="#fff";
+   btn.style.border="0";
+   btn.style.borderRadius="8px";
+   btn.style.fontWeight="700";
+
+   btn.onclick=()=>playStream(url);
+
+   container.appendChild(btn);
+
+ });
+
+ document.body.appendChild(container);
+
+}
+
+function playStream(url){
+
+ if(Hls.isSupported()){
+
+   const hls=new Hls({
+     maxBufferLength:30,
+     lowLatencyMode:true
+   });
+
+   hls.loadSource(url);
+   hls.attachMedia(video);
+
+   hls.on(Hls.Events.MANIFEST_PARSED,()=>{
+     new Plyr(video,{
+       controls:['play','progress','mute','volume','fullscreen']
+     });
+     video.play();
+   });
+
+ }
+
+ else if(video.canPlayType("application/vnd.apple.mpegurl")){
+   video.src=url;
+   video.play();
+ }
+
+}
+
+loadMatch();
 
 </script>
 
