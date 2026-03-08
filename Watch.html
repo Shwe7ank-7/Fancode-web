@@ -8,18 +8,15 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#0d1117;color:#fff;font-family:system-ui,-apple-system,sans-serif;min-height:100vh}
 
-/* popup */
 #popup{position:fixed;inset:0;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;z-index:999}
-.popup-box{background:#FFD700;color:#000;padding:24px 20px;border-radius:14px;width:300px;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.5)}
+.popup-box{background:#FFD700;color:#000;padding:24px 20px;border-radius:14px;width:300px;text-align:center}
 .popup-box h3{font-size:1.2rem;margin-bottom:8px}
 .popup-box p{font-size:.9rem;margin-bottom:16px;opacity:.8}
-.popup-box button{display:block;width:100%;background:#000;color:#FFD700;border:0;border-radius:8px;padding:11px;margin:7px 0;font-weight:700;font-size:.95rem;cursor:pointer}
+.popup-box button{display:block;width:100%;background:#000;color:#FFD700;border:0;border-radius:8px;padding:11px;margin:7px 0;font-weight:700;cursor:pointer}
 
-/* views */
 #quality-page,#player-page{display:none}
 #quality-page.show,#player-page.show{display:block}
 
-/* quality page */
 .match-header{background:linear-gradient(135deg,#161b22,#1f2937);padding:20px 16px 24px;text-align:center;border-bottom:1px solid #30363d}
 .match-logo{width:80px;height:80px;border-radius:12px;object-fit:cover;margin:0 auto 12px;display:block;border:2px solid #30363d;background:#111}
 .match-name{font-size:1.15rem;font-weight:700;margin-bottom:4px;line-height:1.3}
@@ -28,43 +25,42 @@ body{background:#0d1117;color:#fff;font-family:system-ui,-apple-system,sans-seri
 .q-list{padding:16px}
 .q-label{font-size:.75rem;color:#8b949e;text-transform:uppercase;letter-spacing:.8px;font-weight:600;margin-bottom:10px}
 
-.q-item{display:flex;align-items:center;justify-content:space-between;background:#161b22;border:1px solid #30363d;border-radius:12px;padding:16px 18px;margin-bottom:10px;cursor:pointer;transition:all .2s;text-decoration:none;color:#fff}
+.q-item{display:flex;align-items:center;justify-content:space-between;background:#161b22;border:1px solid #30363d;border-radius:12px;padding:16px 18px;margin-bottom:10px;cursor:pointer;transition:all .2s}
 .q-item:hover,.q-item:active{background:#1f2937;border-color:#e50914;transform:translateX(4px)}
 .q-item-left{display:flex;align-items:center;gap:14px}
 .play-icon{width:36px;height:36px;background:#e50914;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .play-icon svg{margin-left:2px}
 .q-name{font-size:1rem;font-weight:600}
 .q-desc{font-size:.78rem;color:#8b949e;margin-top:2px}
-
-.q-badge{padding:4px 12px;border-radius:20px;font-size:.75rem;font-weight:700;letter-spacing:.3px}
+.q-badge{padding:4px 12px;border-radius:20px;font-size:.75rem;font-weight:700}
 .badge-1080{background:#7c3aed;color:#fff}
 .badge-720{background:#059669;color:#fff}
-.badge-540{background:#2563eb;color:#fff}
-.badge-480{background:#2563eb;color:#fff}
+.badge-540,.badge-480{background:#2563eb;color:#fff}
 .badge-360{background:#d97706;color:#fff}
 .badge-240{background:#4b5563;color:#fff}
 
-/* player page */
 #player-page{background:#000;min-height:100vh}
 .player-topbar{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#111;border-bottom:1px solid #1e1e1e}
-.back-q-btn{background:#1e1e1e;color:#ccc;border:1px solid #2a2a2a;border-radius:8px;padding:6px 14px;font-size:.82rem;cursor:pointer;white-space:nowrap}
-.back-q-btn:hover{background:#2a2a2a;color:#fff}
+.back-q-btn{background:#1e1e1e;color:#ccc;border:1px solid #2a2a2a;border-radius:8px;padding:6px 14px;font-size:.82rem;cursor:pointer}
 .now-playing{font-size:.88rem;color:#888}
 .now-playing strong{color:#fff}
 
 #video-wrap{width:100%;background:#000;position:relative}
 video{width:100%;display:block;background:#000}
 
-#vid-loader{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.85);gap:14px;font-size:.9rem;color:#ccc;z-index:5}
+#vid-loader{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.85);gap:12px;z-index:5}
 .spinner{width:40px;height:40px;border:4px solid #333;border-top-color:#e50914;border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
+#vid-loader-text{font-size:.9rem;color:#ccc}
+#vid-loader-sub{font-size:.75rem;color:#555;max-width:280px;text-align:center;word-break:break-all}
 
 #inline-quality{display:flex;gap:8px;padding:10px 14px;background:#111;overflow-x:auto;border-bottom:1px solid #1e1e1e;scrollbar-width:none}
 #inline-quality::-webkit-scrollbar{display:none}
 .iq-btn{background:#1e1e1e;color:#aaa;border:1px solid #2a2a2a;border-radius:6px;padding:6px 14px;font-size:.82rem;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0}
 .iq-btn.active{background:#e50914;color:#fff;border-color:#e50914}
 
-#vid-error{display:none;margin:16px;padding:14px;background:#1a0000;border:1px solid #500;border-radius:8px;color:#f88;font-size:.88rem;line-height:1.6}
+#vid-error{display:none;margin:16px;padding:14px;background:#1a0000;border:1px solid #500;border-radius:8px;color:#f88;font-size:.85rem;line-height:1.6}
+#vid-error button{margin-top:10px;background:#e50914;color:#fff;border:0;border-radius:6px;padding:8px 16px;cursor:pointer;font-size:.85rem}
 
 #init-loader{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 20px;gap:14px;color:#555;font-size:.9rem}
 </style>
@@ -102,7 +98,11 @@ video{width:100%;display:block;background:#000}
   <div id="inline-quality"></div>
   <div id="video-wrap">
     <video id="player" controls playsinline webkit-playsinline></video>
-    <div id="vid-loader"><div class="spinner"></div><span id="vid-loader-text">Connecting…</span></div>
+    <div id="vid-loader">
+      <div class="spinner"></div>
+      <span id="vid-loader-text">Connecting…</span>
+      <span id="vid-loader-sub"></span>
+    </div>
   </div>
   <div id="vid-error"></div>
 </div>
@@ -114,54 +114,59 @@ const QUALITY_ORDER = ["240p","360p","480p","540p","720p","1080p"];
 const BADGE_CLASS   = {"1080p":"badge-1080","720p":"badge-720","540p":"badge-540","480p":"badge-480","360p":"badge-360","240p":"badge-240"};
 const Q_DESC        = {"1080p":"Full HD · Best quality","720p":"HD · Recommended","540p":"qHD · Balanced","480p":"SD · Smooth","360p":"Low · Data saver","240p":"Lowest · Minimal data"};
 
-/* ── Proxy helper ──
-   Wraps a FanCode CDN URL through our /proxy worker so the
-   worker can attach User-Agent + Referer on the server side. */
-function proxify(url){
-  return "/proxy?url=" + encodeURIComponent(url);
-}
-
 const params  = new URLSearchParams(location.search);
 const matchId = params.get("id");
 
 let streams     = [];
 let hlsInstance = null;
-let currentUrl  = null;
 
 const $ = id => document.getElementById(id);
 
-function parseMasterPlaylist(text){
+/* ── Test proxy is working before attempting stream ── */
+async function testProxy(url) {
+  try {
+    const proxyUrl = "/proxy?url=" + encodeURIComponent(url);
+    const res = await fetch(proxyUrl);
+    if (!res.ok) throw new Error("Proxy returned HTTP " + res.status);
+    const text = await res.text();
+    if (!text.includes("#EXTM3U") && !text.includes("#EXT-X")) {
+      throw new Error("Proxy response is not a valid playlist");
+    }
+    return { ok: true, proxyUrl };
+  } catch(e) {
+    return { ok: false, error: e.message };
+  }
+}
+
+function parseMasterPlaylist(text) {
   const lines = text.split(/\r?\n/);
   const out   = [];
-  for(let i = 0; i < lines.length; i++){
-    if(lines[i].startsWith("#EXT-X-STREAM-INF")){
+  for (let i = 0; i < lines.length; i++) {
+    if (lines[i].startsWith("#EXT-X-STREAM-INF")) {
       const url = lines[i+1]?.trim();
-      if(!url || url.startsWith("#")) continue;
+      if (!url || url.startsWith("#")) continue;
       const m = url.match(/\/(\d+p)\.m3u8/i);
-      if(m) out.push({ quality: m[1].toLowerCase(), url });
+      if (m) out.push({ quality: m[1].toLowerCase(), url });
     }
   }
-  // highest first in selector list
   return out.sort((a,b) => QUALITY_ORDER.indexOf(b.quality) - QUALITY_ORDER.indexOf(a.quality));
 }
 
-function showQualityPage(){
+function showQualityPage() {
   $("player-page").classList.remove("show");
   $("quality-page").classList.add("show");
-  const v = $("player");
-  v.pause();
+  $("player").pause();
+  if (hlsInstance) { hlsInstance.destroy(); hlsInstance = null; }
 }
 
-function buildQualityPage(match){
+function buildQualityPage(match) {
   $("match-logo").src = match.image || "";
   $("match-name").textContent = match.title || "Live Match";
   $("match-tournament").textContent = match.tournament || "";
-
   const container = $("q-items");
   container.innerHTML = "";
-
   streams.forEach(s => {
-    const q = s.quality;
+    const q    = s.quality;
     const item = document.createElement("div");
     item.className = "q-item";
     item.innerHTML = `
@@ -180,10 +185,9 @@ function buildQualityPage(match){
   });
 }
 
-function buildInlineQuality(){
+function buildInlineQuality() {
   const bar = $("inline-quality");
   bar.innerHTML = "";
-  // low → high in strip
   [...streams].reverse().forEach(s => {
     const btn = document.createElement("button");
     btn.className   = "iq-btn";
@@ -198,34 +202,46 @@ function buildInlineQuality(){
   });
 }
 
-function setActiveInline(quality){
-  $("inline-quality").querySelectorAll(".iq-btn").forEach(btn => {
-    btn.classList.toggle("active", btn.dataset.q === quality);
-  });
+function setActiveInline(quality) {
+  $("inline-quality").querySelectorAll(".iq-btn").forEach(btn =>
+    btn.classList.toggle("active", btn.dataset.q === quality)
+  );
 }
 
-function playStream(s, switchPage = true){
-  if(switchPage){
+function showVidError(msg) {
+  $("vid-loader").style.display = "none";
+  $("vid-error").style.display  = "block";
+  $("vid-error").innerHTML = `⚠️ ${msg}<br><button onclick="showQualityPage()">← Try another quality</button>`;
+}
+
+async function playStream(s, switchPage = true) {
+  if (switchPage) {
     $("quality-page").classList.remove("show");
     $("player-page").classList.add("show");
   }
 
-  $("now-label").textContent         = s.quality.toUpperCase();
-  $("vid-error").style.display       = "none";
-  $("vid-loader").style.display      = "flex";
-  $("vid-loader-text").textContent   = "Connecting…";
+  $("now-label").textContent       = s.quality.toUpperCase();
+  $("vid-error").style.display     = "none";
+  $("vid-loader").style.display    = "flex";
+  $("vid-loader-text").textContent = "Testing proxy…";
+  $("vid-loader-sub").textContent  = "";
   setActiveInline(s.quality);
 
-  // Route through proxy so worker adds User-Agent + Referer
-  const proxyUrl = proxify(s.url);
+  if (hlsInstance) { hlsInstance.destroy(); hlsInstance = null; }
 
-  if(proxyUrl === currentUrl) return;
-  currentUrl = proxyUrl;
+  // First test the proxy with this URL
+  const test = await testProxy(s.url);
+  if (!test.ok) {
+    showVidError("Proxy error: " + test.error + "<br>Make sure netlify.toml and edge-functions/proxy.js are deployed.");
+    return;
+  }
 
-  const video = $("player");
-  if(hlsInstance){ hlsInstance.destroy(); hlsInstance = null; }
+  $("vid-loader-text").textContent = "Loading stream…";
 
-  if(Hls.isSupported()){
+  const proxyUrl = test.proxyUrl;
+  const video    = $("player");
+
+  if (Hls.isSupported()) {
     hlsInstance = new Hls({
       enableWorker   : true,
       lowLatencyMode : true,
@@ -237,60 +253,69 @@ function playStream(s, switchPage = true){
 
     hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
       $("vid-loader").style.display = "none";
-      video.play().catch(()=>{});
+      video.play().catch(() => {});
     });
 
     hlsInstance.on(Hls.Events.ERROR, (e, data) => {
-      if(!data.fatal) return;
-      if(data.type === Hls.ErrorTypes.NETWORK_ERROR){
-        $("vid-loader-text").textContent = "Retrying…";
-        setTimeout(() => hlsInstance.startLoad(), 2000);
-      } else if(data.type === Hls.ErrorTypes.MEDIA_ERROR){
-        $("vid-loader-text").textContent = "Recovering…";
+      console.error("HLS error:", data);
+      $("vid-loader-sub").textContent = data.type + ": " + (data.details||"");
+      if (!data.fatal) return;
+      if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
+        $("vid-loader-text").textContent = "Network error – retrying…";
+        setTimeout(() => hlsInstance && hlsInstance.startLoad(), 2000);
+      } else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
+        $("vid-loader-text").textContent = "Media error – recovering…";
         hlsInstance.recoverMediaError();
       } else {
-        $("vid-loader").style.display = "none";
-        $("vid-error").style.display  = "block";
-        $("vid-error").innerHTML = "⚠️ Stream error. Try another quality or refresh the page.";
+        showVidError("Fatal stream error (" + data.details + "). Try another quality.");
         hlsInstance.destroy();
       }
     });
 
-  } else if(video.canPlayType("application/vnd.apple.mpegurl")){
-    // iOS Safari native HLS — goes through proxy too
+  } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
     video.src = proxyUrl;
     video.load();
     $("vid-loader").style.display = "none";
-    video.play().catch(()=>{});
+    video.play().catch(() => {});
   } else {
-    $("vid-loader").style.display = "none";
-    $("vid-error").style.display  = "block";
-    $("vid-error").innerHTML = "⚠️ Your browser doesn't support HLS streaming.";
+    showVidError("Your browser doesn't support HLS streaming.");
   }
 }
 
-async function init(){
-  if(!matchId){ $("init-loader").innerHTML = "<div style='color:#f55'>⚠️ No match ID in URL.</div>"; return; }
-  try{
+async function init() {
+  if (!matchId) {
+    $("init-loader").innerHTML = "<div style='color:#f55'>⚠️ No match ID in URL.</div>";
+    return;
+  }
+  try {
     const res  = await fetch(JSON_URL + "?_=" + Date.now());
-    if(!res.ok) throw new Error("HTTP " + res.status);
+    if (!res.ok) throw new Error("HTTP " + res.status);
     const data = await res.json();
 
     const match = data.matches.find(m => String(m.match_id) === matchId);
-    if(!match){ $("init-loader").innerHTML = "<div style='color:#f55'>⚠️ Match not found or has ended.</div>"; return; }
+    if (!match) {
+      $("init-loader").innerHTML = "<div style='color:#f55'>⚠️ Match not found or has ended.</div>";
+      return;
+    }
 
     const masterText = match.auto_streams?.[0]?.auto;
-    if(!masterText){ $("init-loader").innerHTML = "<div style='color:#f55'>⚠️ No stream available.</div>"; return; }
+    if (!masterText) {
+      $("init-loader").innerHTML = "<div style='color:#f55'>⚠️ No stream available for this match.</div>";
+      return;
+    }
 
     streams = parseMasterPlaylist(masterText);
-    if(!streams.length){ $("init-loader").innerHTML = "<div style='color:#f55'>⚠️ Could not parse qualities.</div>"; return; }
+    if (!streams.length) {
+      $("init-loader").innerHTML = "<div style='color:#f55'>⚠️ Could not parse stream qualities.</div>";
+      return;
+    }
 
     $("init-loader").style.display = "none";
     buildQualityPage(match);
     buildInlineQuality();
     $("quality-page").classList.add("show");
 
-  } catch(err){
+  } catch(err) {
     $("init-loader").innerHTML = `<div style="color:#f55">⚠️ ${err.message}</div>`;
   }
 }
