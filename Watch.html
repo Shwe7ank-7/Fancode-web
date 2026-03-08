@@ -95,11 +95,14 @@ const JSON_URL="https://raw.githubusercontent.com/Jitendra-unatti/fancode/refs/h
 const params=new URLSearchParams(location.search);
 const matchId=params.get("id");
 
-if(!matchId){
-alert("Match ID missing");
-}
+let hls;
 
 async function loadStream(){
+
+if(!matchId){
+alert("Match ID missing");
+return;
+}
 
 const res=await fetch(JSON_URL);
 const data=await res.json();
@@ -113,25 +116,32 @@ return;
 
 const playlist=match.auto_streams?.[0]?.auto;
 
-const regex=/https.*?\.m3u8[^\n]*/g;
+if(!playlist){
+alert("Stream not available yet");
+return;
+}
 
+const regex=/https.*?\.m3u8[^\n]*/g;
 const urls=playlist.match(regex);
 
 const container=document.getElementById("qualities");
 
-urls.forEach(url=>{
+urls.forEach((url,i)=>{
 
 const q=url.match(/(\d+)p/);
-
 if(!q)return;
 
 const btn=document.createElement("button");
-
 btn.innerText="▶ "+q[1]+"p";
 
 btn.onclick=()=>play(url);
 
 container.appendChild(btn);
+
+/* auto play highest quality */
+if(i===urls.length-1){
+setTimeout(()=>play(url),800);
+}
 
 });
 
@@ -141,18 +151,28 @@ function play(url){
 
 const video=document.getElementById("player");
 
+/* destroy previous stream */
+if(hls){
+hls.destroy();
+}
+
 if(Hls.isSupported()){
 
-const hls=new Hls();
+hls=new Hls({
+
+xhrSetup:function(xhr){
+xhr.setRequestHeader("Referer","https://fancode.com/");
+xhr.setRequestHeader("User-Agent","ReactNativeVideo/9.3.0");
+}
+
+});
 
 hls.loadSource(url);
-
 hls.attachMedia(video);
 
 hls.on(Hls.Events.MANIFEST_PARSED,function(){
 
 new Plyr(video);
-
 video.play();
 
 });
