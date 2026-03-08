@@ -24,7 +24,6 @@ body{background:#0d1117;color:#fff;font-family:system-ui,-apple-system,sans-seri
 
 .q-list{padding:16px}
 .q-label{font-size:.75rem;color:#8b949e;text-transform:uppercase;letter-spacing:.8px;font-weight:600;margin-bottom:10px}
-
 .q-item{display:flex;align-items:center;justify-content:space-between;background:#161b22;border:1px solid #30363d;border-radius:12px;padding:16px 18px;margin-bottom:10px;cursor:pointer;transition:all .2s}
 .q-item:hover,.q-item:active{background:#1f2937;border-color:#e50914;transform:translateX(4px)}
 .q-item-left{display:flex;align-items:center;gap:14px}
@@ -33,17 +32,14 @@ body{background:#0d1117;color:#fff;font-family:system-ui,-apple-system,sans-seri
 .q-name{font-size:1rem;font-weight:600}
 .q-desc{font-size:.78rem;color:#8b949e;margin-top:2px}
 .q-badge{padding:4px 12px;border-radius:20px;font-size:.75rem;font-weight:700}
-.badge-1080{background:#7c3aed;color:#fff}
-.badge-720{background:#059669;color:#fff}
+.badge-1080{background:#7c3aed;color:#fff}.badge-720{background:#059669;color:#fff}
 .badge-540,.badge-480{background:#2563eb;color:#fff}
-.badge-360{background:#d97706;color:#fff}
-.badge-240{background:#4b5563;color:#fff}
+.badge-360{background:#d97706;color:#fff}.badge-240{background:#4b5563;color:#fff}
 
 #player-page{background:#000;min-height:100vh}
 .player-topbar{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#111;border-bottom:1px solid #1e1e1e}
 .back-q-btn{background:#1e1e1e;color:#ccc;border:1px solid #2a2a2a;border-radius:8px;padding:6px 14px;font-size:.82rem;cursor:pointer}
-.now-playing{font-size:.88rem;color:#888}
-.now-playing strong{color:#fff}
+.now-playing{font-size:.88rem;color:#888}.now-playing strong{color:#fff}
 
 #video-wrap{width:100%;background:#000;position:relative}
 video{width:100%;display:block;background:#000}
@@ -52,15 +48,15 @@ video{width:100%;display:block;background:#000}
 .spinner{width:40px;height:40px;border:4px solid #333;border-top-color:#e50914;border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 #vid-loader-text{font-size:.9rem;color:#ccc}
-#vid-loader-sub{font-size:.75rem;color:#555;max-width:280px;text-align:center;word-break:break-all}
+#vid-loader-sub{font-size:.72rem;color:#555;max-width:290px;text-align:center;padding:0 10px;word-break:break-all}
 
 #inline-quality{display:flex;gap:8px;padding:10px 14px;background:#111;overflow-x:auto;border-bottom:1px solid #1e1e1e;scrollbar-width:none}
 #inline-quality::-webkit-scrollbar{display:none}
 .iq-btn{background:#1e1e1e;color:#aaa;border:1px solid #2a2a2a;border-radius:6px;padding:6px 14px;font-size:.82rem;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0}
 .iq-btn.active{background:#e50914;color:#fff;border-color:#e50914}
 
-#vid-error{display:none;margin:16px;padding:14px;background:#1a0000;border:1px solid #500;border-radius:8px;color:#f88;font-size:.85rem;line-height:1.6}
-#vid-error button{margin-top:10px;background:#e50914;color:#fff;border:0;border-radius:6px;padding:8px 16px;cursor:pointer;font-size:.85rem}
+#vid-error{display:none;margin:16px;padding:14px;background:#1a0000;border:1px solid #500;border-radius:8px;color:#f88;font-size:.85rem;line-height:1.7;word-break:break-all}
+#vid-error button{margin-top:10px;background:#e50914;color:#fff;border:0;border-radius:6px;padding:8px 16px;cursor:pointer;font-size:.85rem;display:block}
 
 #init-loader{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 20px;gap:14px;color:#555;font-size:.9rem}
 </style>
@@ -116,37 +112,18 @@ const Q_DESC        = {"1080p":"Full HD · Best quality","720p":"HD · Recommend
 
 const params  = new URLSearchParams(location.search);
 const matchId = params.get("id");
-
-let streams     = [];
-let hlsInstance = null;
-
-const $ = id => document.getElementById(id);
-
-/* ── Test proxy is working before attempting stream ── */
-async function testProxy(url) {
-  try {
-    const proxyUrl = "/proxy?url=" + encodeURIComponent(url);
-    const res = await fetch(proxyUrl);
-    if (!res.ok) throw new Error("Proxy returned HTTP " + res.status);
-    const text = await res.text();
-    if (!text.includes("#EXTM3U") && !text.includes("#EXT-X")) {
-      throw new Error("Proxy response is not a valid playlist");
-    }
-    return { ok: true, proxyUrl };
-  } catch(e) {
-    return { ok: false, error: e.message };
-  }
-}
+let streams   = [];
+let hlsInst   = null;
+const $       = id => document.getElementById(id);
 
 function parseMasterPlaylist(text) {
-  const lines = text.split(/\r?\n/);
-  const out   = [];
+  const lines = text.split(/\r?\n/), out = [];
   for (let i = 0; i < lines.length; i++) {
     if (lines[i].startsWith("#EXT-X-STREAM-INF")) {
-      const url = lines[i+1]?.trim();
-      if (!url || url.startsWith("#")) continue;
-      const m = url.match(/\/(\d+p)\.m3u8/i);
-      if (m) out.push({ quality: m[1].toLowerCase(), url });
+      const u = lines[i+1]?.trim();
+      if (!u || u.startsWith("#")) continue;
+      const m = u.match(/\/(\d+p)\.m3u8/i);
+      if (m) out.push({ quality: m[1].toLowerCase(), url: u });
     }
   }
   return out.sort((a,b) => QUALITY_ORDER.indexOf(b.quality) - QUALITY_ORDER.indexOf(a.quality));
@@ -156,32 +133,26 @@ function showQualityPage() {
   $("player-page").classList.remove("show");
   $("quality-page").classList.add("show");
   $("player").pause();
-  if (hlsInstance) { hlsInstance.destroy(); hlsInstance = null; }
+  if (hlsInst) { hlsInst.destroy(); hlsInst = null; }
 }
 
 function buildQualityPage(match) {
   $("match-logo").src = match.image || "";
   $("match-name").textContent = match.title || "Live Match";
   $("match-tournament").textContent = match.tournament || "";
-  const container = $("q-items");
-  container.innerHTML = "";
+  const c = $("q-items");
+  c.innerHTML = "";
   streams.forEach(s => {
-    const q    = s.quality;
     const item = document.createElement("div");
     item.className = "q-item";
     item.innerHTML = `
       <div class="q-item-left">
-        <div class="play-icon">
-          <svg width="14" height="16" viewBox="0 0 14 16" fill="white"><path d="M0 0 L14 8 L0 16 Z"/></svg>
-        </div>
-        <div>
-          <div class="q-name">${q.toUpperCase()}</div>
-          <div class="q-desc">${Q_DESC[q]||""}</div>
-        </div>
+        <div class="play-icon"><svg width="14" height="16" viewBox="0 0 14 16" fill="white"><path d="M0 0 L14 8 L0 16 Z"/></svg></div>
+        <div><div class="q-name">${s.quality.toUpperCase()}</div><div class="q-desc">${Q_DESC[s.quality]||""}</div></div>
       </div>
-      <span class="q-badge ${BADGE_CLASS[q]||"badge-240"}">${q.toUpperCase()}</span>`;
+      <span class="q-badge ${BADGE_CLASS[s.quality]||"badge-240"}">${s.quality.toUpperCase()}</span>`;
     item.onclick = () => playStream(s);
-    container.appendChild(item);
+    c.appendChild(item);
   });
 }
 
@@ -190,9 +161,9 @@ function buildInlineQuality() {
   bar.innerHTML = "";
   [...streams].reverse().forEach(s => {
     const btn = document.createElement("button");
-    btn.className   = "iq-btn";
+    btn.className = "iq-btn";
     btn.textContent = s.quality.toUpperCase();
-    btn.dataset.q   = s.quality;
+    btn.dataset.q = s.quality;
     btn.onclick = () => {
       bar.querySelectorAll(".iq-btn").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
@@ -202,16 +173,15 @@ function buildInlineQuality() {
   });
 }
 
-function setActiveInline(quality) {
-  $("inline-quality").querySelectorAll(".iq-btn").forEach(btn =>
-    btn.classList.toggle("active", btn.dataset.q === quality)
-  );
+function setActiveInline(q) {
+  $("inline-quality").querySelectorAll(".iq-btn").forEach(b =>
+    b.classList.toggle("active", b.dataset.q === q));
 }
 
 function showVidError(msg) {
   $("vid-loader").style.display = "none";
   $("vid-error").style.display  = "block";
-  $("vid-error").innerHTML = `⚠️ ${msg}<br><button onclick="showQualityPage()">← Try another quality</button>`;
+  $("vid-error").innerHTML = `⚠️ ${msg}<button onclick="showQualityPage()">← Try another quality</button>`;
 }
 
 async function playStream(s, switchPage = true) {
@@ -219,102 +189,103 @@ async function playStream(s, switchPage = true) {
     $("quality-page").classList.remove("show");
     $("player-page").classList.add("show");
   }
-
   $("now-label").textContent       = s.quality.toUpperCase();
   $("vid-error").style.display     = "none";
   $("vid-loader").style.display    = "flex";
-  $("vid-loader-text").textContent = "Testing proxy…";
+  $("vid-loader-text").textContent = "Connecting…";
   $("vid-loader-sub").textContent  = "";
   setActiveInline(s.quality);
+  if (hlsInst) { hlsInst.destroy(); hlsInst = null; }
 
-  if (hlsInstance) { hlsInstance.destroy(); hlsInstance = null; }
+  const proxyUrl = "/proxy?url=" + encodeURIComponent(s.url);
 
-  // First test the proxy with this URL
-  const test = await testProxy(s.url);
-  if (!test.ok) {
-    showVidError("Proxy error: " + test.error + "<br>Make sure netlify.toml and edge-functions/proxy.js are deployed.");
-    return;
+  // Quick proxy test — fetch and show raw response snippet if fails
+  try {
+    const test = await fetch(proxyUrl);
+    const txt  = await test.text();
+    if (!test.ok) {
+      showVidError("Proxy HTTP " + test.status + ":<br>" + txt.substring(0, 200));
+      return;
+    }
+    if (!txt.includes("#EXT")) {
+      showVidError("Proxy returned unexpected content:<br><small>" + txt.substring(0, 300) + "</small>");
+      return;
+    }
+    // Proxy is good — now play using blob URL to avoid double-fetch
+    const blob    = new Blob([txt], { type: "application/vnd.apple.mpegurl" });
+    const blobUrl = URL.createObjectURL(blob);
+    loadHLS(blobUrl, proxyUrl);
+  } catch(e) {
+    showVidError("Proxy fetch failed: " + e.message);
   }
+}
 
+function loadHLS(blobUrl, proxyBase) {
+  const video = $("player");
   $("vid-loader-text").textContent = "Loading stream…";
 
-  const proxyUrl = test.proxyUrl;
-  const video    = $("player");
-
   if (Hls.isSupported()) {
-    hlsInstance = new Hls({
+    hlsInst = new Hls({
       enableWorker   : true,
       lowLatencyMode : true,
       maxBufferLength: 30,
+      // Segments are relative in the rewritten playlist — HLS.js resolves them
+      // against the blob URL, so we need a loader that maps them back to /proxy
+      pLoader: class extends Hls.DefaultConfig.loader {
+        load(context, config, callbacks) {
+          // If HLS.js requests a blob URL for sub-playlist or segment,
+          // redirect back to /proxy
+          if (context.url && context.url.startsWith("blob:")) {
+            context.url = proxyBase;
+          }
+          super.load(context, config, callbacks);
+        }
+      }
     });
-
-    hlsInstance.loadSource(proxyUrl);
-    hlsInstance.attachMedia(video);
-
-    hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
+    hlsInst.loadSource(blobUrl);
+    hlsInst.attachMedia(video);
+    hlsInst.on(Hls.Events.MANIFEST_PARSED, () => {
       $("vid-loader").style.display = "none";
       video.play().catch(() => {});
     });
-
-    hlsInstance.on(Hls.Events.ERROR, (e, data) => {
-      console.error("HLS error:", data);
-      $("vid-loader-sub").textContent = data.type + ": " + (data.details||"");
+    hlsInst.on(Hls.Events.ERROR, (e, data) => {
+      $("vid-loader-sub").textContent = (data.details || "");
       if (!data.fatal) return;
       if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
-        $("vid-loader-text").textContent = "Network error – retrying…";
-        setTimeout(() => hlsInstance && hlsInstance.startLoad(), 2000);
+        $("vid-loader-text").textContent = "Retrying…";
+        setTimeout(() => hlsInst && hlsInst.startLoad(), 2000);
       } else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
-        $("vid-loader-text").textContent = "Media error – recovering…";
-        hlsInstance.recoverMediaError();
+        hlsInst.recoverMediaError();
       } else {
-        showVidError("Fatal stream error (" + data.details + "). Try another quality.");
-        hlsInstance.destroy();
+        showVidError("Stream error: " + data.details + "<br>Try another quality.");
       }
     });
-
   } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
-    video.src = proxyUrl;
+    video.src = proxyBase;
     video.load();
     $("vid-loader").style.display = "none";
     video.play().catch(() => {});
   } else {
-    showVidError("Your browser doesn't support HLS streaming.");
+    showVidError("Browser doesn't support HLS.");
   }
 }
 
 async function init() {
-  if (!matchId) {
-    $("init-loader").innerHTML = "<div style='color:#f55'>⚠️ No match ID in URL.</div>";
-    return;
-  }
+  if (!matchId) { $("init-loader").innerHTML = "<div style='color:#f55'>⚠️ No match ID.</div>"; return; }
   try {
     const res  = await fetch(JSON_URL + "?_=" + Date.now());
     if (!res.ok) throw new Error("HTTP " + res.status);
     const data = await res.json();
-
     const match = data.matches.find(m => String(m.match_id) === matchId);
-    if (!match) {
-      $("init-loader").innerHTML = "<div style='color:#f55'>⚠️ Match not found or has ended.</div>";
-      return;
-    }
-
+    if (!match) { $("init-loader").innerHTML = "<div style='color:#f55'>⚠️ Match not found.</div>"; return; }
     const masterText = match.auto_streams?.[0]?.auto;
-    if (!masterText) {
-      $("init-loader").innerHTML = "<div style='color:#f55'>⚠️ No stream available for this match.</div>";
-      return;
-    }
-
+    if (!masterText) { $("init-loader").innerHTML = "<div style='color:#f55'>⚠️ No stream available.</div>"; return; }
     streams = parseMasterPlaylist(masterText);
-    if (!streams.length) {
-      $("init-loader").innerHTML = "<div style='color:#f55'>⚠️ Could not parse stream qualities.</div>";
-      return;
-    }
-
+    if (!streams.length) { $("init-loader").innerHTML = "<div style='color:#f55'>⚠️ No qualities found.</div>"; return; }
     $("init-loader").style.display = "none";
     buildQualityPage(match);
     buildInlineQuality();
     $("quality-page").classList.add("show");
-
   } catch(err) {
     $("init-loader").innerHTML = `<div style="color:#f55">⚠️ ${err.message}</div>`;
   }
