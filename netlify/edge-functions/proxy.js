@@ -2,7 +2,6 @@ export default async (request, context) => {
   const url = new URL(request.url);
   const target = url.searchParams.get("url");
 
-  // Handle CORS preflight
   if (request.method === "OPTIONS") {
     return new Response(null, {
       status: 204,
@@ -21,7 +20,7 @@ export default async (request, context) => {
   let targetUrl;
   try {
     targetUrl = decodeURIComponent(target);
-    new URL(targetUrl); // validate
+    new URL(targetUrl);
   } catch {
     return new Response("Invalid URL", { status: 400 });
   }
@@ -37,24 +36,39 @@ export default async (request, context) => {
       }
     });
 
+    // If upstream failed, return its status with body for debugging
+    if (!upstream.ok) {
+      const errText = await upstream.text();
+      return new Response("Upstream error " + upstream.status + ": " + errText.substring(0, 300), {
+        status: upstream.status,
+        headers: { "Access-Control-Allow-Origin": "*" }
+      });
+    }
+
     const isPlaylist = targetUrl.includes(".m3u8");
 
     if (isPlaylist) {
       let text = await upstream.text();
 
-      // Get base URL for relative paths
-      const base = new URL(targetUrl);
+      // Get base path for resolving relative URLs
+      const base     = new URL(targetUrl);
       const basePath = base.origin + base.pathname.substring(0, base.pathname.lastIndexOf("/") + 1);
+      const baseQuery = base.search; // preserve query string (hdntl token)
 
       // Rewrite absolute https:// URLs
       text = text.replace(/(https:\/\/[^\s\r\n"]+)/g, (match) =>
         `/proxy?url=${encodeURIComponent(match)}`
       );
 
-      // Rewrite relative URLs (like 240p.m3u8 or seg001.ts)
+      // Rewrite relative segment/playlist lines (non-comment, non-empty lines)
       text = text.replace(/^([^#\r\n][^\r\n]*)$/gm, (line) => {
-        if (line.startsWith("http") || line.startsWith("/proxy")) return line;
-        return `/proxy?url=${encodeURIComponent(basePath + line)}`;
+        line = line.trim();
+        if (!line) return line;
+        if (line.startsWith("/proxy")) return line;
+        if (line.startsWith("http")) return `/proxy?url=${encodeURIComponent(line)}`;
+        // relative path — prepend base + keep token
+        const fullUrl = basePath + line + (line.includes("?") ? "" : baseQuery);
+        return `/proxy?url=${encodeURIComponent(fullUrl)}`;
       });
 
       return new Response(text, {
@@ -67,7 +81,7 @@ export default async (request, context) => {
       });
     }
 
-    // Binary segments (.ts, .aac, etc.)
+    // Binary .ts segments
     const contentType = upstream.headers.get("content-type") || "video/mp2t";
     return new Response(upstream.body, {
       status: upstream.status,
@@ -79,7 +93,10 @@ export default async (request, context) => {
     });
 
   } catch (err) {
-    return new Response("Proxy error: " + err.message, { status: 502 });
+    return new Response("Proxy fetch error: " + err.message, {
+      status: 502,
+      headers: { "Access-Control-Allow-Origin": "*" }
+    });
   }
 };
 
