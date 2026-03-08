@@ -10,148 +10,422 @@
 <script src="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.min.js"></script>
 
 <style>
+*{box-sizing:border-box;margin:0;padding:0}
 
 body{
-margin:0;
-background:#000;
-color:#fff;
-font-family:system-ui;
-}
-
-video{
-width:100%;
-background:#000;
-}
-
-.container{
-padding:15px;
-}
-
-button{
-display:block;
-width:100%;
-background:#e50914;
-color:#fff;
-border:0;
-border-radius:8px;
-padding:12px;
-margin:8px 0;
-font-weight:700;
+  background:#0a0a0a;
+  color:#fff;
+  font-family:system-ui,-apple-system,sans-serif;
+  min-height:100vh;
 }
 
 #popup{
-position:fixed;
-inset:0;
-background:rgba(0,0,0,.85);
-display:flex;
-align-items:center;
-justify-content:center;
-z-index:999;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.88);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:999;
 }
 
 .popup-box{
-background:#FFD700;
-color:#000;
-padding:20px;
-border-radius:12px;
-width:300px;
-text-align:center;
+  background:#FFD700;
+  color:#000;
+  padding:24px 20px;
+  border-radius:14px;
+  width:300px;
+  text-align:center;
+  box-shadow:0 8px 32px rgba(0,0,0,.5);
 }
+
+.popup-box h3{font-size:1.2rem;margin-bottom:8px}
+.popup-box p{font-size:.9rem;margin-bottom:16px;opacity:.8}
 
 .popup-box button{
-background:#000;
-color:#FFD700;
+  display:block;
+  width:100%;
+  background:#000;
+  color:#FFD700;
+  border:0;
+  border-radius:8px;
+  padding:11px;
+  margin:7px 0;
+  font-weight:700;
+  font-size:.95rem;
+  cursor:pointer;
 }
 
+/* ── video wrapper ── */
+#video-wrap{
+  width:100%;
+  background:#000;
+  position:relative;
+}
+
+video{
+  width:100%;
+  display:block;
+  background:#000;
+}
+
+/* ── loading overlay ── */
+#loader{
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,.75);
+  gap:14px;
+  font-size:.9rem;
+  color:#ccc;
+}
+
+.spinner{
+  width:40px;height:40px;
+  border:4px solid #333;
+  border-top-color:#e50914;
+  border-radius:50%;
+  animation:spin .8s linear infinite;
+}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── quality bar ── */
+#quality-bar{
+  display:flex;
+  gap:8px;
+  padding:10px 14px;
+  background:#111;
+  overflow-x:auto;
+  border-bottom:1px solid #222;
+  flex-wrap:wrap;
+}
+
+.q-btn{
+  background:#222;
+  color:#ccc;
+  border:1px solid #333;
+  border-radius:6px;
+  padding:6px 14px;
+  font-size:.82rem;
+  font-weight:600;
+  cursor:pointer;
+  white-space:nowrap;
+  transition:all .2s;
+}
+
+.q-btn:hover{background:#333;color:#fff}
+.q-btn.active{background:#e50914;color:#fff;border-color:#e50914}
+
+/* ── match info strip ── */
+#match-info{
+  padding:10px 14px;
+  background:#111;
+  font-size:.88rem;
+  color:#aaa;
+  border-bottom:1px solid #1a1a1a;
+}
+
+#match-title{
+  font-size:1rem;
+  font-weight:700;
+  color:#fff;
+  margin-bottom:2px;
+}
+
+/* ── error box ── */
+#error-box{
+  display:none;
+  margin:20px 14px;
+  padding:14px;
+  background:#1a0000;
+  border:1px solid #500;
+  border-radius:8px;
+  color:#f88;
+  font-size:.88rem;
+  line-height:1.5;
+}
 </style>
 </head>
 
 <body>
 
+<!-- Telegram popup -->
 <div id="popup">
-<div class="popup-box">
-<h3>Support Us</h3>
-<p>Join Telegram for more live matches</p>
-
-<button onclick="window.open('https://t.me/+3sgGQcDP6ExhYTU1','_blank')">
-Join Telegram
-</button>
-
-<button onclick="popup.style.display='none'">
-Already Joined
-</button>
-
-</div>
+  <div class="popup-box">
+    <h3>🔴 Support Us</h3>
+    <p>Join Telegram for more live matches</p>
+    <button onclick="window.open('https://t.me/+3sgGQcDP6ExhYTU1','_blank')">📲 Join Telegram</button>
+    <button onclick="document.getElementById('popup').style.display='none'">✅ Already Joined</button>
+  </div>
 </div>
 
-<video id="player" controls playsinline></video>
+<!-- Match info -->
+<div id="match-info">
+  <div id="match-title">Loading match…</div>
+  <div id="match-meta"></div>
+</div>
 
-<div class="container" id="qualities"></div>
+<!-- Quality selector -->
+<div id="quality-bar"></div>
+
+<!-- Video -->
+<div id="video-wrap">
+  <video id="player" controls playsinline></video>
+  <div id="loader">
+    <div class="spinner"></div>
+    <span id="loader-text">Loading stream…</span>
+  </div>
+</div>
+
+<!-- Error -->
+<div id="error-box" id="error-box"></div>
 
 <script>
+/* ═══════════════════════════════════════════
+   CONFIG
+═══════════════════════════════════════════ */
+const M3U_URL = "https://raw.githubusercontent.com/Jitendra-unatti/fancode/refs/heads/main/data/fancode.m3u";
 
-const JSON_URL="https://raw.githubusercontent.com/Jitendra-unatti/fancode/refs/heads/main/data/fancode.json";
+/* ═══════════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════════ */
+const params   = new URLSearchParams(location.search);
+const matchId  = params.get("id");
 
-const params=new URLSearchParams(location.search);
-const matchId=params.get("id");
+const $  = id => document.getElementById(id);
+const loader = $("loader");
+const errorBox = $("error-box");
 
-if(!matchId){
-alert("Match ID missing");
+function showError(msg){
+  loader.style.display = "none";
+  errorBox.style.display = "block";
+  errorBox.innerHTML = "⚠️ " + msg;
 }
 
+function setLoader(txt){ $("loader-text").textContent = txt; }
+
+/* ═══════════════════════════════════════════
+   PARSE M3U
+   Returns array of:
+   { label, quality, url, userAgent, referer, tvgId, logo, group }
+═══════════════════════════════════════════ */
+function parseM3U(text){
+  const lines   = text.split(/\r?\n/);
+  const entries = [];
+  let   meta    = null;
+
+  for(let i = 0; i < lines.length; i++){
+    const line = lines[i].trim();
+
+    if(line.startsWith("#EXTINF")){
+      // Parse attributes from the tag
+      const tvgId  = (line.match(/tvg-id="([^"]+)"/)   || [])[1] || "";
+      const logo   = (line.match(/tvg-logo="([^"]+)"/)  || [])[1] || "";
+      const group  = (line.match(/group-title="([^"]+)"/)|| [])[1] || "";
+      const label  = line.split(",").pop().trim();            // e.g. "720p | ENG"
+      const qMatch = label.match(/^(\d+p)/i);
+      const quality= qMatch ? qMatch[1].toLowerCase() : "auto";
+      meta = { tvgId, logo, group, label, quality };
+
+    } else if(line && !line.startsWith("#") && meta){
+      // The URL line may contain: baseUrl|User-Agent=xxx&Referer=yyy
+      // OR: baseUrl?token|User-Agent=xxx&Referer=yyy
+      // Split on the LAST pipe that separates headers from URL
+      const pipeIdx = line.lastIndexOf("|User-Agent=");
+      let   url        = line;
+      let   userAgent  = "ReactNativeVideo/9.3.0 (Linux;Android 13) AndroidXMedia3/1.6.1";
+      let   referer    = "https://fancode.com/";
+
+      if(pipeIdx !== -1){
+        url = line.substring(0, pipeIdx);
+        const headerStr = line.substring(pipeIdx + 1); // "User-Agent=xxx&Referer=yyy"
+        const hParams   = new URLSearchParams(headerStr);
+        userAgent = hParams.get("User-Agent") || userAgent;
+        referer   = hParams.get("Referer")    || referer;
+      }
+
+      entries.push({ ...meta, url, userAgent, referer });
+      meta = null;
+    }
+  }
+  return entries;
+}
+
+/* ═══════════════════════════════════════════
+   HLS PLAYER
+═══════════════════════════════════════════ */
+let hlsInstance = null;
+let plyrInstance = null;
+let currentUrl  = null;
+
+function startHLS(url, userAgent, referer){
+  if(url === currentUrl) return;   // already playing this quality
+  currentUrl = url;
+
+  loader.style.display = "flex";
+  setLoader("Connecting to stream…");
+
+  const video = $("player");
+
+  // Destroy previous HLS instance
+  if(hlsInstance){ hlsInstance.destroy(); hlsInstance = null; }
+
+  if(Hls.isSupported()){
+    hlsInstance = new Hls({
+      enableWorker      : true,
+      lowLatencyMode    : true,
+      maxBufferLength   : 30,
+      maxMaxBufferLength: 60,
+      // Inject required headers on every segment/manifest request
+      xhrSetup: function(xhr, reqUrl){
+        // Note: browsers block setting User-Agent via XHR for security,
+        // but we set Referer & other headers where permitted.
+        // User-Agent spoofing requires a proxy; we include it for environments
+        // where a CORS proxy or extension allows it.
+        try{ xhr.setRequestHeader("Referer", referer); }catch(e){}
+        try{ xhr.setRequestHeader("X-Forwarded-For", ""); }catch(e){}
+      },
+      fetchSetup: function(context, initParams){
+        // For fetch-based loaders (fallback)
+        initParams.headers = initParams.headers || {};
+        initParams.headers["Referer"] = referer;
+        initParams.referrer = referer;
+        return new Request(context.url, initParams);
+      }
+    });
+
+    hlsInstance.loadSource(url);
+    hlsInstance.attachMedia(video);
+
+    hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
+      loader.style.display = "none";
+      video.play().catch(()=>{});
+    });
+
+    hlsInstance.on(Hls.Events.ERROR, (event, data) => {
+      if(data.fatal){
+        switch(data.type){
+          case Hls.ErrorTypes.NETWORK_ERROR:
+            setLoader("Network error – retrying…");
+            hlsInstance.startLoad();
+            break;
+          case Hls.ErrorTypes.MEDIA_ERROR:
+            setLoader("Media error – recovering…");
+            hlsInstance.recoverMediaError();
+            break;
+          default:
+            showError("Fatal stream error. The stream may have expired or is geo-restricted.<br>Try refreshing the page.");
+            hlsInstance.destroy();
+        }
+      }
+    });
+
+    // Init Plyr only once
+    if(!plyrInstance){
+      plyrInstance = new Plyr(video, {
+        controls : ['play','progress','current-time','mute','volume','fullscreen'],
+        settings : [],
+        ratio    : '16:9'
+      });
+    }
+
+  } else if(video.canPlayType("application/vnd.apple.mpegurl")){
+    // Safari native HLS
+    video.src = url;
+    loader.style.display = "none";
+    video.play().catch(()=>{});
+
+    if(!plyrInstance){
+      plyrInstance = new Plyr(video, {
+        controls: ['play','progress','current-time','mute','volume','fullscreen']
+      });
+    }
+  } else {
+    showError("Your browser does not support HLS streaming.");
+  }
+}
+
+/* ═══════════════════════════════════════════
+   BUILD QUALITY BUTTONS
+═══════════════════════════════════════════ */
+const QUALITY_ORDER = ["240p","360p","480p","540p","720p","1080p"];
+
+function buildQualityBar(streams){
+  const bar = $("quality-bar");
+  bar.innerHTML = "";
+
+  // Sort by quality order
+  streams.sort((a,b) =>
+    QUALITY_ORDER.indexOf(a.quality) - QUALITY_ORDER.indexOf(b.quality)
+  );
+
+  streams.forEach((s, idx) => {
+    const btn = document.createElement("button");
+    btn.className = "q-btn" + (idx === 0 ? " active" : "");
+    btn.textContent = s.quality.toUpperCase();
+    btn.title = s.label;
+    btn.onclick = () => {
+      document.querySelectorAll(".q-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      startHLS(s.url, s.userAgent, s.referer);
+    };
+    bar.appendChild(btn);
+  });
+}
+
+/* ═══════════════════════════════════════════
+   MAIN LOAD
+═══════════════════════════════════════════ */
 async function loadStream(){
+  if(!matchId){
+    showError("No match ID in URL. Add <code>?id=MATCH_ID</code> to the URL.");
+    return;
+  }
 
-const res = await fetch(JSON_URL);
-const data = await res.json();
+  try{
+    setLoader("Fetching playlist…");
 
-const match = data.matches.find(m => String(m.match_id) === matchId);
-if(!match) return alert("Match not found");
+    const res = await fetch(M3U_URL + "?_=" + Date.now()); // bust cache
+    if(!res.ok) throw new Error("HTTP " + res.status);
+    const text = await res.text();
 
-const playlistText = match.auto_streams?.[0]?.auto;
-if(!playlistText) return alert("Stream not available");
+    const all     = parseM3U(text);
+    const streams = all.filter(e => String(e.tvgId) === String(matchId));
 
-const blob = new Blob([playlistText], {type:"application/vnd.apple.mpegurl"});
-const masterUrl = URL.createObjectURL(blob);
+    if(!streams.length){
+      showError(`No streams found for match ID <strong>${matchId}</strong>.<br>The match may not be live yet, or the playlist hasn't been updated.`);
+      return;
+    }
 
-startPlayer(masterUrl);
+    // Show match info
+    const first = streams[0];
+    $("match-title").textContent = first.group || "Live Match";
+    $("match-meta").textContent  = `Match ID: ${matchId} · ${streams.length} quality options`;
 
-}
+    buildQualityBar(streams);
 
-function startPlayer(url){
+    // Auto-start with highest available quality
+    const best = streams[streams.length - 1]; // last after sort = highest
+    // But default to 480p for reliability on mobile
+    const preferred = streams.find(s => s.quality === "480p") || streams[Math.floor(streams.length/2)] || best;
 
-const video = document.getElementById("player");
+    // Mark preferred as active
+    const btns = document.querySelectorAll(".q-btn");
+    const prefIdx = streams.indexOf(preferred);
+    btns.forEach((b,i) => b.classList.toggle("active", i === prefIdx));
 
-if(Hls.isSupported()){
+    startHLS(preferred.url, preferred.userAgent, preferred.referer);
 
-const hls = new Hls({
-enableWorker:true,
-lowLatencyMode:true
-});
-
-hls.loadSource(url);
-hls.attachMedia(video);
-
-hls.on(Hls.Events.MANIFEST_PARSED, () => {
-
-new Plyr(video,{
-controls:['play','progress','mute','volume','settings','fullscreen']
-});
-
-video.play();
-
-});
-
-} else {
-
-video.src = url;
-video.play();
-
-}
-
+  } catch(err){
+    showError("Failed to load playlist: " + err.message);
+  }
 }
 
 loadStream();
-
 </script>
 
 </body>
