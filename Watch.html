@@ -12,53 +12,51 @@ body{background:#0d1117;color:#fff;font-family:system-ui,-apple-system,sans-seri
 .popup-box{background:#FFD700;color:#000;padding:24px 20px;border-radius:14px;width:300px;text-align:center}
 .popup-box h3{font-size:1.2rem;margin-bottom:8px}
 .popup-box p{font-size:.9rem;margin-bottom:16px;opacity:.8}
-.popup-box button{display:block;width:100%;background:#000;color:#FFD700;border:0;border-radius:8px;padding:11px;margin:7px 0;font-weight:700;cursor:pointer}
+.popup-box button{display:block;width:100%;background:#000;color:#FFD700;border:0;border-radius:8px;padding:11px;margin:7px 0;font-weight:700;cursor:pointer;font-size:.95rem}
 
+/* views */
 #quality-page,#player-page{display:none}
 #quality-page.show,#player-page.show{display:block}
 
+/* quality page */
 .match-header{background:linear-gradient(135deg,#161b22,#1f2937);padding:20px 16px 24px;text-align:center;border-bottom:1px solid #30363d}
 .match-logo{width:80px;height:80px;border-radius:12px;object-fit:cover;margin:0 auto 12px;display:block;border:2px solid #30363d;background:#111}
 .match-name{font-size:1.15rem;font-weight:700;margin-bottom:4px;line-height:1.3}
-.match-tournament{font-size:.82rem;color:#8b949e;text-transform:uppercase;letter-spacing:.5px}
+.match-tourn{font-size:.82rem;color:#8b949e;text-transform:uppercase;letter-spacing:.5px}
 
 .q-list{padding:16px}
 .q-label{font-size:.75rem;color:#8b949e;text-transform:uppercase;letter-spacing:.8px;font-weight:600;margin-bottom:10px}
 .q-item{display:flex;align-items:center;justify-content:space-between;background:#161b22;border:1px solid #30363d;border-radius:12px;padding:16px 18px;margin-bottom:10px;cursor:pointer;transition:all .2s}
 .q-item:hover,.q-item:active{background:#1f2937;border-color:#e50914;transform:translateX(4px)}
-.q-item-left{display:flex;align-items:center;gap:14px}
+.q-left{display:flex;align-items:center;gap:14px}
 .play-icon{width:36px;height:36px;background:#e50914;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .play-icon svg{margin-left:2px}
 .q-name{font-size:1rem;font-weight:600}
 .q-desc{font-size:.78rem;color:#8b949e;margin-top:2px}
 .q-badge{padding:4px 12px;border-radius:20px;font-size:.75rem;font-weight:700}
-.badge-1080{background:#7c3aed;color:#fff}.badge-720{background:#059669;color:#fff}
-.badge-540,.badge-480{background:#2563eb;color:#fff}
-.badge-360{background:#d97706;color:#fff}.badge-240{background:#4b5563;color:#fff}
+.b1080{background:#7c3aed;color:#fff}.b720{background:#059669;color:#fff}
+.b540,.b480{background:#2563eb;color:#fff}
+.b360{background:#d97706;color:#fff}.b240{background:#4b5563;color:#fff}
 
+/* player page */
 #player-page{background:#000;min-height:100vh}
-.player-topbar{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#111;border-bottom:1px solid #1e1e1e}
-.back-q-btn{background:#1e1e1e;color:#ccc;border:1px solid #2a2a2a;border-radius:8px;padding:6px 14px;font-size:.82rem;cursor:pointer}
-.now-playing{font-size:.88rem;color:#888}.now-playing strong{color:#fff}
+.topbar{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#111;border-bottom:1px solid #1e1e1e}
+.back-btn{background:#1e1e1e;color:#ccc;border:1px solid #2a2a2a;border-radius:8px;padding:6px 14px;font-size:.82rem;cursor:pointer;white-space:nowrap}
+.back-btn:hover{background:#2a2a2a;color:#fff}
+.now-lbl{font-size:.88rem;color:#888}.now-lbl strong{color:#fff}
 
-#video-wrap{width:100%;background:#000;position:relative}
+#vwrap{width:100%;background:#000;position:relative}
 video{width:100%;display:block;background:#000}
 
-#vid-loader{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.85);gap:12px;z-index:5}
-.spinner{width:40px;height:40px;border:4px solid #333;border-top-color:#e50914;border-radius:50%;animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-#vid-loader-text{font-size:.9rem;color:#ccc}
-#vid-loader-sub{font-size:.72rem;color:#555;max-width:290px;text-align:center;padding:0 10px;word-break:break-all}
+#vloader{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.85);gap:12px;z-index:5}
+.spin{width:40px;height:40px;border:4px solid #333;border-top-color:#e50914;border-radius:50%;animation:sp .8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+#vloader-txt{font-size:.9rem;color:#ccc}
 
-#inline-quality{display:flex;gap:8px;padding:10px 14px;background:#111;overflow-x:auto;border-bottom:1px solid #1e1e1e;scrollbar-width:none}
-#inline-quality::-webkit-scrollbar{display:none}
-.iq-btn{background:#1e1e1e;color:#aaa;border:1px solid #2a2a2a;border-radius:6px;padding:6px 14px;font-size:.82rem;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0}
-.iq-btn.active{background:#e50914;color:#fff;border-color:#e50914}
+#verr{display:none;margin:16px;padding:14px;background:#1a0000;border:1px solid #500;border-radius:8px;color:#f88;font-size:.85rem;line-height:1.7}
+#verr button{margin-top:10px;background:#e50914;color:#fff;border:0;border-radius:6px;padding:8px 16px;cursor:pointer;font-size:.85rem;display:block}
 
-#vid-error{display:none;margin:16px;padding:14px;background:#1a0000;border:1px solid #500;border-radius:8px;color:#f88;font-size:.85rem;line-height:1.7;word-break:break-all}
-#vid-error button{margin-top:10px;background:#e50914;color:#fff;border:0;border-radius:6px;padding:8px 16px;cursor:pointer;font-size:.85rem;display:block}
-
-#init-loader{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 20px;gap:14px;color:#555;font-size:.9rem}
+#iloader{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 20px;gap:14px;color:#555;font-size:.9rem}
 </style>
 </head>
 <body>
@@ -72,222 +70,182 @@ video{width:100%;display:block;background:#000}
   </div>
 </div>
 
-<div id="init-loader"><div class="spinner"></div>Loading match…</div>
+<div id="iloader"><div class="spin"></div>Loading match…</div>
 
+<!-- Quality selector -->
 <div id="quality-page">
   <div class="match-header">
-    <img id="match-logo" class="match-logo" src="" alt="">
-    <div class="match-name" id="match-name"></div>
-    <div class="match-tournament" id="match-tournament"></div>
+    <img id="mlogo" class="match-logo" src="" alt="">
+    <div class="match-name" id="mname"></div>
+    <div class="match-tourn" id="mtourn"></div>
   </div>
   <div class="q-list">
-    <div class="q-label">Select Quality</div>
-    <div id="q-items"></div>
+    <div class="q-label">Select Quality to Watch</div>
+    <div id="qitems"></div>
   </div>
 </div>
 
+<!-- Player -->
 <div id="player-page">
-  <div class="player-topbar">
-    <button class="back-q-btn" onclick="showQualityPage()">← Quality</button>
-    <div class="now-playing">Playing: <strong id="now-label"></strong></div>
+  <div class="topbar">
+    <button class="back-btn" onclick="goBack()">← Quality</button>
+    <div class="now-lbl">Playing: <strong id="nowlbl"></strong></div>
   </div>
-  <div id="inline-quality"></div>
-  <div id="video-wrap">
-    <video id="player" controls playsinline webkit-playsinline></video>
-    <div id="vid-loader">
-      <div class="spinner"></div>
-      <span id="vid-loader-text">Connecting…</span>
-      <span id="vid-loader-sub"></span>
-    </div>
+  <div id="vwrap">
+    <video id="vid" controls playsinline webkit-playsinline></video>
+    <div id="vloader"><div class="spin"></div><span id="vloader-txt">Connecting…</span></div>
   </div>
-  <div id="vid-error"></div>
+  <div id="verr"></div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.8/dist/hls.min.js"></script>
 <script>
-const JSON_URL      = "https://raw.githubusercontent.com/Jitendra-unatti/fancode/refs/heads/main/data/fancode.json";
-const QUALITY_ORDER = ["240p","360p","480p","540p","720p","1080p"];
-const BADGE_CLASS   = {"1080p":"badge-1080","720p":"badge-720","540p":"badge-540","480p":"badge-480","360p":"badge-360","240p":"badge-240"};
-const Q_DESC        = {"1080p":"Full HD · Best quality","720p":"HD · Recommended","540p":"qHD · Balanced","480p":"SD · Smooth","360p":"Low · Data saver","240p":"Lowest · Minimal data"};
+const JSON_URL = "https://raw.githubusercontent.com/Jitendra-unatti/fancode/refs/heads/main/data/fancode.json";
+const QORDER   = ["240p","360p","480p","540p","720p","1080p"];
+const QDESC    = {"1080p":"Full HD · Best quality","720p":"HD · Recommended","540p":"qHD · Balanced","480p":"SD · Smooth","360p":"Low · Data saver","240p":"Lowest · Minimal data"};
+const QBADGE   = {"1080p":"b1080","720p":"b720","540p":"b540","480p":"b480","360p":"b360","240p":"b240"};
 
 const params  = new URLSearchParams(location.search);
 const matchId = params.get("id");
-let streams   = [];
-let hlsInst   = null;
+let   streams = [];
+let   hls     = null;
 const $       = id => document.getElementById(id);
 
-function parseMasterPlaylist(text) {
+function parseMaster(text){
   const lines = text.split(/\r?\n/), out = [];
-  for (let i = 0; i < lines.length; i++) {
-    if (lines[i].startsWith("#EXT-X-STREAM-INF")) {
+  for(let i=0;i<lines.length;i++){
+    if(lines[i].startsWith("#EXT-X-STREAM-INF")){
       const u = lines[i+1]?.trim();
-      if (!u || u.startsWith("#")) continue;
+      if(!u||u.startsWith("#")) continue;
       const m = u.match(/\/(\d+p)\.m3u8/i);
-      if (m) out.push({ quality: m[1].toLowerCase(), url: u });
+      if(m) out.push({quality:m[1].toLowerCase(), url:u});
     }
   }
-  return out.sort((a,b) => QUALITY_ORDER.indexOf(b.quality) - QUALITY_ORDER.indexOf(a.quality));
+  // sort highest first in selector, lowest first in bar
+  return out.sort((a,b)=>QORDER.indexOf(b.quality)-QORDER.indexOf(a.quality));
 }
 
-function showQualityPage() {
+function goBack(){
   $("player-page").classList.remove("show");
   $("quality-page").classList.add("show");
-  $("player").pause();
-  if (hlsInst) { hlsInst.destroy(); hlsInst = null; }
+  $("vid").pause();
+  if(hls){hls.destroy();hls=null;}
 }
 
-function buildQualityPage(match) {
-  $("match-logo").src = match.image || "";
-  $("match-name").textContent = match.title || "Live Match";
-  $("match-tournament").textContent = match.tournament || "";
-  const c = $("q-items");
+function buildQualityPage(match){
+  $("mlogo").src  = match.image||"";
+  $("mname").textContent  = match.title||"Live Match";
+  $("mtourn").textContent = match.tournament||"";
+  const c = $("qitems");
   c.innerHTML = "";
-  streams.forEach(s => {
-    const item = document.createElement("div");
-    item.className = "q-item";
-    item.innerHTML = `
-      <div class="q-item-left">
-        <div class="play-icon"><svg width="14" height="16" viewBox="0 0 14 16" fill="white"><path d="M0 0 L14 8 L0 16 Z"/></svg></div>
-        <div><div class="q-name">${s.quality.toUpperCase()}</div><div class="q-desc">${Q_DESC[s.quality]||""}</div></div>
+  streams.forEach(s=>{
+    const d = document.createElement("div");
+    d.className = "q-item";
+    d.innerHTML = `
+      <div class="q-left">
+        <div class="play-icon"><svg width="14" height="16" viewBox="0 0 14 16" fill="white"><path d="M0 0L14 8 0 16z"/></svg></div>
+        <div>
+          <div class="q-name">${s.quality.toUpperCase()}</div>
+          <div class="q-desc">${QDESC[s.quality]||""}</div>
+        </div>
       </div>
-      <span class="q-badge ${BADGE_CLASS[s.quality]||"badge-240"}">${s.quality.toUpperCase()}</span>`;
-    item.onclick = () => playStream(s);
-    c.appendChild(item);
+      <span class="q-badge ${QBADGE[s.quality]||"b240"}">${s.quality.toUpperCase()}</span>`;
+    d.onclick = ()=>startPlay(s);
+    c.appendChild(d);
   });
 }
 
-function buildInlineQuality() {
-  const bar = $("inline-quality");
-  bar.innerHTML = "";
-  [...streams].reverse().forEach(s => {
-    const btn = document.createElement("button");
-    btn.className = "iq-btn";
-    btn.textContent = s.quality.toUpperCase();
-    btn.dataset.q = s.quality;
-    btn.onclick = () => {
-      bar.querySelectorAll(".iq-btn").forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      playStream(s, false);
-    };
-    bar.appendChild(btn);
-  });
+function showErr(msg){
+  $("vloader").style.display="none";
+  $("verr").style.display="block";
+  $("verr").innerHTML=`⚠️ ${msg}<button onclick="goBack()">← Choose another quality</button>`;
 }
 
-function setActiveInline(q) {
-  $("inline-quality").querySelectorAll(".iq-btn").forEach(b =>
-    b.classList.toggle("active", b.dataset.q === q));
-}
+function startPlay(s){
+  $("quality-page").classList.remove("show");
+  $("player-page").classList.add("show");
+  $("verr").style.display   = "none";
+  $("vloader").style.display= "flex";
+  $("vloader-txt").textContent = "Loading…";
+  $("nowlbl").textContent   = s.quality.toUpperCase();
+  if(hls){hls.destroy();hls=null;}
 
-function showVidError(msg) {
-  $("vid-loader").style.display = "none";
-  $("vid-error").style.display  = "block";
-  $("vid-error").innerHTML = `⚠️ ${msg}<button onclick="showQualityPage()">← Try another quality</button>`;
-}
+  const video = $("vid");
 
-async function playStream(s, switchPage = true) {
-  if (switchPage) {
-    $("quality-page").classList.remove("show");
-    $("player-page").classList.add("show");
-  }
-  $("now-label").textContent       = s.quality.toUpperCase();
-  $("vid-error").style.display     = "none";
-  $("vid-loader").style.display    = "flex";
-  $("vid-loader-text").textContent = "Connecting…";
-  $("vid-loader-sub").textContent  = "";
-  setActiveInline(s.quality);
-  if (hlsInst) { hlsInst.destroy(); hlsInst = null; }
-
-  const proxyUrl = "/proxy?url=" + encodeURIComponent(s.url);
-
-  // Quick proxy test — fetch and show raw response snippet if fails
-  try {
-    const test = await fetch(proxyUrl);
-    const txt  = await test.text();
-    if (!test.ok) {
-      showVidError("Proxy HTTP " + test.status + ":<br>" + txt.substring(0, 200));
-      return;
-    }
-    if (!txt.includes("#EXT")) {
-      showVidError("Proxy returned unexpected content:<br><small>" + txt.substring(0, 300) + "</small>");
-      return;
-    }
-    // Proxy is good — now play using blob URL to avoid double-fetch
-    const blob    = new Blob([txt], { type: "application/vnd.apple.mpegurl" });
-    const blobUrl = URL.createObjectURL(blob);
-    loadHLS(blobUrl, proxyUrl);
-  } catch(e) {
-    showVidError("Proxy fetch failed: " + e.message);
-  }
-}
-
-function loadHLS(blobUrl, proxyBase) {
-  const video = $("player");
-  $("vid-loader-text").textContent = "Loading stream…";
-
-  if (Hls.isSupported()) {
-    hlsInst = new Hls({
-      enableWorker   : true,
-      lowLatencyMode : true,
-      maxBufferLength: 30,
-      // Segments are relative in the rewritten playlist — HLS.js resolves them
-      // against the blob URL, so we need a loader that maps them back to /proxy
-      pLoader: class extends Hls.DefaultConfig.loader {
-        load(context, config, callbacks) {
-          // If HLS.js requests a blob URL for sub-playlist or segment,
-          // redirect back to /proxy
-          if (context.url && context.url.startsWith("blob:")) {
-            context.url = proxyBase;
-          }
-          super.load(context, config, callbacks);
-        }
-      }
+  /* ── Strategy 1: HLS.js direct (Android Chrome, Firefox, etc.) ── */
+  if(Hls.isSupported()){
+    hls = new Hls({
+      enableWorker      : true,
+      lowLatencyMode    : true,
+      maxBufferLength   : 60,
+      maxMaxBufferLength: 120,
+      fragLoadingTimeOut: 20000,
+      manifestLoadingTimeOut: 20000,
+      levelLoadingTimeOut   : 20000,
+      fragLoadingMaxRetry   : 6,
+      manifestLoadingMaxRetry: 3,
+      levelLoadingMaxRetry  : 4,
+      fragLoadingRetryDelay : 1000,
     });
-    hlsInst.loadSource(blobUrl);
-    hlsInst.attachMedia(video);
-    hlsInst.on(Hls.Events.MANIFEST_PARSED, () => {
-      $("vid-loader").style.display = "none";
-      video.play().catch(() => {});
+
+    hls.loadSource(s.url);
+    hls.attachMedia(video);
+
+    hls.on(Hls.Events.MANIFEST_PARSED, ()=>{
+      $("vloader").style.display="none";
+      video.play().catch(()=>{});
     });
-    hlsInst.on(Hls.Events.ERROR, (e, data) => {
-      $("vid-loader-sub").textContent = (data.details || "");
-      if (!data.fatal) return;
-      if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
-        $("vid-loader-text").textContent = "Retrying…";
-        setTimeout(() => hlsInst && hlsInst.startLoad(), 2000);
-      } else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
-        hlsInst.recoverMediaError();
+
+    let errCount = 0;
+    hls.on(Hls.Events.ERROR, (e,d)=>{
+      if(!d.fatal){errCount++;return;}
+      if(d.type===Hls.ErrorTypes.NETWORK_ERROR && errCount<5){
+        $("vloader-txt").textContent="Retrying…";
+        $("vloader").style.display="flex";
+        setTimeout(()=>hls&&hls.startLoad(), 2000);
+      } else if(d.type===Hls.ErrorTypes.MEDIA_ERROR){
+        hls.recoverMediaError();
       } else {
-        showVidError("Stream error: " + data.details + "<br>Try another quality.");
+        /* HLS.js failed — fall back to native <video> src */
+        hls.destroy(); hls=null;
+        tryNative(s.url);
       }
     });
-  } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
-    video.src = proxyBase;
-    video.load();
-    $("vid-loader").style.display = "none";
-    video.play().catch(() => {});
+
   } else {
-    showVidError("Browser doesn't support HLS.");
+    /* ── Strategy 2: Native HLS (iOS Safari) ── */
+    tryNative(s.url);
   }
 }
 
-async function init() {
-  if (!matchId) { $("init-loader").innerHTML = "<div style='color:#f55'>⚠️ No match ID.</div>"; return; }
-  try {
-    const res  = await fetch(JSON_URL + "?_=" + Date.now());
-    if (!res.ok) throw new Error("HTTP " + res.status);
+function tryNative(url){
+  /* iOS Safari and some Android browsers handle .m3u8 natively */
+  const video = $("vid");
+  $("vloader-txt").textContent = "Loading…";
+  $("vloader").style.display   = "flex";
+  video.src = url;
+  video.load();
+  video.oncanplay = ()=>{ $("vloader").style.display="none"; video.play().catch(()=>{}); };
+  video.onerror   = ()=>showErr("Could not play this stream. The token may have expired — go back to the main page and try again.");
+}
+
+async function init(){
+  if(!matchId){$("iloader").innerHTML="<div style='color:#f55'>⚠️ No match ID.</div>";return;}
+  try{
+    const res  = await fetch(JSON_URL+"?_="+Date.now());
+    if(!res.ok) throw new Error("HTTP "+res.status);
     const data = await res.json();
-    const match = data.matches.find(m => String(m.match_id) === matchId);
-    if (!match) { $("init-loader").innerHTML = "<div style='color:#f55'>⚠️ Match not found.</div>"; return; }
-    const masterText = match.auto_streams?.[0]?.auto;
-    if (!masterText) { $("init-loader").innerHTML = "<div style='color:#f55'>⚠️ No stream available.</div>"; return; }
-    streams = parseMasterPlaylist(masterText);
-    if (!streams.length) { $("init-loader").innerHTML = "<div style='color:#f55'>⚠️ No qualities found.</div>"; return; }
-    $("init-loader").style.display = "none";
+    const match = data.matches.find(m=>String(m.match_id)===matchId);
+    if(!match){$("iloader").innerHTML="<div style='color:#f55'>⚠️ Match not found or ended.</div>";return;}
+    const txt = match.auto_streams?.[0]?.auto;
+    if(!txt){$("iloader").innerHTML="<div style='color:#f55'>⚠️ No stream available.</div>";return;}
+    streams = parseMaster(txt);
+    if(!streams.length){$("iloader").innerHTML="<div style='color:#f55'>⚠️ No qualities found.</div>";return;}
+    $("iloader").style.display="none";
     buildQualityPage(match);
-    buildInlineQuality();
     $("quality-page").classList.add("show");
-  } catch(err) {
-    $("init-loader").innerHTML = `<div style="color:#f55">⚠️ ${err.message}</div>`;
+  }catch(e){
+    $("iloader").innerHTML=`<div style="color:#f55">⚠️ ${e.message}</div>`;
   }
 }
 
