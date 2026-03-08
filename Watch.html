@@ -95,93 +95,55 @@ const JSON_URL="https://raw.githubusercontent.com/Jitendra-unatti/fancode/refs/h
 const params=new URLSearchParams(location.search);
 const matchId=params.get("id");
 
-let hls;
+if(!matchId){
+alert("Match ID missing");
+}
 
 async function loadStream(){
 
-if(!matchId){
-alert("Match ID missing");
-return;
-}
+const res = await fetch(JSON_URL);
+const data = await res.json();
 
-const res=await fetch(JSON_URL);
-const data=await res.json();
+const match = data.matches.find(m => String(m.match_id) === matchId);
+if(!match) return alert("Match not found");
 
-const match=data.matches.find(m=>String(m.match_id)===matchId);
+const playlistText = match.auto_streams?.[0]?.auto;
+if(!playlistText) return alert("Stream not available");
 
-if(!match){
-alert("Match not found");
-return;
-}
+const blob = new Blob([playlistText], {type:"application/vnd.apple.mpegurl"});
+const masterUrl = URL.createObjectURL(blob);
 
-const playlist=match.auto_streams?.[0]?.auto;
-
-if(!playlist){
-alert("Stream not available yet");
-return;
-}
-
-const regex=/https.*?\.m3u8[^\n]*/g;
-const urls=playlist.match(regex);
-
-const container=document.getElementById("qualities");
-
-urls.forEach((url,i)=>{
-
-const q=url.match(/(\d+)p/);
-if(!q)return;
-
-const btn=document.createElement("button");
-btn.innerText="▶ "+q[1]+"p";
-
-btn.onclick=()=>play(url);
-
-container.appendChild(btn);
-
-/* auto play highest quality */
-if(i===urls.length-1){
-setTimeout(()=>play(url),800);
-}
-
-});
+startPlayer(masterUrl);
 
 }
 
-function play(url){
+function startPlayer(url){
 
-const video=document.getElementById("player");
-
-/* destroy previous stream */
-if(hls){
-hls.destroy();
-}
+const video = document.getElementById("player");
 
 if(Hls.isSupported()){
 
-hls=new Hls({
-
-xhrSetup:function(xhr){
-xhr.setRequestHeader("Referer","https://fancode.com/");
-xhr.setRequestHeader("User-Agent","ReactNativeVideo/9.3.0");
-}
-
+const hls = new Hls({
+enableWorker:true,
+lowLatencyMode:true
 });
 
 hls.loadSource(url);
 hls.attachMedia(video);
 
-hls.on(Hls.Events.MANIFEST_PARSED,function(){
+hls.on(Hls.Events.MANIFEST_PARSED, () => {
 
-new Plyr(video);
+new Plyr(video,{
+controls:['play','progress','mute','volume','settings','fullscreen']
+});
+
 video.play();
 
 });
 
-}
+} else {
 
-else{
-
-video.src=url;
+video.src = url;
 video.play();
 
 }
