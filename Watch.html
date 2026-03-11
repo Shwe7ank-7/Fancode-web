@@ -1,18 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
 <title>FanCode Live</title>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.6/shaka-player.compiled.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.11/shaka-player.compiled.js"></script>
 
 <style>
 
 body{
-background:#0f172a;
 margin:0;
+background:#0b132b;
 font-family:sans-serif;
 color:white;
 }
@@ -20,7 +21,7 @@ color:white;
 .container{
 max-width:900px;
 margin:auto;
-padding:10px;
+padding:12px;
 }
 
 video{
@@ -31,21 +32,20 @@ border-radius:8px;
 
 .match{
 display:flex;
-align-items:center;
-gap:10px;
+gap:12px;
+background:#1c2541;
 padding:10px;
-background:#1e293b;
-margin-top:10px;
-border-radius:6px;
+margin-top:12px;
+border-radius:8px;
 cursor:pointer;
 }
 
 .match img{
 width:120px;
-border-radius:4px;
+border-radius:6px;
 }
 
-.quality{
+.qbar{
 margin-top:10px;
 display:flex;
 gap:8px;
@@ -53,14 +53,10 @@ flex-wrap:wrap;
 }
 
 .qbtn{
-background:#334155;
+background:#3a506b;
 padding:6px 10px;
-border-radius:4px;
+border-radius:5px;
 cursor:pointer;
-}
-
-.qbtn:hover{
-background:#475569;
 }
 
 </style>
@@ -75,7 +71,7 @@ background:#475569;
 
 <video id="video" controls autoplay></video>
 
-<div class="quality" id="qualities"></div>
+<div id="qualities" class="qbar"></div>
 
 <div id="matches"></div>
 
@@ -85,11 +81,10 @@ background:#475569;
 
 const API="https://raw.githubusercontent.com/Jitendra-unatti/fancode/refs/heads/main/data/fancode.json";
 
-let player;
-let currentStream="";
-let expireTime=0;
+let player=null;
+let currentMatch=null;
 
-async function init(){
+async function loadMatches(){
 
 const res=await fetch(API);
 const data=await res.json();
@@ -97,18 +92,21 @@ const data=await res.json();
 const matches=data.matches;
 
 const container=document.getElementById("matches");
+container.innerHTML="";
 
 matches.forEach(match=>{
 
-const auto=match.auto_streams?.[0]?.auto;
+if(!match.auto_streams) return;
+
+const auto=match.auto_streams[0].auto;
 
 if(!auto) return;
 
-const url=auto.match(/https.*\.m3u8.*/)[0];
+const master=auto.match(/https.*\.m3u8.*/);
 
-const expire=url.match(/Expires=(\d+)/);
+if(!master) return;
 
-const exp=expire?parseInt(expire[1]):0;
+const streamUrl=master[0];
 
 const div=document.createElement("div");
 
@@ -123,7 +121,7 @@ div.innerHTML=`
 </div>
 `;
 
-div.onclick=()=>playStream(url,exp);
+div.onclick=()=>play(streamUrl,match);
 
 container.appendChild(div);
 
@@ -131,13 +129,12 @@ container.appendChild(div);
 
 }
 
-async function playStream(url,exp){
+async function play(url,match){
 
-currentStream=url;
-expireTime=exp;
+currentMatch=match;
 
 if(player){
-player.destroy();
+await player.destroy();
 }
 
 const video=document.getElementById("video");
@@ -147,9 +144,7 @@ player=new shaka.Player(video);
 player.getNetworkingEngine().registerRequestFilter((type,request)=>{
 
 request.headers["User-Agent"]="ReactNativeVideo/9.3.0 (Linux;Android 13) AndroidXMedia3/1.6.1";
-
 request.headers["Referer"]="https://fancode.com/";
-
 request.headers["Origin"]="https://fancode.com";
 
 });
@@ -165,6 +160,7 @@ buildQuality();
 }catch(e){
 
 console.log(e);
+alert("Stream failed");
 
 }
 
@@ -174,9 +170,8 @@ function buildQuality(){
 
 const tracks=player.getVariantTracks();
 
-const qDiv=document.getElementById("qualities");
-
-qDiv.innerHTML="";
+const q=document.getElementById("qualities");
+q.innerHTML="";
 
 tracks.forEach(track=>{
 
@@ -194,7 +189,7 @@ player.selectVariantTrack(track,true);
 
 };
 
-qDiv.appendChild(btn);
+q.appendChild(btn);
 
 });
 
@@ -202,35 +197,24 @@ qDiv.appendChild(btn);
 
 setInterval(async()=>{
 
-if(!expireTime) return;
+if(!currentMatch) return;
 
 const now=Math.floor(Date.now()/1000);
 
-if(expireTime-now<120){
-
-console.log("Token Expired Refreshing");
-
 const res=await fetch(API);
-
 const data=await res.json();
 
 const matches=data.matches;
 
 for(let m of matches){
 
-const auto=m.auto_streams?.[0]?.auto;
+if(m.match_id===currentMatch.match_id){
 
-if(!auto) continue;
+const auto=m.auto_streams[0].auto;
 
-const url=auto.match(/https.*\.m3u8.*/)[0];
+const master=auto.match(/https.*\.m3u8.*/)[0];
 
-if(url.includes(currentStream.split("/")[3])){
-
-const expire=url.match(/Expires=(\d+)/);
-
-const exp=expire?parseInt(expire[1]):0;
-
-playStream(url,exp);
+player.load(master);
 
 break;
 
@@ -238,11 +222,9 @@ break;
 
 }
 
-}
+},120000);
 
-},30000);
-
-init();
+loadMatches();
 
 </script>
 
