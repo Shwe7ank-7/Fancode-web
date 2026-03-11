@@ -1,330 +1,250 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
-<title>Watch Live</title>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<!-- Shaka Player -->
-<script src="https://cdn.jsdelivr.net/npm/shaka-player@4.7.11/dist/shaka-player.compiled.js"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>FanCode Live</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.7.6/shaka-player.compiled.js"></script>
+
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:#0d1117;color:#fff;font-family:system-ui,-apple-system,sans-serif;min-height:100vh}
 
-#popup{position:fixed;inset:0;background:rgba(0,0,0,.9);display:flex;align-items:center;justify-content:center;z-index:999}
-.popup-box{background:#FFD700;color:#000;padding:24px 20px;border-radius:14px;width:300px;text-align:center}
-.popup-box h3{font-size:1.2rem;margin-bottom:8px}
-.popup-box p{font-size:.9rem;margin-bottom:16px;opacity:.8}
-.popup-box button{display:block;width:100%;background:#000;color:#FFD700;border:0;border-radius:8px;padding:11px;margin:7px 0;font-weight:700;cursor:pointer;font-size:.95rem}
-
-#qpage,#ppage{display:none}
-#qpage.on,#ppage.on{display:block}
-
-/* Quality page */
-.mheader{background:linear-gradient(135deg,#161b22,#1f2937);padding:20px 16px 24px;text-align:center;border-bottom:1px solid #30363d}
-.mlogo{width:80px;height:80px;border-radius:12px;object-fit:cover;margin:0 auto 12px;display:block;border:2px solid #30363d;background:#111}
-.mtitle{font-size:1.1rem;font-weight:700;margin-bottom:4px;line-height:1.3}
-.mtourn{font-size:.8rem;color:#8b949e;text-transform:uppercase;letter-spacing:.5px}
-.mexpire{font-size:.78rem;color:#f59e0b;margin-top:6px}
-
-.qlist{padding:16px}
-.qlabel{font-size:.75rem;color:#8b949e;text-transform:uppercase;letter-spacing:.8px;font-weight:600;margin-bottom:12px}
-.qitem{display:flex;align-items:center;justify-content:space-between;background:#161b22;border:1px solid #30363d;border-radius:12px;padding:16px 18px;margin-bottom:10px;cursor:pointer;transition:all .2s}
-.qitem:hover,.qitem:active{background:#1f2937;border-color:#e50914;transform:translateX(3px)}
-.qleft{display:flex;align-items:center;gap:14px}
-.pico{width:36px;height:36px;background:#e50914;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.pico svg{margin-left:2px}
-.qn{font-size:1rem;font-weight:600}
-.qd{font-size:.78rem;color:#8b949e;margin-top:2px}
-.qbadge{padding:4px 12px;border-radius:20px;font-size:.75rem;font-weight:700}
-.b1080{background:#7c3aed;color:#fff}.b720{background:#059669;color:#fff}
-.b540,.b480{background:#2563eb;color:#fff}
-.b360{background:#d97706;color:#fff}.b240{background:#4b5563;color:#fff}
-
-/* Player page */
-#ppage{background:#000;min-height:100vh}
-.ptopbar{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#111;border-bottom:1px solid #1e1e1e}
-.backbtn{background:#1e1e1e;color:#ccc;border:1px solid #2a2a2a;border-radius:8px;padding:7px 16px;font-size:.85rem;cursor:pointer;font-weight:600}
-.backbtn:hover{background:#2a2a2a;color:#fff}
-.playlbl{font-size:.88rem;color:#888}.playlbl strong{color:#fff}
-
-#vwrap{width:100%;background:#000;position:relative}
-video{width:100%;display:block;background:#000;min-height:210px}
-
-#vloading{
-  position:absolute;inset:0;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  background:rgba(0,0,0,.85);gap:16px;z-index:5;
+body{
+background:#0f172a;
+margin:0;
+font-family:sans-serif;
+color:white;
 }
-.spin{width:42px;height:42px;border:4px solid #222;border-top-color:#e50914;border-radius:50%;animation:sp .8s linear infinite}
-@keyframes sp{to{transform:rotate(360deg)}}
-.spin-txt{font-size:.9rem;color:#ccc}
 
-#verr{display:none;margin:20px 16px;padding:16px;background:#1a0000;border:1px solid #600;border-radius:10px;color:#f88;font-size:.88rem;line-height:1.8}
-.rbtn{display:inline-block;margin-top:12px;background:#e50914;color:#fff;border:0;border-radius:7px;padding:9px 20px;cursor:pointer;font-size:.88rem;font-weight:600}
+.container{
+max-width:900px;
+margin:auto;
+padding:10px;
+}
 
-#iloader{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 20px;gap:16px;color:#555;font-size:.9rem}
+video{
+width:100%;
+background:black;
+border-radius:8px;
+}
+
+.match{
+display:flex;
+align-items:center;
+gap:10px;
+padding:10px;
+background:#1e293b;
+margin-top:10px;
+border-radius:6px;
+cursor:pointer;
+}
+
+.match img{
+width:120px;
+border-radius:4px;
+}
+
+.quality{
+margin-top:10px;
+display:flex;
+gap:8px;
+flex-wrap:wrap;
+}
+
+.qbtn{
+background:#334155;
+padding:6px 10px;
+border-radius:4px;
+cursor:pointer;
+}
+
+.qbtn:hover{
+background:#475569;
+}
+
 </style>
+
 </head>
+
 <body>
 
-<div id="popup">
-  <div class="popup-box">
-    <h3>🔴 Support Us</h3>
-    <p>Join Telegram for more live matches</p>
-    <button onclick="window.open('https://t.me/+3sgGQcDP6ExhYTU1','_blank')">📲 Join Telegram</button>
-    <button onclick="document.getElementById('popup').style.display='none'">✅ Already Joined</button>
-  </div>
-</div>
+<div class="container">
 
-<div id="iloader"><div class="spin"></div>Loading match…</div>
+<h2>FanCode Live Matches</h2>
 
-<!-- Quality selector -->
-<div id="qpage">
-  <div class="mheader">
-    <img id="mlogo" class="mlogo" src="" alt="">
-    <div class="mtitle" id="mtitle"></div>
-    <div class="mtourn" id="mtourn"></div>
-    <div class="mexpire" id="mexpire"></div>
-  </div>
-  <div class="qlist">
-    <div class="qlabel">🎬 Select Quality</div>
-    <div id="qitems"></div>
-  </div>
-</div>
+<video id="video" controls autoplay></video>
 
-<!-- Player -->
-<div id="ppage">
-  <div class="ptopbar">
-    <button class="backbtn" onclick="goBack()">← Quality</button>
-    <div class="playlbl">Playing: <strong id="nowq"></strong></div>
-  </div>
-  <div id="vwrap">
-    <video id="vid" controls playsinline webkit-playsinline preload="none"></video>
-    <div id="vloading">
-      <div class="spin"></div>
-      <span class="spin-txt" id="vloadtxt">Loading…</span>
-    </div>
-  </div>
-  <div id="verr"></div>
+<div class="quality" id="qualities"></div>
+
+<div id="matches"></div>
+
 </div>
 
 <script>
-const JSON_URL = "https://raw.githubusercontent.com/Jitendra-unatti/fancode/refs/heads/main/data/fancode.json";
-const QORDER   = ["240p","360p","480p","540p","720p","1080p"];
-const QDESC    = {
-  "1080p":"Full HD · Best quality",
-  "720p" :"HD · Recommended",
-  "540p" :"qHD · Balanced",
-  "480p" :"SD · Smooth",
-  "360p" :"Low · Data saver",
-  "240p" :"Lowest · Minimal data"
-};
-const QBADGE = {"1080p":"b1080","720p":"b720","540p":"b540","480p":"b480","360p":"b360","240p":"b240"};
 
-const params  = new URLSearchParams(location.search);
-const matchId = params.get("id");
-let   streams = [];
-let   player  = null;   // Shaka Player instance
-const $       = id => document.getElementById(id);
+const API="https://raw.githubusercontent.com/Jitendra-unatti/fancode/refs/heads/main/data/fancode.json";
 
-/* Install Shaka polyfills once */
-shaka.polyfill.installAll();
-
-function parseMaster(text){
-  const lines = text.split(/\r?\n/), out = [];
-  for(let i = 0; i < lines.length; i++){
-    if(lines[i].startsWith("#EXT-X-STREAM-INF")){
-      const u = lines[i+1]?.trim();
-      if(!u || u.startsWith("#")) continue;
-      const m = u.match(/\/(\d+p)\.m3u8/i);
-      if(m) out.push({ quality: m[1].toLowerCase(), url: u });
-    }
-  }
-  return out.sort((a,b) => QORDER.indexOf(b.quality) - QORDER.indexOf(a.quality));
-}
-
-async function destroyPlayer(){
-  if(player){
-    await player.destroy();
-    player = null;
-  }
-}
-
-function goBack(){
-  $("ppage").classList.remove("on");
-  $("qpage").classList.add("on");
-  destroyPlayer();
-  $("vloading").style.display = "flex";
-  $("verr").style.display     = "none";
-}
-
-function buildQPage(match){
-  $("mlogo").src = match.image || "";
-  $("mtitle").textContent = match.title || "Live Match";
-  $("mtourn").textContent = match.tournament || "";
-  const exp = match.auto_streams?.[0]?.expire_date;
-  if(exp) $("mexpire").textContent = "⏱ Valid until: " + exp;
-
-  const c = $("qitems");
-  c.innerHTML = "";
-  streams.forEach(s => {
-    const d = document.createElement("div");
-    d.className = "qitem";
-    d.innerHTML = `
-      <div class="qleft">
-        <div class="pico"><svg width="13" height="15" viewBox="0 0 13 15" fill="white"><path d="M0 0L13 7.5 0 15z"/></svg></div>
-        <div>
-          <div class="qn">${s.quality.toUpperCase()}</div>
-          <div class="qd">${QDESC[s.quality]||""}</div>
-        </div>
-      </div>
-      <span class="qbadge ${QBADGE[s.quality]||"b240"}">${s.quality.toUpperCase()}</span>`;
-    d.onclick = () => play(s);
-    c.appendChild(d);
-  });
-}
-
-function showErr(msg){
-  $("vloading").style.display = "none";
-  $("verr").style.display     = "block";
-  $("verr").innerHTML = `⚠️ ${msg}<br><button class="rbtn" onclick="goBack()">← Choose another quality</button>`;
-}
-
-async function play(s){
-  $("qpage").classList.remove("on");
-  $("ppage").classList.add("on");
-  $("verr").style.display     = "none";
-  $("vloading").style.display = "flex";
-  $("vloadtxt").textContent   = "Loading " + s.quality.toUpperCase() + "…";
-  $("nowq").textContent       = s.quality.toUpperCase();
-
-  await destroyPlayer();
-
-  const vid = $("vid");
-
-  /* Check Shaka support */
-  if(!shaka.Player.isBrowserSupported()){
-    showErr("Your browser is not supported by Shaka Player. Please use Chrome or Firefox.");
-    return;
-  }
-
-  player = new shaka.Player();
-  await player.attach(vid);
-
-  /* Configure Shaka:
-     - Set custom request headers so every HLS segment
-       gets the required User-Agent and Referer.
-     - Retry aggressively for live streams.
-  */
-  player.configure({
-    streaming: {
-      retryParameters: {
-        maxAttempts   : 6,
-        baseDelay     : 1000,
-        backoffFactor : 2,
-        fuzzFactor    : 0.5,
-        timeout       : 20000,
-      },
-      bufferingGoal      : 30,
-      rebufferingGoal    : 2,
-      bufferBehind       : 30,
-      ignoreTextStreamFailures: true,
-    },
-    manifest: {
-      retryParameters: {
-        maxAttempts: 4,
-        baseDelay  : 500,
-        timeout    : 15000,
-      },
-      hls: {
-        ignoreTextStreamFailures: true,
-      }
-    },
-  });
-
-  /* Attach request filter — injects headers on EVERY request
-     (manifest + segments). Shaka is the only JS player that
-     allows this properly without CORS issues on same-origin. */
-  player.getNetworkingEngine().registerRequestFilter((type, request) => {
-    request.headers["User-Agent"] = "ReactNativeVideo/9.3.0 (Linux;Android 13) AndroidXMedia3/1.6.1";
-    request.headers["Referer"]    = "https://fancode.com/";
-    request.headers["Origin"]     = "https://fancode.com";
-  });
-
-  player.addEventListener("error", (e) => {
-    const err = e.detail;
-    console.error("Shaka error", err);
-    const msg = err.code === 1001 || err.code === 1002 || err.code === 1003
-      ? "Network error — stream may have expired or CDN is blocking.<br><small>Try refreshing the home page for fresh tokens.</small>"
-      : err.code === 4000 || err.code === 4001
-        ? "Could not parse stream. Try another quality."
-        : `Playback error (code ${err.code}). Try another quality.`;
-    showErr(msg);
-  });
-
-  try {
-    await player.load(s.url);
-    $("vloading").style.display = "none";
-    vid.play().catch(()=>{});
-  } catch(e) {
-    console.error("Shaka load error", e);
-    showErr(
-      `Failed to load stream (code ${e.code||"?"}).<br>` +
-      "<small>The token may be expired or the CDN is blocking this request.</small>"
-    );
-  }
-}
+let player;
+let currentStream="";
+let expireTime=0;
 
 async function init(){
-  if(!matchId){
-    $("iloader").innerHTML = "<div style='color:#f55'>⚠️ No match ID in URL.</div>";
-    return;
-  }
-  try{
-    const res  = await fetch(JSON_URL + "?_=" + Date.now());
-    if(!res.ok) throw new Error("HTTP " + res.status);
-    const data = await res.json();
 
-    const match = data.matches.find(m => String(m.match_id) === matchId);
-    if(!match){
-      $("iloader").innerHTML = "<div style='color:#f55'>⚠️ Match not found or ended.</div>";
-      return;
-    }
+const res=await fetch(API);
+const data=await res.json();
 
-    /* Token expiry check */
-    const cv = match.auto_streams?.[0]?.cookie_valid;
-    if(cv && Math.floor(Date.now()/1000) > parseInt(cv)){
-      $("iloader").innerHTML = `
-        <div style="color:#f59e0b;text-align:center;padding:0 20px">
-          ⚠️ Stream token expired.<br>
-          <small style="color:#666">Go back and refresh the home page.</small><br><br>
-          <a href="/" style="color:#e50914;font-weight:700">← Back to Home</a>
-        </div>`;
-      return;
-    }
+const matches=data.matches;
 
-    const txt = match.auto_streams?.[0]?.auto;
-    if(!txt){
-      $("iloader").innerHTML = "<div style='color:#f55'>⚠️ No stream available for this match.</div>";
-      return;
-    }
+const container=document.getElementById("matches");
 
-    streams = parseMaster(txt);
-    if(!streams.length){
-      $("iloader").innerHTML = "<div style='color:#f55'>⚠️ No stream qualities found.</div>";
-      return;
-    }
+matches.forEach(match=>{
 
-    $("iloader").style.display = "none";
-    buildQPage(match);
-    $("qpage").classList.add("on");
+const auto=match.auto_streams?.[0]?.auto;
 
-  } catch(e){
-    $("iloader").innerHTML = `<div style="color:#f55">⚠️ ${e.message}</div>`;
-  }
+if(!auto) return;
+
+const url=auto.match(/https.*\.m3u8.*/)[0];
+
+const expire=url.match(/Expires=(\d+)/);
+
+const exp=expire?parseInt(expire[1]):0;
+
+const div=document.createElement("div");
+
+div.className="match";
+
+div.innerHTML=`
+<img src="${match.image}">
+<div>
+<div>${match.title}</div>
+<div>${match.tournament}</div>
+<div>${match.status}</div>
+</div>
+`;
+
+div.onclick=()=>playStream(url,exp);
+
+container.appendChild(div);
+
+});
+
 }
 
+async function playStream(url,exp){
+
+currentStream=url;
+expireTime=exp;
+
+if(player){
+player.destroy();
+}
+
+const video=document.getElementById("video");
+
+player=new shaka.Player(video);
+
+player.getNetworkingEngine().registerRequestFilter((type,request)=>{
+
+request.headers["User-Agent"]="ReactNativeVideo/9.3.0 (Linux;Android 13) AndroidXMedia3/1.6.1";
+
+request.headers["Referer"]="https://fancode.com/";
+
+request.headers["Origin"]="https://fancode.com";
+
+});
+
+try{
+
+await player.load(url);
+
+video.play();
+
+buildQuality();
+
+}catch(e){
+
+console.log(e);
+
+}
+
+}
+
+function buildQuality(){
+
+const tracks=player.getVariantTracks();
+
+const qDiv=document.getElementById("qualities");
+
+qDiv.innerHTML="";
+
+tracks.forEach(track=>{
+
+const btn=document.createElement("div");
+
+btn.className="qbtn";
+
+btn.innerText=track.height+"p";
+
+btn.onclick=()=>{
+
+player.configure({abr:{enabled:false}});
+
+player.selectVariantTrack(track,true);
+
+};
+
+qDiv.appendChild(btn);
+
+});
+
+}
+
+setInterval(async()=>{
+
+if(!expireTime) return;
+
+const now=Math.floor(Date.now()/1000);
+
+if(expireTime-now<120){
+
+console.log("Token Expired Refreshing");
+
+const res=await fetch(API);
+
+const data=await res.json();
+
+const matches=data.matches;
+
+for(let m of matches){
+
+const auto=m.auto_streams?.[0]?.auto;
+
+if(!auto) continue;
+
+const url=auto.match(/https.*\.m3u8.*/)[0];
+
+if(url.includes(currentStream.split("/")[3])){
+
+const expire=url.match(/Expires=(\d+)/);
+
+const exp=expire?parseInt(expire[1]):0;
+
+playStream(url,exp);
+
+break;
+
+}
+
+}
+
+}
+
+},30000);
+
 init();
+
 </script>
+
 </body>
 </html>
