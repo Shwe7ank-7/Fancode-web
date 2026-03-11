@@ -3,7 +3,7 @@
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 
 <title>FanCode Live</title>
 
@@ -12,10 +12,10 @@
 <style>
 
 body{
-margin:0;
 background:#0b132b;
-font-family:sans-serif;
 color:white;
+margin:0;
+font-family:sans-serif;
 }
 
 .container{
@@ -32,10 +32,10 @@ border-radius:8px;
 
 .match{
 display:flex;
-gap:12px;
-background:#1c2541;
+gap:10px;
 padding:10px;
 margin-top:12px;
+background:#1c2541;
 border-radius:8px;
 cursor:pointer;
 }
@@ -45,7 +45,7 @@ width:120px;
 border-radius:6px;
 }
 
-.qbar{
+.quality{
 margin-top:10px;
 display:flex;
 gap:8px;
@@ -69,9 +69,9 @@ cursor:pointer;
 
 <h2>FanCode Live Matches</h2>
 
-<video id="video" controls autoplay></video>
+<video id="video" controls autoplay playsinline></video>
 
-<div id="qualities" class="qbar"></div>
+<div id="qualities" class="quality"></div>
 
 <div id="matches"></div>
 
@@ -79,34 +79,32 @@ cursor:pointer;
 
 <script>
 
-const API="https://raw.githubusercontent.com/Jitendra-unatti/fancode/refs/heads/main/data/fancode.json";
+const JSON_API="https://raw.githubusercontent.com/Jitendra-unatti/fancode/refs/heads/main/data/fancode.json";
 
-let player=null;
-let currentMatch=null;
+let player;
+let currentMatchId;
 
 async function loadMatches(){
 
-const res=await fetch(API);
+const res=await fetch(JSON_API);
 const data=await res.json();
-
-const matches=data.matches;
 
 const container=document.getElementById("matches");
 container.innerHTML="";
 
-matches.forEach(match=>{
+data.matches.forEach(match=>{
 
 if(!match.auto_streams) return;
 
-const auto=match.auto_streams[0].auto;
+const text=match.auto_streams[0].auto;
 
-if(!auto) return;
+if(!text) return;
 
-const master=auto.match(/https.*\.m3u8.*/);
+const firstUrl=text.match(/https:\/\/[^\n]+\.m3u8[^\n]*/);
 
-if(!master) return;
+if(!firstUrl) return;
 
-const streamUrl=master[0];
+const streamUrl=firstUrl[0];
 
 const div=document.createElement("div");
 
@@ -121,7 +119,7 @@ div.innerHTML=`
 </div>
 `;
 
-div.onclick=()=>play(streamUrl,match);
+div.onclick=()=>playStream(streamUrl,match.match_id);
 
 container.appendChild(div);
 
@@ -129,15 +127,15 @@ container.appendChild(div);
 
 }
 
-async function play(url,match){
+async function playStream(url,matchId){
 
-currentMatch=match;
+currentMatchId=matchId;
+
+const video=document.getElementById("video");
 
 if(player){
 await player.destroy();
 }
-
-const video=document.getElementById("video");
 
 player=new shaka.Player(video);
 
@@ -155,41 +153,41 @@ await player.load(url);
 
 video.play();
 
-buildQuality();
+createQualityButtons();
 
-}catch(e){
+}catch(err){
 
-console.log(e);
-alert("Stream failed");
-
-}
+console.error(err);
+alert("Stream failed to load");
 
 }
 
-function buildQuality(){
+}
+
+function createQualityButtons(){
 
 const tracks=player.getVariantTracks();
 
-const q=document.getElementById("qualities");
-q.innerHTML="";
+const container=document.getElementById("qualities");
+container.innerHTML="";
 
 tracks.forEach(track=>{
+
+if(!track.height) return;
 
 const btn=document.createElement("div");
 
 btn.className="qbtn";
-
 btn.innerText=track.height+"p";
 
 btn.onclick=()=>{
 
 player.configure({abr:{enabled:false}});
-
 player.selectVariantTrack(track,true);
 
 };
 
-q.appendChild(btn);
+container.appendChild(btn);
 
 });
 
@@ -197,30 +195,26 @@ q.appendChild(btn);
 
 setInterval(async()=>{
 
-if(!currentMatch) return;
+if(!currentMatchId) return;
 
-const now=Math.floor(Date.now()/1000);
-
-const res=await fetch(API);
+const res=await fetch(JSON_API);
 const data=await res.json();
 
-const matches=data.matches;
+const match=data.matches.find(m=>m.match_id===currentMatchId);
 
-for(let m of matches){
+if(!match) return;
 
-if(m.match_id===currentMatch.match_id){
+const text=match.auto_streams[0].auto;
 
-const auto=m.auto_streams[0].auto;
+const firstUrl=text.match(/https:\/\/[^\n]+\.m3u8[^\n]*/);
 
-const master=auto.match(/https.*\.m3u8.*/)[0];
+if(!firstUrl) return;
 
-player.load(master);
+const newUrl=firstUrl[0];
 
-break;
+await player.load(newUrl);
 
-}
-
-}
+console.log("Token refreshed");
 
 },120000);
 
