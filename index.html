@@ -2,124 +2,272 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>FanCode Live</title>
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fancode - @Shwe7ank</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:#0f0f0f;color:#fff;font-family:system-ui,-apple-system,sans-serif}
-header{background:#111;border-bottom:2px solid #e50914;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
-.logo{font-size:1.2rem;font-weight:800}.logo span{color:#e50914}
-.tg{background:#e50914;color:#fff;border:0;border-radius:7px;padding:7px 14px;font-size:.8rem;font-weight:700;text-decoration:none}
-#fbar{display:flex;gap:8px;padding:10px 14px;overflow-x:auto;background:#111;border-bottom:1px solid #1e1e1e;scrollbar-width:none}
-#fbar::-webkit-scrollbar{display:none}
-.fb{background:#1e1e1e;color:#aaa;border:1px solid #2a2a2a;border-radius:20px;padding:6px 16px;font-size:.82rem;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .2s}
-.fb:hover{background:#2a2a2a;color:#fff}.fb.active{background:#e50914;color:#fff;border-color:#e50914}
-.wrap{max-width:720px;margin:auto;padding:10px 14px 30px}
-.toprow{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-#cnt{font-size:.82rem;color:#666}
-#rbtn{background:#1e1e1e;color:#888;border:1px solid #2a2a2a;border-radius:7px;padding:6px 14px;font-size:.8rem;cursor:pointer}
-#rbtn:hover{background:#2a2a2a;color:#fff}
-.card{background:#1a1a1a;border-radius:14px;margin-bottom:16px;overflow:hidden;border:1.5px solid #2a2a2a;transition:border-color .2s,transform .15s}
-.card:hover{border-color:#e50914;transform:translateY(-2px)}
-.iw{position:relative;overflow:hidden}
-.card img{width:100%;display:block;aspect-ratio:16/9;object-fit:cover;background:#111}
-.lb{position:absolute;top:10px;left:10px;background:#e50914;color:#fff;padding:3px 9px;border-radius:5px;font-size:.72rem;font-weight:800;display:flex;align-items:center;gap:5px}
-.ld{width:7px;height:7px;background:#fff;border-radius:50%;animation:bl 1s infinite}
-@keyframes bl{0%,100%{opacity:1}50%{opacity:0}}
-.ub{position:absolute;top:10px;left:10px;background:rgba(0,0,0,.7);color:#bbb;padding:3px 9px;border-radius:5px;font-size:.72rem;font-weight:700}
-.st{position:absolute;top:10px;right:10px;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);color:#fff;padding:3px 9px;border-radius:5px;font-size:.72rem;font-weight:700}
-.cb{padding:13px 15px 15px}
-.ct{font-size:1rem;font-weight:700;margin-bottom:4px;line-height:1.3}
-.cm{color:#888;font-size:.82rem;margin-bottom:12px;line-height:1.7}
-.qp{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
-.qp span{background:#222;border:1px solid #333;color:#aaa;border-radius:4px;padding:2px 8px;font-size:.72rem;font-weight:600}
-.wbtn{display:block;width:100%;background:#e50914;color:#fff;text-align:center;padding:11px;border-radius:8px;text-decoration:none;font-weight:700;font-size:.95rem;transition:background .2s}
-.wbtn:hover{background:#c0070f}
-.wbtn.off{background:#2a2a2a;color:#555;pointer-events:none}
-#ldr{text-align:center;padding:60px 20px;color:#555}
-.sp{width:36px;height:36px;border:3px solid #222;border-top-color:#e50914;border-radius:50%;animation:sp2 .8s linear infinite;margin:0 auto 14px}
-@keyframes sp2{to{transform:rotate(360deg)}}
-#emp{display:none;text-align:center;padding:50px 20px;color:#555}
+
+body{
+  background:#0a0f1c;
+  font-family:system-ui;
+  color:white;
+  padding-bottom:50px;
+}
+
+.match-tile{
+  background:#131d2f;
+  border-radius:28px;
+  border:1px solid #253247;
+  overflow:hidden;
+  transition:.3s;
+  display:flex;
+  flex-direction:column;
+}
+
+.match-tile:hover{
+  transform:translateY(-6px);
+  border-color:#3b82f6;
+  box-shadow:0 10px 25px -5px rgba(59,130,246,.2);
+}
+
+.img-wrapper{
+  height:200px;
+  overflow:hidden;
+  position:relative;
+  background:#1e293b;
+}
+
+.match-img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.live-badge{
+  position:absolute;
+  top:12px;
+  left:12px;
+  background:#dc2626;
+  font-size:11px;
+  font-weight:800;
+  padding:4px 12px;
+  border-radius:30px;
+}
+
+.btn-watch{
+  background:#2563eb;
+  padding:14px;
+  border-radius:16px;
+  text-align:center;
+  font-weight:800;
+  margin-top:auto;
+  cursor:pointer;
+}
+
+.btn-watch.not-live{
+  background:#1e293b;
+  color:#64748b;
+  cursor:not-allowed;
+}
+
+.modal-overlay{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.9);
+  z-index:1000;
+  align-items:center;
+  justify-content:center;
+}
+
+.modal-content{
+  background:#131d2f;
+  width:90%;
+  max-width:350px;
+  padding:30px;
+  border-radius:30px;
+  border:1px solid #253247;
+  text-align:center;
+}
+
+.quality-btn{
+  background:#1e293b;
+  border:1px solid #253247;
+  width:100%;
+  padding:15px;
+  margin-bottom:10px;
+  border-radius:15px;
+  font-weight:bold;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  cursor:pointer;
+}
+
+.close-btn{
+  margin-top:15px;
+  color:#ef4444;
+  font-weight:bold;
+  cursor:pointer;
+}
+
 </style>
 </head>
-<body>
-<header>
-  <div class="logo">Fan<span>Code</span> Live</div>
-  <a class="tg" href="https://t.me/+3sgGQcDP6ExhYTU1" target="_blank">📲 Telegram</a>
-</header>
-<div id="fbar"><button class="fb active" data-sport="all">🏠 All</button></div>
-<div class="wrap">
-  <div class="toprow">
-    <div id="cnt"></div>
-    <button id="rbtn" onclick="load(true)">🔄 Refresh</button>
+<body class="p-5 max-w-7xl mx-auto">
+<div class="text-center mb-10 mt-5">
+  <div class="inline-flex items-center gap-3 bg-[#131d2f] py-4 px-8 rounded-full border border-blue-900/50">
+    <i class="fas fa-bolt text-yellow-400"></i>
+    <span class="text-2xl font-black">FANCODE</span>
   </div>
-  <div id="ldr"><div class="sp"></div>Loading…</div>
-  <div id="matches"></div>
-  <div id="emp">No matches found.</div>
+  <p class="text-gray-500 text-xs mt-3">WEB BY @Shwe7ank</p>
+</div>
+<div id="matches-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+<div id="quality-modal" class="modal-overlay">
+  <div class="modal-content">
+    <h3 class="text-xl font-bold mb-5">Select Quality</h3>
+    <div id="quality-list"></div>
+    <div class="close-btn" onclick="closeModal()">CLOSE</div>
+  </div>
 </div>
 <script>
-const JURL  = "https://raw.githubusercontent.com/Jitendra-unatti/fancode/refs/heads/main/data/fancode.json";
-const QORD  = ["240p","360p","480p","540p","720p","1080p"];
-const SICON = {cricket:"🏏",football:"⚽",tennis:"🎾",kabaddi:"🤼",basketball:"🏀",hockey:"🏑"};
-let all = [], af = "all";
-const $ = id => document.getElementById(id);
 
-function getQ(s){ if(!s?.length) return []; const t=s[0].auto||"",q=[],r=/\/(\d+p)\.m3u8/gi;let m;while((m=r.exec(t)))if(!q.includes(m[1].toLowerCase()))q.push(m[1].toLowerCase());return q.sort((a,b)=>QORD.indexOf(a)-QORD.indexOf(b)); }
-function expired(s){ const c=s?.[0]?.cookie_valid; return c ? Math.floor(Date.now()/1000)>parseInt(c) : false; }
+const DATA_URL="https://raw.githubusercontent.com/Jitendra-unatti/fancode/refs/heads/main/data/fancode.json";
+const PLAYER_URL="Watch.html?url=";
 
-function render(list){
-  const box=$("matches"),emp=$("emp"),cnt=$("cnt");
-  box.innerHTML="";
-  const f = af==="all" ? list : list.filter(m=>(m.category||"").toLowerCase()===af.toLowerCase());
-  cnt.textContent = f.length ? f.length+" match"+(f.length>1?"es":"") : "";
-  if(!f.length){emp.style.display="block";return;} emp.style.display="none";
-  f.forEach(m=>{
-    const live = m.status==="LIVE"&&m.streamingStatus==="STARTED";
-    const exp  = expired(m.auto_streams);
-    const qs   = getQ(m.auto_streams);
-    const can  = live&&!exp;
-    const sport= m.category||"Other";
-    const c=document.createElement("div"); c.className="card";
-    c.innerHTML=`
-      <div class="iw">
-        ${live?`<div class="lb"><span class="ld"></span>LIVE</div>`:`<div class="ub">🕐 ${m.startTime||"Upcoming"}</div>`}
-        <span class="st">${sport}</span>
-        <img src="${m.image}" alt="${m.title}" loading="lazy" onerror="this.style.background='#111'">
+const container=document.getElementById("matches-container");
+
+let allMatches=[];
+
+function initApp(){
+
+  fetch(DATA_URL)
+  .then(res=>res.json())
+  .then(data=>{
+    allMatches=data.matches || [];
+    renderMatches(allMatches);
+  })
+  .catch(()=>{
+    container.innerHTML="<p class='text-center col-span-full'>Failed to load matches</p>";
+  });
+
+}
+
+function renderMatches(matches){
+
+  container.innerHTML="";
+
+  matches.forEach((m,index)=>{
+
+    const isLive=(m.status||"").toUpperCase()==="LIVE";
+
+    let img = m.image 
+      ? m.image 
+      : "https://www.fancode.com/skillup-uploads/cms-media/Cricket_Fallback_Old_match-card.jpg";
+
+    const card=document.createElement("div");
+
+    card.className="match-tile";
+
+    card.innerHTML=`
+
+      <div class="img-wrapper">
+        <img src="${img}" class="match-img">
+        ${isLive ? '<span class="live-badge">LIVE</span>' : ''}
       </div>
-      <div class="cb">
-        <div class="ct">${m.title}</div>
-        <div class="cm">${m.tournament}<br>${m.startTime}<br>${m.language||""}</div>
-        ${qs.length?`<div class="qp">${qs.map(q=>`<span>${q.toUpperCase()}</span>`).join("")}</div>`:""}
-        ${can?`<a class="wbtn" href="watch.html?id=${m.match_id}">▶ Watch Now</a>`
-             :live&&exp?`<a class="wbtn off">🔄 Token Expired</a>`
-             :`<a class="wbtn off">⏳ Not Started Yet</a>`}
-      </div>`;
-    box.appendChild(c);
+
+      <div class="p-6 flex flex-col flex-grow">
+
+        <h3 class="font-bold text-lg h-14 line-clamp-2">${m.title}</h3>
+
+        <p class="text-gray-400 text-xs mt-2 uppercase tracking-widest font-bold">
+          ${m.tournament}
+        </p>
+
+        <p class="text-gray-500 text-xs mt-1 mb-5">
+          ${m.startTime}
+        </p>
+
+        <div onclick="${isLive ? `openQuality(${index})` : ''}" 
+             class="btn-watch ${!isLive ? 'not-live' : ''}">
+
+          ${isLive ? '<i class="fas fa-play-circle mr-2"></i> WATCH LIVE' : 'NOT LIVE'}
+
+        </div>
+
+      </div>
+
+    `;
+
+    container.appendChild(card);
+
   });
+
 }
 
-function buildF(list){
-  const bar=$("fbar");
-  bar.querySelectorAll("[data-sport]:not([data-sport='all'])").forEach(b=>b.remove());
-  [...new Set(list.map(m=>m.category||"Other"))].sort().forEach(s=>{
-    const b=document.createElement("button"); b.className="fb"; b.dataset.sport=s;
-    b.textContent=(SICON[s.toLowerCase()]||"🎮")+" "+s; bar.appendChild(b);
+function openQuality(index){
+
+  const match=allMatches[index];
+
+  const streamData = match.auto_streams?.[0]?.auto || "";
+
+  const list=document.getElementById("quality-list");
+
+  list.innerHTML="";
+
+  if(!streamData){
+    alert("Stream not found");
+    return;
+  }
+
+  const lines=streamData.split("\n");
+
+  lines.forEach((line,i)=>{
+
+    if(line.includes("RESOLUTION=")){
+
+      const resolution=line
+        .split("RESOLUTION=")[1]
+        .split(",")[0]
+        .split("x")[1]+"p";
+
+      const streamUrl=lines[i+1].trim();
+
+      const btn=document.createElement("div");
+
+      btn.className="quality-btn";
+
+      btn.innerHTML=`
+        <span>${resolution}</span>
+        <i class="fas fa-chevron-right"></i>
+      `;
+
+      btn.onclick=()=>{
+        window.location.href=PLAYER_URL+encodeURIComponent(streamUrl);
+      };
+
+      list.appendChild(btn);
+
+    }
+
   });
-  bar.querySelectorAll(".fb").forEach(b=>{ b.onclick=()=>{ bar.querySelectorAll(".fb").forEach(x=>x.classList.remove("active")); b.classList.add("active"); af=b.dataset.sport; render(all); }; });
+
+  document.getElementById("quality-modal").style.display="flex";
+
 }
 
-async function load(bust=false){
-  $("ldr").style.display="block"; $("matches").innerHTML=""; $("emp").style.display="none"; $("cnt").textContent="";
-  try{
-    const r=await fetch(JURL+(bust?"?_="+Date.now():""));
-    if(!r.ok) throw new Error("HTTP "+r.status);
-    const d=await r.json(); all=d.matches||[];
-    $("ldr").style.display="none";
-    if(!all.length){$("emp").style.display="block";$("emp").textContent="No matches right now.";return;}
-    buildF(all); render(all);
-  }catch(e){ $("ldr").innerHTML=`<div style="color:#f55">⚠️ ${e.message}</div>`; }
+function closeModal(){
+  document.getElementById("quality-modal").style.display="none";
 }
-load();
+
+initApp();
+
+</script>
+<script>
+// alert('Join Our Telegram For More Live Links')
+         if (confirm("Join Our Telegram Channel @Shwe7ank") == true) {
+         window.open("https://t.me/Shwe7ank", '_blank');
+     }
 </script>
 </body>
 </html>
