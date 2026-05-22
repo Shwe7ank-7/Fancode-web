@@ -1,272 +1,402 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>Fancode Player</title>
-<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<!-- Shaka Player -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.6.0/shaka-player.ui.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.6.0/controls.min.css">
+<link  rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.6.0/controls.min.css">
+
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-html, body {
-  height: 100%;
-  background: #000;
-  overflow: hidden;
-  font-family: system-ui;
-}
+  html, body {
+    width: 100%;
+    height: 100%;
+    background: #000;
+    font-family: system-ui, -apple-system, sans-serif;
+    overflow: hidden;
+  }
 
-.wrap {
-  width: 100%;
-  height: 100%;
-}
+  /* ── Player ── */
+  #player-wrap {
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
 
-.shaka-video-container,
-video {
-  width: 100%;
-  height: 100%;
-}
+  .shaka-video-container {
+    width: 100%;
+    height: 100%;
+  }
 
-.shaka-spinner-container { display: none !important; }
+  video {
+    width: 100%;
+    height: 100%;
+    background: #000;
+  }
 
-/* Error / Loading overlays */
-#overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: #0a0f1c;
-  color: white;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
-  z-index: 9999;
-  padding: 30px;
-  text-align: center;
-}
+  /* Hide Shaka's built-in spinner (we have our own overlay) */
+  .shaka-spinner-container { display: none !important; }
 
-#overlay.show { display: flex; }
+  /* ── Loading bar ── */
+  #load-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    width: 0%;
+    background: linear-gradient(90deg, #2563eb, #60a5fa);
+    transition: width .4s ease;
+    z-index: 9001;
+    border-radius: 0 2px 2px 0;
+  }
 
-#overlay .icon { font-size: 40px; }
-#overlay h2   { font-size: 20px; font-weight: 800; }
-#overlay p    { font-size: 13px; color: #94a3b8; max-width: 300px; line-height: 1.6; }
+  /* ── Overlay (loading / error) ── */
+  #overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: #070c17;
+    z-index: 9000;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 30px;
+    text-align: center;
+    color: #e2e8f0;
+  }
+  #overlay.show { display: flex; }
 
-.ov-btn {
-  margin-top: 6px;
-  background: #2563eb;
-  color: white;
-  padding: 12px 30px;
-  border-radius: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  border: none;
-  font-size: 14px;
-}
+  #ov-icon  { font-size: 42px; line-height: 1; }
+  #ov-title { font-size: 20px; font-weight: 900; }
+  #ov-msg   { font-size: 13px; color: #64748b; max-width: 320px; line-height: 1.7; }
 
-.ov-btn:hover { background: #1d4ed8; }
+  .ov-spinner {
+    width: 44px;
+    height: 44px;
+    border: 4px solid #1e3050;
+    border-top-color: #2563eb;
+    border-radius: 50%;
+    animation: spin .8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
-#loading-bar {
-  position: fixed;
-  top: 0; left: 0;
-  height: 3px;
-  width: 0%;
-  background: #3b82f6;
-  transition: width .4s;
-  z-index: 10000;
-}
+  .ov-btn {
+    margin-top: 6px;
+    background: #1d4ed8;
+    color: #fff;
+    padding: 13px 32px;
+    border-radius: 14px;
+    font-weight: 800;
+    font-size: 14px;
+    cursor: pointer;
+    border: none;
+    transition: background .2s;
+  }
+  .ov-btn:hover { background: #1e40af; }
+
+  .ov-btn-sec {
+    margin-top: 4px;
+    background: transparent;
+    color: #475569;
+    padding: 10px 28px;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    border: 1px solid #1a2d47;
+    transition: color .2s, border-color .2s;
+  }
+  .ov-btn-sec:hover { color: #94a3b8; border-color: #334155; }
+
+  /* ── Back button (always visible top-left while playing) ── */
+  #back-btn {
+    display: none;
+    position: fixed;
+    top: 14px;
+    left: 14px;
+    z-index: 8999;
+    background: rgba(0,0,0,.65);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,.15);
+    border-radius: 999px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+    transition: background .2s;
+  }
+  #back-btn:hover { background: rgba(0,0,0,.85); }
 </style>
 <script src="https://semicolondriverelevated.com/1d/6a/57/1d6a575d756ceeb65888fb8b7328a1e6.js"></script>
 </head>
 
 <body>
-<div id="loading-bar"></div>
 
-<!-- Video -->
-<div class="wrap">
-  <div class="shaka-video-container" data-shaka-player>
+<div id="load-bar"></div>
+
+<!-- Back button (shown after playback starts) -->
+<button id="back-btn" onclick="history.back()">← Back</button>
+
+<!-- Video player -->
+<div id="player-wrap">
+  <div class="shaka-video-container" data-shaka-player id="shaka-container">
     <video id="video" autoplay playsinline></video>
   </div>
 </div>
 
-<!-- Overlay (loading / error) -->
-<div id="overlay">
-  <div class="icon" id="ov-icon">⏳</div>
-  <h2 id="ov-title">Loading Stream…</h2>
-  <p  id="ov-msg">Fetching match data, please wait.</p>
-  <button class="ov-btn" id="ov-btn" style="display:none" onclick="history.back()">
-    ← Go Back
-  </button>
+<!-- Overlay -->
+<div id="overlay" class="show">
+  <div class="ov-spinner" id="ov-spinner"></div>
+  <div id="ov-icon"  style="display:none"></div>
+  <div id="ov-title">Loading stream…</div>
+  <div id="ov-msg">Please wait while we fetch the stream.</div>
+  <button class="ov-btn"     id="ov-back"   style="display:none" onclick="history.back()">← Go Back</button>
+  <button class="ov-btn-sec" id="ov-retry"  style="display:none" onclick="retryStream()">↻ Retry</button>
 </div>
 
 <script>
-const DATA_URL = "https://famcodexwebs.xojiv79335.workers.dev/";
+// ──────────────────────────────────────────────
+//  Helpers
+// ──────────────────────────────────────────────
+const $    = id => document.getElementById(id);
+const bar  = $('load-bar');
+const ov   = $('overlay');
 
-const sp     = new URLSearchParams(window.location.search);
-const matchId = sp.get("id");
-const lang    = (sp.get("lang") || "ENGLISH").toUpperCase();
-const cdnKey  = sp.get("cdn") || "fancode_cdn";
-
-const video   = document.getElementById("video");
-const overlay = document.getElementById("overlay");
-const bar     = document.getElementById("loading-bar");
-
-/* Show loading overlay immediately */
-showLoading("Loading Stream…", "Fetching match data, please wait.");
-
-function setBar(pct) { bar.style.width = pct + "%"; }
-
-function showLoading(title, msg) {
-  document.getElementById("ov-icon").textContent  = "⏳";
-  document.getElementById("ov-title").textContent = title;
-  document.getElementById("ov-msg").textContent   = msg;
-  document.getElementById("ov-btn").style.display = "none";
-  overlay.classList.add("show");
+function setBar(pct) {
+  bar.style.width = pct + '%';
+}
+function hideBar() {
+  bar.style.width = '100%';
+  setTimeout(() => { bar.style.transition = 'none'; bar.style.width = '0%';
+    setTimeout(() => { bar.style.transition = 'width .4s ease'; }, 50); }, 700);
 }
 
-function showError(title, msg) {
-  document.getElementById("ov-icon").textContent  = "⚠️";
-  document.getElementById("ov-title").textContent = title;
-  document.getElementById("ov-msg").textContent   = msg;
-  document.getElementById("ov-btn").style.display = "inline-block";
-  overlay.classList.add("show");
+function showLoading(msg) {
+  $('ov-spinner').style.display = 'block';
+  $('ov-icon'  ).style.display  = 'none';
+  $('ov-title' ).textContent    = 'Loading stream…';
+  $('ov-msg'   ).textContent    = msg || 'Please wait.';
+  $('ov-back'  ).style.display  = 'none';
+  $('ov-retry' ).style.display  = 'none';
+  ov.classList.add('show');
+}
+
+function showError(title, msg, showRetry) {
+  $('ov-spinner').style.display = 'none';
+  $('ov-icon'  ).style.display  = 'block';
+  $('ov-icon'  ).textContent    = '⚠️';
+  $('ov-title' ).textContent    = title;
+  $('ov-msg'   ).textContent    = msg;
+  $('ov-back'  ).style.display  = 'inline-block';
+  $('ov-retry' ).style.display  = showRetry ? 'inline-block' : 'none';
+  ov.classList.add('show');
 }
 
 function hideOverlay() {
-  overlay.classList.remove("show");
-  bar.style.width = "100%";
-  setTimeout(() => { bar.style.width = "0%"; bar.style.transition = "none"; }, 600);
+  ov.classList.remove('show');
+  $('back-btn').style.display = 'block';
+  hideBar();
 }
 
-/* ---- Main ---- */
+// ──────────────────────────────────────────────
+//  Read URL params
+// ──────────────────────────────────────────────
+const sp   = new URLSearchParams(window.location.search);
+const matchId   = sp.get('id');
+const lang      = (sp.get('lang') || 'ENGLISH').toUpperCase();
+const streamUrl = sp.get('url');   // direct stream URL passed from index
+const drmStr    = sp.get('drm') || ''; // clearkey string "kid:key" or ""
+
+let shakaPlayer = null;
+
+// ──────────────────────────────────────────────
+//  Main
+// ──────────────────────────────────────────────
 async function start() {
-  if (!matchId) { showError("Missing Parameters", "No match ID found in the URL."); return; }
-
-  setBar(20);
-
-  let data;
-  try {
-    const res = await fetch(DATA_URL);
-    data = await res.json();
-  } catch(e) {
-    showError("Network Error", "Could not reach the server. Check your connection and try again.");
-    return;
-  }
-
-  setBar(50);
-
-  /* Find entry matching match_id + language */
-  const entry = (data.matches || []).find(m =>
-    String(m.match_id) === String(matchId) &&
-    (m.language || "").toUpperCase() === lang
-  );
-
-  if (!entry) {
-    /* Fallback: try any entry with this match_id */
-    const fallback = (data.matches || []).find(m => String(m.match_id) === String(matchId));
-    if (!fallback) {
-      showError("Match Not Found", "This match may have ended or the ID is invalid.");
-      return;
-    }
-    /* Redirect with fallback language */
-    const p = new URLSearchParams({ id: matchId, lang: (fallback.language || "ENGLISH").toUpperCase(), cdn: cdnKey });
-    window.location.replace("Watch.html?" + p.toString());
-    return;
-  }
-
-  const cdn = entry.STREAMING_CDN;
-  if (!cdn) { showError("No Stream Data", "Stream configuration is missing for this match."); return; }
-
-  /* Resolve stream URL — try requested cdn key, then fallbacks */
-  const urlCandidates = [
-    cdn[cdnKey],
-    cdn.Primary_Playback_URL,
-    cdn.fancode_cdn,
-    cdn.fancode_bd_cdn,
-  ];
-  const streamUrl = urlCandidates.find(u => u && u !== "Unavailable" && u !== "");
-
   if (!streamUrl) {
-    showError("Stream Unavailable", "The selected server is currently unavailable. Please go back and choose another.");
+    showError('Missing Stream URL', 'No stream URL was provided. Please go back and select a server.');
     return;
   }
 
-  setBar(70);
+  setBar(30);
+  showLoading('Preparing player…');
 
-  /* Install Shaka polyfills */
+  // Install Shaka polyfills
   shaka.polyfill.installAll();
 
   if (!shaka.Player.isBrowserSupported()) {
-    showError("Browser Not Supported", "Your browser doesn't support DRM video playback. Try Chrome or Edge.");
+    showError(
+      'Browser Not Supported',
+      'Your browser does not support the video player. Please use Chrome, Edge, or Safari.'
+    );
     return;
   }
 
-  const player    = new shaka.Player(video);
-  const container = document.querySelector(".shaka-video-container");
-  const ui        = new shaka.ui.Overlay(player, container, video);
+  setBar(60);
 
+  try {
+    await loadStream(streamUrl, drmStr);
+  } catch(e) {
+    console.error('Stream load failed:', e);
+    showError(
+      'Playback Failed',
+      `Could not load the stream. Error: ${e.message || e.code || 'Unknown'}. Try going back and selecting a different server.`,
+      true
+    );
+  }
+}
+
+// ──────────────────────────────────────────────
+//  Load stream into Shaka
+// ──────────────────────────────────────────────
+async function loadStream(url, drm) {
+  const video     = $('video');
+  const container = $('shaka-container');
+
+  // Destroy old player if any
+  if (shakaPlayer) {
+    await shakaPlayer.destroy();
+    shakaPlayer = null;
+  }
+
+  const player = new shaka.Player(video);
+  shakaPlayer  = player;
+
+  // ── Shaka UI ──
+  const ui = new shaka.ui.Overlay(player, container, video);
   ui.configure({
     controlPanelElements: [
       'play_pause', 'mute', 'time_and_duration',
-      'spacer', 'quality',
-      'picture_in_picture', 'fullscreen', 'overflow_menu'
+      'spacer', 'quality', 'picture_in_picture',
+      'fullscreen', 'overflow_menu'
     ],
-    overflowMenuButtons: ['quality', 'captions', 'cast', 'playback_rate'],
+    overflowMenuButtons: ['quality', 'playback_rate', 'loop'],
     enableFullscreenOnRotation: true,
     forceLandscapeOnFullscreen: true,
+    fadeDelay: 3,
   });
 
-  /* DRM configuration — support both clearkey formats */
-  const drmData = cdn.drm;
-  if (drmData) {
+  // ── DRM config ──
+  // Supports both clearkey formats: "kid:key" string or "kid:key" from keys array
+  if (drm && drm.trim() !== '') {
     const clearKeys = {};
-
-    /* Format 1: clearkey string "kid:key" */
-    if (drmData.clearkey) {
-      const parts = drmData.clearkey.split(":");
-      if (parts.length === 2) clearKeys[parts[0]] = parts[1];
-    }
-
-    /* Format 2: keys array ["kid:key", ...] */
-    if (Array.isArray(drmData.keys)) {
-      drmData.keys.forEach(k => {
-        const p = k.split(":");
-        if (p.length === 2) clearKeys[p[0]] = p[1];
-      });
-    }
-
+    // May be comma-separated if multiple keys
+    drm.split(',').forEach(entry => {
+      const parts = entry.trim().split(':');
+      if (parts.length === 2 && parts[0] && parts[1]) {
+        clearKeys[parts[0]] = parts[1];
+      }
+    });
     if (Object.keys(clearKeys).length > 0) {
       player.configure({ drm: { clearKeys } });
     }
   }
 
-  /* Player error handler */
-  player.addEventListener("error", ev => {
-    const code = ev.detail?.code || "unknown";
-    const msg  = ev.detail?.message || "";
-    console.error("Shaka error:", ev.detail);
+  // ── Stream type detection ──
+  // Shaka auto-detects HLS vs DASH from the URL, but we can also hint
+  const isHLS  = url.includes('.m3u8');
+  const isDASH = url.includes('.mpd');
+
+  if (isHLS) {
+    // Make sure Shaka uses HLS parsing
+    player.configure('manifest.dash.ignoreDrmInfo', false);
+  }
+
+  // ── Buffering config ──
+  player.configure({
+    streaming: {
+      bufferingGoal: 30,
+      rebufferingGoal: 4,
+      bufferBehind: 30,
+      retryParameters: {
+        maxAttempts: 5,
+        baseDelay: 1000,
+        backoffFactor: 2,
+        fuzzFactor: 0.5,
+      },
+    },
+    manifest: {
+      retryParameters: {
+        maxAttempts: 4,
+        baseDelay: 1000,
+      },
+    },
+  });
+
+  // ── Error handler ──
+  player.addEventListener('error', ev => {
+    const err  = ev.detail;
+    const code = err?.code || '?';
+    console.error('Shaka error event:', err);
+
+    // Ignore low-severity or non-fatal codes
+    if (err?.severity === shaka.util.Error.Severity.RECOVERABLE) return;
+
     showError(
       `Playback Error (${code})`,
-      msg || "The stream could not be played. Try a different server or language."
+      getErrorMessage(code, err),
+      true
     );
   });
 
-  setBar(85);
+  // ── Buffering state ──
+  player.addEventListener('buffering', ev => {
+    if (ev.buffering) {
+      setBar(70);
+    }
+  });
 
+  setBar(75);
+
+  // ── LOAD ──
+  await player.load(url);
+
+  setBar(95);
+
+  // ── Play ──
   try {
-    await player.load(streamUrl);
-    setBar(100);
-    hideOverlay();
-    await video.play().catch(() => {});
+    await video.play();
   } catch(e) {
-    console.error("Load error:", e);
-    const code = e.code || "";
-    showError(
-      "Stream Failed to Load",
-      `Error ${code}: The stream could not be loaded. DRM or network issue. Go back and try another server.`
-    );
+    // Autoplay blocked — user needs to tap play, which is fine
+    console.warn('Autoplay blocked:', e);
+  }
+
+  hideOverlay();
+}
+
+// ──────────────────────────────────────────────
+//  Retry
+// ──────────────────────────────────────────────
+async function retryStream() {
+  showLoading('Retrying…');
+  setBar(20);
+  try {
+    await loadStream(streamUrl, drmStr);
+  } catch(e) {
+    showError('Retry Failed', `Still can't load. ${e.message || ''}. Go back and try another server.`, true);
   }
 }
 
+// ──────────────────────────────────────────────
+//  Human-readable error messages
+// ──────────────────────────────────────────────
+function getErrorMessage(code, err) {
+  const c = Number(code);
+  if (c >= 1000 && c < 2000) return 'Network error — check your connection or try another server.';
+  if (c >= 2000 && c < 3000) return 'The stream manifest could not be parsed. Try another server.';
+  if (c >= 3000 && c < 4000) return 'Media decoding error — your device may not support this stream format.';
+  if (c >= 6000 && c < 7000) return 'DRM / license error — the stream is protected and your device could not unlock it.';
+  return err?.message || 'Unknown error. Go back and try another server.';
+}
+
+// ──────────────────────────────────────────────
+//  Start
+// ──────────────────────────────────────────────
 start();
 </script>
 </body>
