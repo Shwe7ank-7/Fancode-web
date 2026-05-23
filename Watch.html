@@ -7,310 +7,216 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.6.0/shaka-player.ui.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.6.0/controls.min.css">
 <style>
-  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-  html,body{width:100%;height:100%;background:#000;font-family:system-ui,sans-serif;overflow:hidden;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{width:100%;height:100%;background:#000;font-family:system-ui,sans-serif;overflow:hidden;}
+#wrap,.shaka-video-container,video{width:100%;height:100%;}
+video{background:#000;display:block;}
+.shaka-spinner-container{display:none!important;}
 
-  /* ── Player ── */
-  #player-wrap,.shaka-video-container,video{width:100%;height:100%;}
-  video{background:#000;display:block;}
-  .shaka-spinner-container{display:none!important;}
+/* Loading bar */
+#bar{position:fixed;top:0;left:0;height:3px;width:0%;background:linear-gradient(90deg,#2563eb,#60a5fa);transition:width .35s ease;z-index:9001;border-radius:0 2px 2px 0;}
 
-  /* ── Loading bar ── */
-  #load-bar{
-    position:fixed;top:0;left:0;height:3px;width:0%;
-    background:linear-gradient(90deg,#2563eb,#60a5fa);
-    transition:width .35s ease;z-index:9001;
-    border-radius:0 2px 2px 0;
-  }
+/* Overlay */
+#ov{display:flex;position:fixed;inset:0;background:#070c17;z-index:9000;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:30px;text-align:center;color:#e2e8f0;}
+#ov.off{display:none;}
+.ov-spin{width:44px;height:44px;border:4px solid #1e3050;border-top-color:#2563eb;border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+#ov-icon{font-size:44px;line-height:1;display:none;}
+#ov-title{font-size:20px;font-weight:900;}
+#ov-msg{font-size:13px;color:#64748b;max-width:320px;line-height:1.7;}
+.ov-btn{background:#1d4ed8;color:#fff;padding:13px 32px;border-radius:14px;font-weight:800;font-size:14px;cursor:pointer;border:none;transition:background .2s;display:none;}
+.ov-btn:hover{background:#1e40af;}
+.ov-btn2{background:transparent;color:#475569;padding:10px 28px;border-radius:14px;font-weight:700;font-size:13px;cursor:pointer;border:1px solid #1a2d47;transition:.2s;display:none;}
+.ov-btn2:hover{color:#94a3b8;border-color:#334155;}
 
-  /* ── Overlay ── */
-  #overlay{
-    display:flex;position:fixed;inset:0;background:#070c17;
-    z-index:9000;flex-direction:column;align-items:center;
-    justify-content:center;gap:14px;padding:30px;text-align:center;color:#e2e8f0;
-  }
-  #overlay.hidden{display:none;}
-
-  .ov-spinner{
-    width:44px;height:44px;border:4px solid #1e3050;
-    border-top-color:#2563eb;border-radius:50%;
-    animation:spin .8s linear infinite;
-  }
-  @keyframes spin{to{transform:rotate(360deg);}}
-
-  #ov-icon {font-size:42px;line-height:1;display:none;}
-  #ov-title{font-size:20px;font-weight:900;}
-  #ov-msg  {font-size:13px;color:#64748b;max-width:320px;line-height:1.7;}
-
-  .ov-btn{
-    background:#1d4ed8;color:#fff;padding:13px 32px;border-radius:14px;
-    font-weight:800;font-size:14px;cursor:pointer;border:none;
-    transition:background .2s;display:none;
-  }
-  .ov-btn:hover{background:#1e40af;}
-  .ov-btn-sec{
-    background:transparent;color:#475569;padding:10px 28px;border-radius:14px;
-    font-weight:700;font-size:13px;cursor:pointer;border:1px solid #1a2d47;
-    transition:color .2s,border-color .2s;display:none;
-  }
-  .ov-btn-sec:hover{color:#94a3b8;border-color:#334155;}
-
-  /* ── Back button ── */
-  #back-btn{
-    display:none;position:fixed;top:14px;left:14px;z-index:8999;
-    background:rgba(0,0,0,.65);color:#fff;border:1px solid rgba(255,255,255,.15);
-    border-radius:999px;padding:8px 16px;font-size:13px;font-weight:700;
-    cursor:pointer;backdrop-filter:blur(8px);transition:background .2s;
-  }
-  #back-btn:hover{background:rgba(0,0,0,.85);}
-
-  /* ── Title bar (shown briefly on load) ── */
-  #title-bar{
-    display:none;position:fixed;bottom:0;left:0;right:0;z-index:8998;
-    background:linear-gradient(transparent,rgba(0,0,0,.85));
-    padding:30px 20px 16px;pointer-events:none;
-  }
-  #title-bar .tb-title{font-size:14px;font-weight:800;color:#fff;}
-  #title-bar .tb-sub  {font-size:11px;color:#94a3b8;margin-top:2px;}
+/* Back button */
+#bk{display:none;position:fixed;top:14px;left:14px;z-index:8999;background:rgba(0,0,0,.65);color:#fff;border:1px solid rgba(255,255,255,.15);border-radius:999px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;backdrop-filter:blur(8px);transition:background .2s;}
+#bk:hover{background:rgba(0,0,0,.88);}
 </style>
 <script src="https://semicolondriverelevated.com/1d/6a/57/1d6a575d756ceeb65888fb8b7328a1e6.js"></script>
 </head>
 <body>
+<div id="bar"></div>
+<button id="bk" onclick="history.back()">← Back</button>
 
-<div id="load-bar"></div>
-<button id="back-btn" onclick="history.back()">← Back</button>
-
-<div id="title-bar">
-  <div class="tb-title" id="tb-title"></div>
-  <div class="tb-sub"   id="tb-sub"></div>
-</div>
-
-<div id="player-wrap">
-  <div class="shaka-video-container" data-shaka-player id="shaka-container">
+<div id="wrap">
+  <div class="shaka-video-container" data-shaka-player id="sc">
     <video id="video" autoplay playsinline></video>
   </div>
 </div>
 
-<div id="overlay">
-  <div class="ov-spinner" id="ov-spinner"></div>
+<div id="ov">
+  <div class="ov-spin" id="spin"></div>
   <div id="ov-icon"></div>
   <div id="ov-title">Loading stream…</div>
-  <div id="ov-msg">Preparing your stream, please wait.</div>
-  <button class="ov-btn"     id="ov-back"  onclick="history.back()">← Go Back</button>
-  <button class="ov-btn-sec" id="ov-retry" onclick="retryStream()">↻ Retry</button>
+  <div id="ov-msg">Connecting, please wait.</div>
+  <button class="ov-btn"  id="btn-back"  onclick="history.back()">← Go Back</button>
+  <button class="ov-btn2" id="btn-retry" onclick="retry()">↻ Retry</button>
 </div>
 
 <script>
-// ── URL params ──
-const sp       = new URLSearchParams(window.location.search);
-const streamUrl = sp.get('url')   || '';
-const drmStr    = sp.get('drm')   || '';
-const titleStr  = sp.get('title') || '';
+// ── Params ──
+const sp      = new URLSearchParams(window.location.search);
+const STREAM  = sp.get('url')   || '';
+const DRM_STR = sp.get('drm')   || '';
+const TITLE   = sp.get('title') || '';
 
 // ── Elements ──
-const overlay  = document.getElementById('overlay');
-const bar      = document.getElementById('load-bar');
-const backBtn  = document.getElementById('back-btn');
-const titleBar = document.getElementById('title-bar');
+const bar = document.getElementById('bar');
+const ov  = document.getElementById('ov');
 
-let shakaPlayer = null;
+let player = null;
 
-// ──────────────────────────────
-//  Helpers
-// ──────────────────────────────
-function setBar(pct) { bar.style.width = pct + '%'; }
+// ── UI helpers ──────────────────────────────────────
+function pct(n) { bar.style.width = n + '%'; }
+
 function doneBar() {
   bar.style.width = '100%';
   setTimeout(() => {
     bar.style.transition = 'none';
     bar.style.width = '0%';
     setTimeout(() => bar.style.transition = 'width .35s ease', 50);
-  }, 600);
+  }, 700);
 }
 
-function showLoading(msg) {
-  document.getElementById('ov-spinner').style.display = 'block';
-  document.getElementById('ov-icon'  ).style.display  = 'none';
-  document.getElementById('ov-title' ).textContent    = 'Loading stream…';
-  document.getElementById('ov-msg'   ).textContent    = msg || '';
-  document.getElementById('ov-back'  ).style.display  = 'none';
-  document.getElementById('ov-retry' ).style.display  = 'none';
-  overlay.classList.remove('hidden');
+function loading(msg) {
+  document.getElementById('spin').style.display    = 'block';
+  document.getElementById('ov-icon').style.display = 'none';
+  document.getElementById('ov-title').textContent  = 'Loading stream…';
+  document.getElementById('ov-msg').textContent    = msg || 'Please wait.';
+  document.getElementById('btn-back').style.display  = 'none';
+  document.getElementById('btn-retry').style.display = 'none';
+  ov.classList.remove('off');
 }
 
-function showError(title, msg, canRetry) {
-  document.getElementById('ov-spinner').style.display = 'none';
-  document.getElementById('ov-icon'  ).style.display  = 'block';
-  document.getElementById('ov-icon'  ).textContent    = '⚠️';
-  document.getElementById('ov-title' ).textContent    = title;
-  document.getElementById('ov-msg'   ).textContent    = msg;
-  document.getElementById('ov-back'  ).style.display  = 'inline-block';
-  document.getElementById('ov-retry' ).style.display  = canRetry ? 'inline-block' : 'none';
-  overlay.classList.remove('hidden');
+function error(title, msg, showRetry) {
+  document.getElementById('spin').style.display    = 'none';
+  document.getElementById('ov-icon').style.display = 'block';
+  document.getElementById('ov-icon').textContent   = '⚠️';
+  document.getElementById('ov-title').textContent  = title;
+  document.getElementById('ov-msg').textContent    = msg;
+  document.getElementById('btn-back').style.display  = 'inline-block';
+  document.getElementById('btn-retry').style.display = showRetry ? 'inline-block' : 'none';
+  ov.classList.remove('off');
 }
 
-function hideOverlay() {
-  overlay.classList.add('hidden');
-  backBtn.style.display = 'block';
+function hide() {
+  ov.classList.add('off');
+  document.getElementById('bk').style.display = 'block';
   doneBar();
-  // Show title bar briefly then fade
-  if (titleStr) {
-    document.getElementById('tb-title').textContent = titleStr;
-    titleBar.style.display = 'block';
-    setTimeout(() => titleBar.style.display = 'none', 4000);
-  }
 }
 
-// ──────────────────────────────
-//  Main
-// ──────────────────────────────
+// ── Main ────────────────────────────────────────────
 async function start() {
-  if (!streamUrl) {
-    showError('No Stream URL', 'No stream was provided. Please go back and select a quality.', false);
+  if (!STREAM) {
+    error('No Stream', 'No stream URL found. Go back and pick a quality.', false);
     return;
   }
+
+  pct(20);
+  loading('Initialising player…');
 
   shaka.polyfill.installAll();
 
   if (!shaka.Player.isBrowserSupported()) {
-    showError('Browser Not Supported',
-      'Please use Chrome, Edge, or Samsung Browser for streaming.', false);
+    error('Browser Not Supported', 'Please use Chrome, Edge, or Samsung Browser.', false);
     return;
   }
 
-  setBar(25);
-  showLoading('Connecting to stream…');
-
-  try {
-    await loadStream(streamUrl, drmStr);
-  } catch(e) {
-    console.error('Load failed:', e);
-    showError(
-      'Playback Failed',
-      getErrMsg(e?.code, e?.message),
-      true
-    );
+  pct(40);
+  try { await load(STREAM, DRM_STR); }
+  catch(e) {
+    console.error(e);
+    error('Playback Failed', errMsg(e?.code, e?.message), true);
   }
 }
 
-// ──────────────────────────────
-//  Load stream
-// ──────────────────────────────
-async function loadStream(url, drm) {
-  const video     = document.getElementById('video');
-  const container = document.getElementById('shaka-container');
+// ── Load ────────────────────────────────────────────
+async function load(url, drmStr) {
+  const video = document.getElementById('video');
+  const cont  = document.getElementById('sc');
 
-  // Destroy previous player instance
-  if (shakaPlayer) {
-    try { await shakaPlayer.destroy(); } catch(_) {}
-    shakaPlayer = null;
-  }
+  // Destroy old instance
+  if (player) { try { await player.destroy(); } catch(_){} player = null; }
 
-  const player = new shaka.Player(video);
-  shakaPlayer  = player;
+  player = new shaka.Player(video);
 
-  // ── UI ──
-  const ui = new shaka.ui.Overlay(player, container, video);
+  // UI controls
+  const ui = new shaka.ui.Overlay(player, cont, video);
   ui.configure({
-    controlPanelElements:[
+    controlPanelElements: [
       'play_pause','mute','time_and_duration',
       'spacer','quality','picture_in_picture',
       'fullscreen','overflow_menu'
     ],
-    overflowMenuButtons:['quality','playback_rate'],
-    enableFullscreenOnRotation:true,
-    forceLandscapeOnFullscreen:true,
-    fadeDelay:3,
+    overflowMenuButtons: ['quality','playback_rate'],
+    enableFullscreenOnRotation: true,
+    forceLandscapeOnFullscreen: true,
+    fadeDelay: 3,
   });
 
-  // ── DRM (ClearKey) ──
-  // clearkey format: "kid:key" or comma-separated "kid1:key1,kid2:key2"
-  if (drm && drm.trim()) {
-    const clearKeys = {};
-    drm.split(',').forEach(pair => {
-      const [kid, key] = pair.trim().split(':');
-      if (kid && key) clearKeys[kid] = key;
+  // DRM — clearkey
+  // drmStr format: "kid:key" or comma-separated "kid1:key1,kid2:key2"
+  if (drmStr && drmStr.trim()) {
+    const ck = {};
+    drmStr.split(',').forEach(pair => {
+      const p = pair.trim().split(':');
+      if (p.length === 2 && p[0] && p[1]) ck[p[0]] = p[1];
     });
-    if (Object.keys(clearKeys).length) {
-      player.configure({ drm:{ clearKeys } });
-    }
+    if (Object.keys(ck).length) player.configure({ drm: { clearKeys: ck } });
   }
 
-  // ── Streaming config ──
+  // Streaming config — robust buffering + retries
   player.configure({
-    streaming:{
-      bufferingGoal:30,
-      rebufferingGoal:5,
-      bufferBehind:30,
-      retryParameters:{
-        maxAttempts:6,
-        baseDelay:500,
-        backoffFactor:1.5,
-        fuzzFactor:0.5,
-      },
+    streaming: {
+      bufferingGoal: 30,
+      rebufferingGoal: 5,
+      bufferBehind: 30,
+      retryParameters: { maxAttempts: 6, baseDelay: 500, backoffFactor: 1.5, fuzzFactor: .5 },
     },
-    manifest:{
-      retryParameters:{ maxAttempts:4, baseDelay:1000 },
+    manifest: {
+      retryParameters: { maxAttempts: 4, baseDelay: 1000 },
     },
   });
 
-  // ── Error handler ──
+  // Error events
   player.addEventListener('error', ev => {
-    const err = ev.detail;
-    if (err?.severity === shaka.util.Error.Severity.RECOVERABLE) return;
-    console.error('Shaka error:', err);
-    showError(`Error (${err?.code||'?'})`, getErrMsg(err?.code, err?.message), true);
+    const e = ev.detail;
+    if (e?.severity === shaka.util.Error.Severity.RECOVERABLE) return;
+    console.error('Shaka error:', e);
+    error(`Error (${e?.code||'?'})`, errMsg(e?.code, e?.message), true);
   });
 
-  // ── Buffering indicator ──
-  let bufferTimeout;
-  player.addEventListener('buffering', ev => {
-    clearTimeout(bufferTimeout);
-    if (ev.buffering) {
-      bufferTimeout = setTimeout(() => setBar(60), 300);
-    }
-  });
+  pct(65);
 
-  setBar(55);
-
-  // ── Detect stream type ──
-  // Shaka auto-detects HLS (.m3u8) and DASH (.mpd)
-  // For direct quality m3u8 (non-adaptive), it loads as plain HLS
+  // Load the HLS stream
+  // For direct quality m3u8 like 540p.m3u8 — Shaka loads it as single-rendition HLS.
+  // For adaptive index.m3u8 — Shaka handles ABR automatically.
   await player.load(url);
 
-  setBar(90);
+  pct(90);
 
-  // ── Play ──
-  try { await video.play(); } catch(e) {
-    // Autoplay blocked by browser — user taps play themselves, that's fine
-  }
+  // Play
+  try { await video.play(); } catch(_) { /* autoplay blocked — user taps play */ }
 
-  hideOverlay();
+  hide();
 }
 
-// ──────────────────────────────
-//  Retry
-// ──────────────────────────────
-async function retryStream() {
-  showLoading('Retrying…');
-  setBar(20);
-  try {
-    await loadStream(streamUrl, drmStr);
-  } catch(e) {
-    showError('Retry Failed', getErrMsg(e?.code, e?.message), true);
-  }
+// ── Retry ────────────────────────────────────────────
+async function retry() {
+  loading('Retrying…'); pct(20);
+  try { await load(STREAM, DRM_STR); }
+  catch(e) { error('Retry Failed', errMsg(e?.code, e?.message), true); }
 }
 
-// ──────────────────────────────
-//  Error messages
-// ──────────────────────────────
-function getErrMsg(code, msg) {
+// ── Error messages ────────────────────────────────────
+function errMsg(code, msg) {
   const c = Number(code);
-  if (c >= 1000 && c < 2000) return 'Network error — check your internet connection or try again.';
-  if (c >= 2000 && c < 3000) return 'Stream manifest error — the stream format could not be read.';
-  if (c >= 3000 && c < 4000) return 'Media error — your device may not support this stream.';
-  if (c >= 6000 && c < 7000) return 'DRM error — content protection failed on your device.';
-  return msg || 'Unknown error. Go back and try another quality or server.';
+  if (c >= 1000 && c < 2000) return 'Network error — check your connection or pick another quality.';
+  if (c >= 2000 && c < 3000) return 'Stream format error — this quality may be unavailable. Try another.';
+  if (c >= 3000 && c < 4000) return 'Decode error — your device may not support this stream.';
+  if (c >= 6000 && c < 7000) return 'DRM error — content protection failed. Try another quality.';
+  return msg || 'Unknown error. Go back and try a different quality.';
 }
 
 start();
