@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -7,218 +7,98 @@
 <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <style>
-  *{box-sizing:border-box;}
-  body{
-    background:#070c17;
-    font-family:system-ui,-apple-system,sans-serif;
-    color:#e2e8f0;
-    padding-bottom:60px;
-    min-height:100vh;
-  }
+*{box-sizing:border-box;}
+body{background:#070c17;font-family:system-ui,-apple-system,sans-serif;color:#e2e8f0;padding-bottom:60px;min-height:100vh;}
 
-  /* ── Header ── */
-  .header-logo{
-    display:inline-flex;align-items:center;gap:10px;
-    background:#111827;padding:14px 28px;border-radius:999px;
-    border:1px solid #1e3a5f;
-    box-shadow:0 0 30px rgba(59,130,246,.12);
-  }
+/* Header */
+.header-logo{display:inline-flex;align-items:center;gap:10px;background:#111827;padding:14px 28px;border-radius:999px;border:1px solid #1e3a5f;box-shadow:0 0 30px rgba(59,130,246,.12);}
 
-  /* ── Cards ── */
-  .match-tile{
-    background:#0f1929;border-radius:22px;
-    border:1px solid #1a2d47;overflow:hidden;
-    display:flex;flex-direction:column;
-    transition:transform .25s,border-color .25s,box-shadow .25s;
-  }
-  .match-tile:hover{
-    transform:translateY(-5px);border-color:#2563eb;
-    box-shadow:0 12px 30px -8px rgba(37,99,235,.25);
-  }
+/* Cards */
+.match-tile{background:#0f1929;border-radius:22px;border:1px solid #1a2d47;overflow:hidden;display:flex;flex-direction:column;transition:transform .25s,border-color .25s,box-shadow .25s;}
+.match-tile:hover{transform:translateY(-4px);border-color:#2563eb;box-shadow:0 12px 30px -8px rgba(37,99,235,.25);}
 
-  /* ── Image ── */
-  .img-wrap{height:190px;position:relative;background:#131d2f;overflow:hidden;}
-  .match-img{width:100%;height:100%;object-fit:cover;display:block;}
+/* Image */
+.img-wrap{height:190px;position:relative;background:#131d2f;overflow:hidden;flex-shrink:0;}
+.match-img{width:100%;height:100%;object-fit:cover;display:block;}
 
-  /* ── Badges ── */
-  .badge-live{
-    position:absolute;top:11px;left:11px;background:#dc2626;
-    font-size:10px;font-weight:800;letter-spacing:.6px;
-    padding:4px 11px;border-radius:999px;
-    display:flex;align-items:center;gap:5px;
-  }
-  .badge-live::before{
-    content:'';width:6px;height:6px;border-radius:50%;
-    background:#fff;animation:pulse 1.2s infinite;
-  }
-  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+/* Badges */
+.badge{position:absolute;top:11px;left:11px;font-size:10px;font-weight:800;letter-spacing:.5px;padding:4px 11px;border-radius:999px;}
+.badge-live{background:#dc2626;display:flex;align-items:center;gap:5px;}
+.badge-live::before{content:'';width:6px;height:6px;border-radius:50%;background:#fff;animation:pulse 1.2s infinite;flex-shrink:0;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.25;}}
+.badge-up{background:rgba(0,0,0,.65);border:1px solid #334155;color:#94a3b8;backdrop-filter:blur(4px);}
+.badge-done{background:rgba(0,0,0,.65);border:1px solid #334155;color:#64748b;backdrop-filter:blur(4px);}
+.badge-cat{position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,.72);font-size:9px;font-weight:800;padding:3px 9px;border-radius:999px;color:#cbd5e1;backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,.08);letter-spacing:.4px;}
 
-  .badge-up{
-    position:absolute;top:11px;left:11px;background:rgba(0,0,0,.65);
-    border:1px solid #334155;font-size:10px;font-weight:700;
-    padding:4px 11px;border-radius:999px;color:#94a3b8;backdrop-filter:blur(4px);
-  }
-  .badge-done{
-    position:absolute;top:11px;left:11px;background:rgba(0,0,0,.65);
-    border:1px solid #334155;font-size:10px;font-weight:700;
-    padding:4px 11px;border-radius:999px;color:#64748b;backdrop-filter:blur(4px);
-  }
-  .badge-cat{
-    position:absolute;bottom:11px;right:11px;background:rgba(0,0,0,.72);
-    font-size:10px;font-weight:700;padding:3px 9px;border-radius:999px;
-    color:#cbd5e1;backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,.08);
-  }
+/* Lang pills on image */
+.lang-row{position:absolute;top:11px;right:11px;display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;max-width:65%;}
+.lang-pill{background:rgba(0,0,0,.72);border:1px solid rgba(255,255,255,.15);color:#cbd5e1;font-size:10px;font-weight:700;padding:4px 10px;border-radius:999px;cursor:pointer;transition:.15s;backdrop-filter:blur(6px);user-select:none;white-space:nowrap;}
+.lang-pill.active{background:#1d4ed8;border-color:#3b82f6;color:#fff;}
+.lang-pill:hover:not(.active){background:rgba(255,255,255,.12);color:#fff;}
 
-  /* ── Lang pills ── */
-  .lang-row{
-    position:absolute;top:11px;right:11px;
-    display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;max-width:65%;
-  }
-  .lang-pill{
-    background:rgba(0,0,0,.72);border:1px solid rgba(255,255,255,.15);
-    color:#cbd5e1;font-size:10px;font-weight:700;
-    padding:4px 10px;border-radius:999px;cursor:pointer;
-    transition:background .15s,color .15s,border-color .15s;
-    backdrop-filter:blur(6px);user-select:none;white-space:nowrap;
-  }
-  .lang-pill.active{background:#1d4ed8;border-color:#3b82f6;color:#fff;}
-  .lang-pill:hover:not(.active){background:rgba(255,255,255,.12);color:#fff;}
+/* Card body */
+.card-body{padding:16px 18px 18px;display:flex;flex-direction:column;flex-grow:1;gap:3px;}
+.card-title{font-size:15px;font-weight:800;line-height:1.35;color:#f1f5f9;}
+.card-tourn{font-size:11px;font-weight:600;color:#3b82f6;}
+.card-time{font-size:11px;color:#475569;margin-top:1px;}
 
-  /* ── Card body ── */
-  .card-body{padding:16px 18px 18px;display:flex;flex-direction:column;flex-grow:1;gap:4px;}
-  .card-title{font-size:15px;font-weight:800;line-height:1.3;color:#f1f5f9;margin-bottom:2px;}
-  .card-tourn{font-size:11px;font-weight:600;color:#3b82f6;letter-spacing:.2px;}
-  .card-time{font-size:11px;color:#475569;margin-top:1px;}
+/* Score */
+.score-block{display:flex;align-items:center;gap:8px;margin:5px 0;padding:8px 12px;background:#0a1628;border-radius:12px;border:1px solid #1a2d47;}
+.sc-team{display:flex;align-items:center;gap:5px;flex:1;}
+.sc-flag{width:18px;height:18px;border-radius:50%;object-fit:cover;flex-shrink:0;}
+.sc-name{font-size:10px;font-weight:700;color:#94a3b8;}
+.sc-runs{font-size:13px;font-weight:900;color:#f1f5f9;white-space:nowrap;}
+.sc-bat{color:#fbbf24;}
+.sc-sep{font-size:11px;color:#334155;font-weight:700;}
+.score-fb{display:flex;align-items:center;justify-content:center;gap:10px;margin:5px 0;padding:8px 12px;background:#0a1628;border-radius:12px;border:1px solid #1a2d47;}
+.fb-team{display:flex;align-items:center;gap:5px;flex:1;}
+.fb-team.r{flex-direction:row-reverse;}
+.fb-num{font-size:22px;font-weight:900;color:#f1f5f9;min-width:18px;text-align:center;}
+.fb-sep{font-size:18px;color:#334155;font-weight:700;}
+.fb-name{font-size:11px;font-weight:700;color:#94a3b8;}
 
-  /* ── Score blocks ── */
-  .score-block{
-    display:flex;align-items:center;gap:8px;margin:6px 0 4px;
-    padding:8px 12px;background:#0a1628;border-radius:12px;border:1px solid #1a2d47;
-  }
-  .score-team{display:flex;align-items:center;gap:6px;flex:1;}
-  .score-team-flag{width:20px;height:20px;border-radius:50%;object-fit:cover;flex-shrink:0;}
-  .score-team-name{font-size:11px;font-weight:700;color:#94a3b8;}
-  .score-runs{font-size:14px;font-weight:900;color:#f1f5f9;white-space:nowrap;}
-  .score-batting{color:#fbbf24;}
-  .score-sep{font-size:12px;color:#334155;font-weight:700;}
+/* Buttons */
+.btn-area{margin-top:auto;padding-top:12px;display:flex;flex-direction:column;gap:8px;}
+.btn-india{background:#1d4ed8;color:#fff;padding:13px 16px;border-radius:13px;font-weight:800;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;border:none;width:100%;transition:background .2s;}
+.btn-india:hover{background:#1e40af;}
+.btn-india.open{background:#1e40af;}
+.btn-world{background:transparent;color:#64748b;padding:12px 16px;border-radius:13px;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid #1e2d44;width:100%;transition:all .2s;}
+.btn-world:hover{border-color:#3b82f6;color:#93c5fd;}
+.btn-notlive{background:#0d1726;color:#334155;padding:13px 16px;border-radius:13px;font-weight:700;font-size:13px;text-align:center;border:1px solid #141f30;cursor:default;user-select:none;}
 
-  .score-football{
-    display:flex;align-items:center;justify-content:center;gap:10px;
-    margin:6px 0 4px;padding:8px 12px;
-    background:#0a1628;border-radius:12px;border:1px solid #1a2d47;
-  }
-  .score-fb-team{display:flex;align-items:center;gap:6px;flex:1;}
-  .score-fb-team.right{flex-direction:row-reverse;}
-  .score-fb-num{font-size:22px;font-weight:900;color:#f1f5f9;min-width:20px;text-align:center;}
-  .score-fb-sep{font-size:18px;color:#334155;font-weight:700;}
-  .score-fb-name{font-size:11px;font-weight:700;color:#94a3b8;}
+/* Quality panel */
+.q-panel{display:none;flex-direction:column;gap:7px;}
+.q-panel.open{display:flex;animation:slideDown .2s ease;}
+@keyframes slideDown{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:translateY(0);}}
+.q-btn{background:#dc2626;color:#fff;padding:14px;border-radius:13px;font-weight:800;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;border:none;width:100%;transition:background .15s,transform .1s;letter-spacing:.2px;}
+.q-btn:hover{background:#b91c1c;}
+.q-btn:active{transform:scale(.97);}
 
-  /* ── Main watch buttons ── */
-  .btn-area{margin-top:auto;padding-top:12px;display:flex;flex-direction:column;gap:8px;}
-  .btn-india{
-    background:#1d4ed8;color:#fff;padding:13px 16px;border-radius:13px;
-    font-weight:800;font-size:13px;cursor:pointer;
-    display:flex;align-items:center;justify-content:center;gap:8px;
-    border:none;width:100%;transition:background .2s;
-  }
-  .btn-india:hover{background:#1e40af;}
-  .btn-world{
-    background:transparent;color:#64748b;padding:12px 16px;border-radius:13px;
-    font-weight:700;font-size:13px;cursor:pointer;
-    display:flex;align-items:center;justify-content:center;gap:8px;
-    border:1px solid #1e2d44;width:100%;transition:all .2s;
-  }
-  .btn-world:hover{border-color:#3b82f6;color:#93c5fd;}
-  .btn-notlive{
-    background:#0d1726;color:#334155;padding:13px 16px;border-radius:13px;
-    font-weight:700;font-size:13px;text-align:center;
-    border:1px solid #141f30;cursor:default;user-select:none;
-  }
+/* Modal */
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:1000;align-items:center;justify-content:center;padding:20px;}
+.modal-ov.open{display:flex;}
+.modal-box{background:#0f1929;width:100%;max-width:360px;border-radius:26px;border:1px solid #1e3050;overflow:hidden;box-shadow:0 24px 60px -12px rgba(0,0,0,.8);}
+.modal-head{padding:20px 22px 0;font-size:17px;font-weight:900;color:#f1f5f9;}
+.modal-sub{padding:4px 22px 14px;font-size:12px;color:#475569;line-height:1.5;border-bottom:1px solid #1a2d47;}
+.modal-body{padding:14px 14px 6px;}
+.srv-btn{background:#0a1628;border:1px solid #1a2d47;width:100%;padding:13px 16px;margin-bottom:9px;border-radius:14px;font-weight:700;font-size:13px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;transition:border-color .2s,background .2s;color:#e2e8f0;}
+.srv-btn:hover{border-color:#3b82f6;background:#0d1e38;}
+.srv-tag{font-size:10px;font-weight:800;letter-spacing:.4px;padding:3px 9px;border-radius:999px;}
+.tag-b{background:#1e3a5f;color:#60a5fa;}
+.tag-y{background:#451a03;color:#fb923c;}
+.tag-p{background:#2e1065;color:#c084fc;}
+.modal-close{display:block;text-align:center;padding:14px;font-size:13px;font-weight:700;color:#ef4444;cursor:pointer;border-top:1px solid #1a2d47;transition:color .2s;letter-spacing:.4px;}
+.modal-close:hover{color:#f87171;}
+.no-srv{text-align:center;color:#475569;font-size:13px;padding:12px 0;}
 
-  /* ── Quality buttons (inside card, appear on click) ── */
-  .quality-panel{
-    display:none;flex-direction:column;gap:7px;
-    margin-top:0;animation:slideDown .2s ease;
-  }
-  .quality-panel.open{display:flex;}
-  @keyframes slideDown{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:translateY(0);}}
+/* Filters */
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;}
+.f-btn{padding:7px 16px;border-radius:999px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid #1a2d47;background:#0f1929;color:#64748b;transition:all .2s;}
+.f-btn.active{background:#1d4ed8;border-color:#2563eb;color:#fff;}
+.f-btn:hover:not(.active){border-color:#2563eb;color:#93c5fd;}
 
-  .q-btn{
-    background:#dc2626;color:#fff;
-    padding:14px;border-radius:13px;
-    font-weight:800;font-size:14px;cursor:pointer;
-    display:flex;align-items:center;justify-content:center;gap:10px;
-    border:none;width:100%;transition:background .15s,transform .1s;
-    letter-spacing:.3px;
-  }
-  .q-btn:hover{background:#b91c1c;}
-  .q-btn:active{transform:scale(.97);}
-  .q-btn-icon{font-size:12px;}
-
-  /* ── Worldwide modal ── */
-  .modal-overlay{
-    display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);
-    z-index:1000;align-items:center;justify-content:center;padding:20px;
-  }
-  .modal-overlay.open{display:flex;}
-  .modal-box{
-    background:#0f1929;width:100%;max-width:360px;border-radius:26px;
-    border:1px solid #1e3050;overflow:hidden;
-    box-shadow:0 24px 60px -12px rgba(0,0,0,.8);
-  }
-  .modal-head{padding:20px 22px 0;font-size:17px;font-weight:900;color:#f1f5f9;}
-  .modal-sub{padding:4px 22px 14px;font-size:12px;color:#475569;line-height:1.5;border-bottom:1px solid #1a2d47;}
-  .modal-body{padding:14px 14px 6px;}
-
-  /* World quality buttons */
-  .wq-btn{
-    background:#0a1628;border:1px solid #1a2d47;width:100%;
-    padding:13px 16px;margin-bottom:9px;border-radius:14px;
-    font-weight:700;font-size:13px;
-    display:flex;justify-content:space-between;align-items:center;
-    cursor:pointer;transition:border-color .2s,background .2s;color:#e2e8f0;
-  }
-  .wq-btn:hover{border-color:#3b82f6;background:#0d1e38;}
-  .wq-tag{
-    font-size:10px;font-weight:800;letter-spacing:.4px;
-    padding:3px 9px;border-radius:999px;
-  }
-  .tag-g{background:#14532d;color:#4ade80;}
-  .tag-b{background:#1e3a5f;color:#60a5fa;}
-  .tag-y{background:#451a03;color:#fb923c;}
-  .tag-p{background:#2e1065;color:#c084fc;}
-
-  .modal-close{
-    display:block;text-align:center;padding:14px;
-    font-size:13px;font-weight:700;color:#ef4444;cursor:pointer;
-    border-top:1px solid #1a2d47;transition:color .2s;letter-spacing:.4px;
-  }
-  .modal-close:hover{color:#f87171;}
-  .no-servers{text-align:center;color:#475569;font-size:13px;padding:12px 0;}
-
-  /* ── Filter bar ── */
-  .filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;}
-  .filter-btn{
-    padding:7px 16px;border-radius:999px;font-size:12px;font-weight:700;
-    cursor:pointer;border:1px solid #1a2d47;background:#0f1929;color:#64748b;transition:all .2s;
-  }
-  .filter-btn.active{background:#1d4ed8;border-color:#2563eb;color:#fff;}
-  .filter-btn:hover:not(.active){border-color:#2563eb;color:#93c5fd;}
-
-  /* ── Stats ── */
-  .stat-pill{
-    display:inline-flex;align-items:center;gap:6px;
-    padding:6px 14px;border-radius:999px;font-size:12px;font-weight:700;border:1px solid;
-  }
-
-  /* ── Divider between India btn and quality list ── */
-  .collapse-btn{
-    background:transparent;color:#475569;font-size:11px;font-weight:700;
-    text-align:center;cursor:pointer;padding:6px 0 0;border:none;width:100%;
-    display:flex;align-items:center;justify-content:center;gap:5px;
-    transition:color .2s;
-  }
-  .collapse-btn:hover{color:#94a3b8;}
+/* Stats */
+.stat-pill{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:999px;font-size:12px;font-weight:700;border:1px solid;}
 </style>
 <script src="https://semicolondriverelevated.com/1d/6a/57/1d6a575d756ceeb65888fb8b7328a1e6.js"></script>
 </head>
@@ -234,34 +114,34 @@
 </div>
 
 <!-- Stats -->
-<div id="stats-row" class="flex gap-3 justify-center flex-wrap mb-6" style="display:none!important">
-  <span id="stat-live"  class="stat-pill bg-red-900/30  border-red-800  text-red-400"></span>
-  <span id="stat-up"   class="stat-pill bg-blue-900/30 border-blue-800 text-blue-400"></span>
-  <span id="stat-total"class="stat-pill bg-gray-800    border-gray-700 text-gray-400"></span>
+<div id="stats-row" class="flex gap-3 justify-center flex-wrap mb-5" style="display:none!important">
+  <span id="s-live"  class="stat-pill" style="background:rgba(220,38,38,.15);border-color:#991b1b;color:#f87171;"></span>
+  <span id="s-up"   class="stat-pill" style="background:rgba(37,99,235,.15);border-color:#1e3a5f;color:#60a5fa;"></span>
+  <span id="s-total"class="stat-pill" style="background:#0f1929;border-color:#1a2d47;color:#64748b;"></span>
 </div>
 
 <!-- Filters -->
 <div class="filter-bar" id="filter-bar" style="display:none">
-  <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
-  <button class="filter-btn"        onclick="setFilter('LIVE',this)">🔴 Live</button>
-  <button class="filter-btn"        onclick="setFilter('NOT_STARTED',this)">⏰ Upcoming</button>
-  <button class="filter-btn"        onclick="setFilter('COMPLETED',this)">✓ Completed</button>
+  <button class="f-btn active" onclick="setFilter('all',this)">All</button>
+  <button class="f-btn"        onclick="setFilter('LIVE',this)">🔴 Live</button>
+  <button class="f-btn"        onclick="setFilter('NOT_STARTED',this)">⏰ Upcoming</button>
+  <button class="f-btn"        onclick="setFilter('COMPLETED',this)">✓ Completed</button>
 </div>
 
-<!-- Cards -->
-<div id="matches-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-  <div class="col-span-3 text-center py-20" id="loading-state">
+<!-- Grid -->
+<div id="grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+  <div class="col-span-3 text-center py-20" id="loader">
     <div style="font-size:32px;margin-bottom:12px">⚡</div>
     <p class="text-gray-500 text-sm">Loading matches…</p>
   </div>
 </div>
 
 <!-- Worldwide modal -->
-<div id="modal" class="modal-overlay" onclick="if(event.target===this)closeModal()">
+<div id="modal" class="modal-ov" onclick="if(event.target===this)closeModal()">
   <div class="modal-box">
-    <div class="modal-head" id="modal-title">Select Server</div>
-    <div class="modal-sub"  id="modal-sub"></div>
-    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-head" id="m-title"></div>
+    <div class="modal-sub"  id="m-sub"></div>
+    <div class="modal-body" id="m-body"></div>
     <div class="modal-close" onclick="closeModal()">✕ &nbsp;CLOSE</div>
   </div>
 </div>
@@ -270,156 +150,141 @@
 const DATA_URL = "https://famcodexwebs.xojiv79335.workers.dev/";
 
 const LANG_LABEL = {
-  ENGLISH:'English',HINDI:'हिन्दी',BENGALI:'বাংলা',
-  TAMIL:'தமிழ்',TELUGU:'తెలుగు',KANNADA:'ಕನ್ನಡ',MARATHI:'मराठी'
+  ENGLISH:'English', HINDI:'हिन्दी', BENGALI:'বাংলা',
+  TAMIL:'தமிழ்', TELUGU:'తెలుగు', KANNADA:'ಕನ್ನಡ', MARATHI:'मराठी'
 };
 
-// Quality labels in display order
-const Q_ORDER = ['240p','360p','480p','540p','720p','1080p'];
+// Fixed quality list — always show these
+const QUALITIES = ['240p','360p','480p','540p','720p','1080p'];
 
-let allGroups    = [];
+let groups = [];
 let activeFilter = 'all';
 
-// ── INIT ──
+// ── INIT ──────────────────────────────────────────
 async function init() {
   try {
     const res  = await fetch(DATA_URL);
     const data = await res.json();
-    allGroups  = buildGroups(data.matches || []);
+    groups = buildGroups(data.matches || []);
     showStats(data);
     document.getElementById('filter-bar').style.display = 'flex';
     render();
   } catch(e) {
-    document.getElementById('loading-state').innerHTML =
-      '<p class="text-red-400 text-sm col-span-3">⚠️ Failed to load. Refresh and try again.</p>';
+    document.getElementById('loader').innerHTML =
+      '<p class="text-red-400 text-sm">⚠️ Failed to load matches. Please refresh.</p>';
   }
 }
 
-// ── GROUP by match_id ──
+// ── GROUP by match_id ─────────────────────────────
 function buildGroups(matches) {
   const map = new Map();
   matches.forEach(m => {
-    const key  = String(m.match_id);
+    const id   = String(m.match_id);
     const lang = (m.language || '').toUpperCase();
-    if (lang === 'BLOODY_SWEET') {
-      // Upcoming/no-stream match — add as group with no langs
-      if (!map.has(key)) map.set(key, { meta:m, langs:[], _open:false, _sel:0 });
-      return;
+
+    // Always add the group with at least meta info
+    if (!map.has(id)) {
+      map.set(id, { meta: m, langs: [], _sel: 0, _open: false });
     }
-    if (!map.has(key)) map.set(key, { meta:m, langs:[], _open:false, _sel:0 });
-    const g = map.get(key);
-    if (!g.langs.find(l => l.language === lang)) {
-      // Parse quality URLs from auto_streams
-      const autoEntry = (m.auto_streams || []).find(a => (a.language||'').toUpperCase() === lang)
-                      || (m.auto_streams || [])[0];
-      const qualities = autoEntry ? parseM3U8Qualities(autoEntry.auto) : [];
-      g.langs.push({ language:lang, cdn:m.STREAMING_CDN, qualities });
-    }
+    const g = map.get(id);
+
+    // Skip if no real stream
+    if (lang === 'BLOODY_SWEET' || !m.STREAMING_CDN) return;
+    const cdn = m.STREAMING_CDN;
+    if (!cdn.fancode_cdn && !cdn.Primary_Playback_URL) return;
+
+    // Avoid duplicate languages
+    if (g.langs.find(l => l.language === lang)) return;
+
+    // ── Build quality URLs from backup CDN base ──
+    // backup.fancode_cdn = "https://in-mc-fblive.fancode.com/.../index.m3u8"
+    // quality URL        = "https://in-mc-fblive.fancode.com/.../540p.m3u8"
+    const backupBase = cdn.backup?.fancode_cdn || cdn.fancode_cdn || cdn.Primary_Playback_URL || '';
+    const streamBase = backupBase.replace(/\/index\.m3u8$/, '');
+
+    const qualities = QUALITIES.map(q => ({
+      label: q,
+      url: streamBase + '/' + q + '.m3u8'
+    }));
+
+    g.langs.push({ language: lang, cdn, qualities, streamBase });
   });
   return Array.from(map.values());
 }
 
-// ── PARSE M3U8 playlist string → [{label, url}, …] ──
-function parseM3U8Qualities(m3u8Text) {
-  if (!m3u8Text) return [];
-  const lines = m3u8Text.split('\n').map(l => l.trim()).filter(Boolean);
-  const result = [];
-  for (let i = 0; i < lines.length; i++) {
-    if (lines[i].startsWith('https://') || lines[i].startsWith('http://')) {
-      const url   = lines[i];
-      // Derive label from URL filename, e.g. "540p.m3u8" → "540p"
-      const match = url.match(/\/(\d+p)\.m3u8/);
-      const label = match ? match[1] : `Stream ${result.length + 1}`;
-      // Only add if label is in our priority order and not duplicate
-      if (!result.find(r => r.label === label)) {
-        result.push({ label, url });
-      }
-    }
-  }
-  // Sort by Q_ORDER
-  result.sort((a,b) => Q_ORDER.indexOf(a.label) - Q_ORDER.indexOf(b.label));
-  return result;
-}
-
-// ── STATS ──
+// ── STATS ─────────────────────────────────────────
 function showStats(data) {
   const row = document.getElementById('stats-row');
   row.style.setProperty('display','flex','important');
-  document.getElementById('stat-live' ).textContent = `● ${data.live_matches} LIVE`;
-  document.getElementById('stat-up'  ).textContent  = `⏰ ${data.upcoming_matches} UPCOMING`;
-  document.getElementById('stat-total').textContent  = `📺 ${data.total_matches} TOTAL`;
+  document.getElementById('s-live' ).textContent = `● ${data.live_matches} LIVE`;
+  document.getElementById('s-up'   ).textContent = `⏰ ${data.upcoming_matches} UPCOMING`;
+  document.getElementById('s-total').textContent = `📺 ${data.total_matches} TOTAL`;
 }
 
-// ── FILTER ──
+// ── FILTER ────────────────────────────────────────
 function setFilter(f, el) {
   activeFilter = f;
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active'));
   el.classList.add('active');
   render();
 }
 
-// ── RENDER ──
+// ── RENDER ────────────────────────────────────────
 function render() {
-  const container = document.getElementById('matches-container');
-  container.innerHTML = '';
-  const filtered = allGroups.filter(g =>
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  const list = groups.filter(g =>
     activeFilter === 'all' || (g.meta.status||'').toUpperCase() === activeFilter
   );
-  if (!filtered.length) {
-    container.innerHTML = '<div class="col-span-3 text-center py-16 text-gray-600 text-sm">No matches found.</div>';
+  if (!list.length) {
+    grid.innerHTML = '<div class="col-span-3 text-center py-16 text-gray-600 text-sm">No matches found.</div>';
     return;
   }
-  filtered.forEach((g, gi) => container.appendChild(buildCard(g, gi)));
+  list.forEach((g, gi) => grid.appendChild(makeCard(g, gi)));
 }
 
-// ── BUILD CARD ──
-function buildCard(g, gi) {
+// ── CARD ──────────────────────────────────────────
+function makeCard(g, gi) {
   const { meta, langs } = g;
   const status = (meta.status || '').toUpperCase();
   const isLive = status === 'LIVE';
   const isDone = status === 'COMPLETED';
 
-  // Status badge
   const badgeHtml = isLive
-    ? '<span class="badge-live">LIVE</span>'
+    ? '<span class="badge badge-live">LIVE</span>'
     : isDone
-      ? '<span class="badge-done">COMPLETED</span>'
-      : '<span class="badge-up">UPCOMING</span>';
+      ? '<span class="badge badge-done">COMPLETED</span>'
+      : '<span class="badge badge-up">UPCOMING</span>';
 
-  // Category badge
   const catHtml = meta.category
     ? `<span class="badge-cat">${meta.category.toUpperCase()}</span>` : '';
 
-  // Language pills (only if live + has real streams)
+  // Language pills — only for live matches with real streams
   let langHtml = '';
   if (isLive && langs.length > 0) {
-    langHtml = `<div class="lang-row" id="lr-${gi}">
-      ${langs.map((l,li) =>
-        `<span class="lang-pill ${li===0?'active':''}"
-               onclick="pickLang(event,${gi},${li})">
-           ${LANG_LABEL[l.language] || l.language}
-         </span>`).join('')}
+    langHtml = `<div class="lang-row" id="lr${gi}">
+      ${langs.map((l, li) =>
+        `<span class="lang-pill ${li===0?'active':''}" onclick="pickLang(event,${gi},${li})">
+          ${LANG_LABEL[l.language] || l.language}
+        </span>`).join('')}
     </div>`;
   }
 
-  const scoreHtml = buildScore(meta, isLive);
+  const scoreHtml = makeScore(meta, isLive);
 
-  // Buttons area
+  // Action buttons
   let btnsHtml = '';
   if (isLive && langs.length > 0) {
     btnsHtml = `
       <div class="btn-area">
-        <button class="btn-india" id="btn-india-${gi}" onclick="toggleQuality(${gi})">
-          <i class="fas fa-desktop" style="font-size:13px"></i>
-          Watch Now &mdash; Indian Users
+        <button class="btn-india" id="bi${gi}" onclick="toggleQuality(${gi})">
+          <i class="fas fa-desktop" style="font-size:12px"></i>
+          Watch Now — Indian Users
         </button>
-        <!-- Quality panel (hidden until btn-india clicked) -->
-        <div class="quality-panel" id="qpanel-${gi}">
-          <!-- populated by toggleQuality() -->
-        </div>
+        <div class="q-panel" id="qp${gi}"></div>
         <button class="btn-world" onclick="openWorldModal(${gi})">
-          <i class="fas fa-globe" style="font-size:13px"></i>
-          Watch Now &mdash; Worldwide
+          <i class="fas fa-globe" style="font-size:12px"></i>
+          Watch Now — Worldwide
         </button>
       </div>`;
   } else if (isDone) {
@@ -434,7 +299,6 @@ function buildCard(g, gi) {
 
   const div = document.createElement('div');
   div.className = 'match-tile';
-  div.id = `card-${gi}`;
   div.innerHTML = `
     <div class="img-wrap">
       <img class="match-img" src="${meta.image}" loading="lazy"
@@ -451,130 +315,120 @@ function buildCard(g, gi) {
   return div;
 }
 
-// ── SCORE ──
-function buildScore(meta, isLive) {
+// ── SCORE ─────────────────────────────────────────
+function makeScore(meta, isLive) {
   if (!isLive || !meta.team || meta.team.length < 2) return '';
   const [t1, t2] = meta.team;
 
-  if (t1.footballScore !== null && t1.footballScore !== undefined && t2.footballScore !== null) {
+  // Football
+  if (t1.footballScore !== null && t1.footballScore !== undefined) {
     const s1 = t1.footballScore?.points ?? 0;
     const s2 = t2.footballScore?.points ?? 0;
-    return `<div class="score-football">
-      <div class="score-fb-team">
-        <img src="${t1.flag?.src||''}" class="score-team-flag" onerror="this.style.display='none'">
-        <span class="score-fb-name">${t1.shortName}</span>
+    return `<div class="score-fb">
+      <div class="fb-team">
+        <img src="${t1.flag?.src||''}" class="sc-flag" onerror="this.style.display='none'">
+        <span class="fb-name">${t1.shortName}</span>
       </div>
-      <span class="score-fb-num">${s1}</span>
-      <span class="score-fb-sep">–</span>
-      <span class="score-fb-num">${s2}</span>
-      <div class="score-fb-team right">
-        <img src="${t2.flag?.src||''}" class="score-team-flag" onerror="this.style.display='none'">
-        <span class="score-fb-name">${t2.shortName}</span>
+      <span class="fb-num">${s1}</span>
+      <span class="fb-sep">–</span>
+      <span class="fb-num">${s2}</span>
+      <div class="fb-team r">
+        <img src="${t2.flag?.src||''}" class="sc-flag" onerror="this.style.display='none'">
+        <span class="fb-name">${t2.shortName}</span>
       </div>
     </div>`;
   }
 
-  const hasCricket = t => Array.isArray(t.cricketScore) && t.cricketScore.length > 0;
-  if (hasCricket(t1) || hasCricket(t2)) {
+  // Cricket
+  const hasCr = t => Array.isArray(t.cricketScore) && t.cricketScore.length > 0;
+  if (hasCr(t1) || hasCr(t2)) {
     const fmt = t => {
-      if (!hasCricket(t)) return '–';
+      if (!hasCr(t)) return '–';
       const s = t.cricketScore[0];
       return `${s.runs}/${s.wickets} (${s.overs})`;
     };
     return `<div class="score-block">
-      <div class="score-team">
-        <img src="${t1.flag?.src||''}" class="score-team-flag" onerror="this.style.display='none'">
-        <span class="score-team-name">${t1.shortName}</span>
+      <div class="sc-team">
+        <img src="${t1.flag?.src||''}" class="sc-flag" onerror="this.style.display='none'">
+        <span class="sc-name">${t1.shortName}</span>
       </div>
-      <span class="score-runs ${t1.status?.cricket?.isBatting?'score-batting':''}">${fmt(t1)}</span>
-      <span class="score-sep">|</span>
-      <span class="score-runs ${t2.status?.cricket?.isBatting?'score-batting':''}">${fmt(t2)}</span>
-      <div class="score-team" style="justify-content:flex-end">
-        <span class="score-team-name">${t2.shortName}</span>
-        <img src="${t2.flag?.src||''}" class="score-team-flag" onerror="this.style.display='none'">
+      <span class="sc-runs ${t1.status?.cricket?.isBatting?'sc-bat':''}">${fmt(t1)}</span>
+      <span class="sc-sep">|</span>
+      <span class="sc-runs ${t2.status?.cricket?.isBatting?'sc-bat':''}">${fmt(t2)}</span>
+      <div class="sc-team" style="justify-content:flex-end">
+        <span class="sc-name">${t2.shortName}</span>
+        <img src="${t2.flag?.src||''}" class="sc-flag" onerror="this.style.display='none'">
       </div>
     </div>`;
   }
   return '';
 }
 
-// ── LANG PICK ──
+// ── LANG PICK ─────────────────────────────────────
 function pickLang(e, gi, li) {
   e.stopPropagation();
-  allGroups[gi]._sel = li;
-  document.querySelectorAll(`#lr-${gi} .lang-pill`)
-    .forEach((p,i) => p.classList.toggle('active', i===li));
-  // Reset quality panel if already open
-  const panel = document.getElementById(`qpanel-${gi}`);
-  if (panel && panel.classList.contains('open')) {
-    allGroups[gi]._open = false;
-    panel.classList.remove('open');
-    panel.innerHTML = '';
-    document.getElementById(`btn-india-${gi}`).innerHTML =
-      '<i class="fas fa-desktop" style="font-size:13px"></i> Watch Now &mdash; Indian Users';
-  }
+  groups[gi]._sel = li;
+  document.querySelectorAll(`#lr${gi} .lang-pill`)
+    .forEach((p, i) => p.classList.toggle('active', i === li));
+  // Collapse quality panel if open
+  collapseQuality(gi);
 }
 
-// ── TOGGLE QUALITY PANEL (Indian users) ──
+// ── TOGGLE QUALITY ────────────────────────────────
 function toggleQuality(gi) {
-  const g      = allGroups[gi];
-  const sel    = g.langs[g._sel] || g.langs[0];
-  const panel  = document.getElementById(`qpanel-${gi}`);
-  const indBtn = document.getElementById(`btn-india-${gi}`);
+  const g   = groups[gi];
+  const sel = g.langs[g._sel] || g.langs[0];
+  const btn = document.getElementById(`bi${gi}`);
+  const panel = document.getElementById(`qp${gi}`);
 
-  if (!sel) return;
+  if (!sel || !sel.qualities || !sel.qualities.length) return;
 
-  // If already open → collapse
   if (g._open) {
-    g._open = false;
-    panel.classList.remove('open');
-    panel.innerHTML = '';
-    indBtn.innerHTML = '<i class="fas fa-desktop" style="font-size:13px"></i> Watch Now &mdash; Indian Users';
+    collapseQuality(gi);
     return;
   }
 
-  // Open
+  // Open — fill quality buttons
   g._open = true;
-  indBtn.innerHTML = '<i class="fas fa-desktop" style="font-size:13px"></i> Watch Now &mdash; Indian Users ▲';
-  panel.innerHTML  = '';
+  btn.classList.add('open');
+  btn.innerHTML = '<i class="fas fa-desktop" style="font-size:12px"></i> Watch Now — Indian Users ▲';
 
-  const qualities = sel.qualities;
-  if (!qualities || !qualities.length) {
-    // Fallback: show primary URL as single button
-    const url = sel.cdn?.fancode_cdn || sel.cdn?.Primary_Playback_URL;
-    if (url) {
-      qualities.push({ label:'Auto', url });
-    } else {
-      panel.innerHTML = '<p style="color:#475569;font-size:12px;text-align:center;padding:8px 0">No stream available</p>';
-      panel.classList.add('open');
-      return;
-    }
-  }
-
-  qualities.forEach(q => {
-    const btn = document.createElement('button');
-    btn.className = 'q-btn';
-    btn.innerHTML = `<i class="fas fa-play q-btn-icon"></i>${q.label}`;
-    btn.onclick   = () => goWatch(sel, q.url, g);
-    panel.appendChild(btn);
+  panel.innerHTML = '';
+  sel.qualities.forEach(q => {
+    const b = document.createElement('button');
+    b.className = 'q-btn';
+    b.innerHTML = `<i class="fas fa-play" style="font-size:11px"></i>${q.label}`;
+    b.onclick = () => goWatch(q.url, sel.cdn?.drm, g.meta.title);
+    panel.appendChild(b);
   });
   panel.classList.add('open');
 }
 
-// ── WORLDWIDE MODAL ──
+function collapseQuality(gi) {
+  const g   = groups[gi];
+  const btn = document.getElementById(`bi${gi}`);
+  const panel = document.getElementById(`qp${gi}`);
+  g._open = false;
+  if (btn) {
+    btn.classList.remove('open');
+    btn.innerHTML = '<i class="fas fa-desktop" style="font-size:12px"></i> Watch Now — Indian Users';
+  }
+  if (panel) { panel.classList.remove('open'); panel.innerHTML = ''; }
+}
+
+// ── WORLDWIDE MODAL ───────────────────────────────
 function openWorldModal(gi) {
-  const g   = allGroups[gi];
+  const g   = groups[gi];
   const sel = g.langs[g._sel] || g.langs[0];
   if (!sel) return;
 
-  const langLabel = LANG_LABEL[sel.language] || sel.language;
-  document.getElementById('modal-title').textContent = '🌍 Worldwide Servers';
-  document.getElementById('modal-sub'  ).textContent = `${g.meta.title} · ${langLabel}`;
+  document.getElementById('m-title').textContent = '🌍 Worldwide Servers';
+  document.getElementById('m-sub').textContent   =
+    `${g.meta.title} · ${LANG_LABEL[sel.language] || sel.language}`;
 
-  const body = document.getElementById('modal-body');
+  const body = document.getElementById('m-body');
   body.innerHTML = '';
 
-  // Build worldwide CDN options — each with adaptive stream (auto quality via Shaka)
   const WORLD = [
     { label:'Server — Bangladesh', key:'fancode_bd_cdn', tag:'BD', cls:'tag-b' },
     { label:'Server — Nepal',      key:'fancode_np_cdn', tag:'NP', cls:'tag-y' },
@@ -586,45 +440,34 @@ function openWorldModal(gi) {
     const url = sel.cdn?.[s.key];
     if (!url || url === 'Unavailable' || url === '') return;
     const btn = document.createElement('div');
-    btn.className = 'wq-btn';
-    btn.innerHTML = `<span>${s.label}</span><span class="wq-tag ${s.cls}">${s.tag}</span>`;
-    btn.onclick   = () => { closeModal(); goWatch(sel, url, g); };
+    btn.className = 'srv-btn';
+    btn.innerHTML = `<span>${s.label}</span><span class="srv-tag ${s.cls}">${s.tag}</span>`;
+    btn.onclick = () => { closeModal(); goWatch(url, sel.cdn?.drm, g.meta.title); };
     body.appendChild(btn);
     count++;
   });
 
   if (!count) {
-    body.innerHTML = '<p class="no-servers">No worldwide servers available right now.</p>';
+    body.innerHTML = '<p class="no-srv">No worldwide servers available right now.</p>';
   }
-
   document.getElementById('modal').classList.add('open');
 }
 
-// ── GO WATCH ──
-function goWatch(sel, url, g) {
-  const drm = buildDrmString(sel.cdn?.drm);
-  const params = new URLSearchParams({
-    url,
-    drm:  drm,
-    title: g.meta.title || '',
-  });
-  window.location.href = 'Watch.html?' + params.toString();
+// ── NAVIGATE TO PLAYER ────────────────────────────
+function goWatch(url, drm, title) {
+  // Build DRM string from drm object
+  let drmStr = '';
+  if (drm) {
+    if (Array.isArray(drm.keys) && drm.keys.length) drmStr = drm.keys.join(',');
+    else if (drm.clearkey) drmStr = drm.clearkey;
+  }
+  const p = new URLSearchParams({ url, drm: drmStr, title: title || '' });
+  window.location.href = 'Watch.html?' + p.toString();
 }
 
-function buildDrmString(drm) {
-  if (!drm) return '';
-  // keys array: ["kid:key", ...]
-  if (Array.isArray(drm.keys) && drm.keys.length) return drm.keys.join(',');
-  // clearkey string
-  if (drm.clearkey) return drm.clearkey;
-  return '';
-}
-
-// ── MODAL ──
-function closeModal() {
-  document.getElementById('modal').classList.remove('open');
-}
-document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
+// ── MODAL CLOSE ───────────────────────────────────
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
 init();
 </script>
