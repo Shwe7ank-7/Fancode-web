@@ -1,46 +1,85 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<title>Fancode Player</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="referrer" content="no-referrer"/>
+<title>Shwe7ank Fancode — Player</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.6.0/shaka-player.ui.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.6.0/controls.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.6.0/controls.min.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html,body{width:100%;height:100%;background:#000;font-family:system-ui,sans-serif;overflow:hidden;}
-#wrap,.shaka-video-container,video{width:100%;height:100%;}
-video{background:#000;display:block;}
-.shaka-spinner-container{display:none!important;}
 
-/* Loading bar */
-#bar{position:fixed;top:0;left:0;height:3px;width:0%;background:linear-gradient(90deg,#2563eb,#60a5fa);transition:width .35s ease;z-index:9001;border-radius:0 2px 2px 0;}
+/* ── Video fill ── */
+.video-container{position:absolute;width:100%;height:100%;background:#000;}
+.shaka-video-container{position:absolute;width:100%;height:100%;}
+video{width:100%;height:100%;background:#000;}
 
-/* Overlay */
-#ov{display:flex;position:fixed;inset:0;background:#070c17;z-index:9000;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:30px;text-align:center;color:#e2e8f0;}
+/* ── Hide Shaka spinner ── */
+.shaka-spinner-container,.shaka-spinner,.shaka-spinner-svg{display:none!important;visibility:hidden!important;opacity:0!important;}
+
+/* ── YouTube-style seek bar ── */
+@font-face{font-family:'Roboto';font-style:normal;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/roboto/v27/KFOmCnqEu92Fr1Me5Q.ttf) format('truetype');}
+@font-face{font-family:'Roboto';font-style:normal;font-weight:500;font-display:swap;src:url(https://fonts.gstatic.com/s/roboto/v27/KFOlCnqEu92Fr1MmEU9vAw.ttf) format('truetype');}
+.youtube-theme{font-family:'Roboto',sans-serif;}
+.youtube-theme .shaka-bottom-controls{width:100%;padding:0;display:flex;flex-direction:column;}
+.youtube-theme .shaka-controls-button-panel{height:56px;padding:0 10px;order:2;}
+.youtube-theme .shaka-range-container{margin:4px 10px;top:0;}
+.youtube-theme .shaka-controls-button-panel>*{margin:0;padding:3px 8px;color:#EEE;height:56px;}
+.youtube-theme .shaka-controls-button-panel>*:hover{color:#FFF;}
+.youtube-theme .shaka-current-time{padding:0 10px;font-size:12px;}
+.youtube-theme .shaka-seek-bar-container{height:3px;position:relative;top:-1px;border-radius:0;margin-bottom:0;}
+.youtube-theme .shaka-seek-bar-container .shaka-range-element{opacity:0;}
+.youtube-theme .shaka-seek-bar-container:hover{height:5px;top:0;cursor:pointer;}
+.youtube-theme .shaka-seek-bar-container:hover .shaka-range-element{opacity:1;}
+.youtube-theme .shaka-seek-bar-container input[type=range]::-webkit-slider-thumb{background:#FF0000;cursor:pointer;}
+.youtube-theme .shaka-seek-bar-container input[type=range]::-moz-range-thumb{background:#FF0000;cursor:pointer;}
+.youtube-theme .shaka-overflow-menu,.youtube-theme .shaka-settings-menu{border-radius:4px;background:rgba(28,28,28,.95);right:10px;bottom:50px;padding:8px 0;min-width:200px;}
+.youtube-theme .shaka-overflow-menu button,.youtube-theme .shaka-settings-menu button{color:#EEE;padding:0;}
+.youtube-theme .shaka-overflow-menu button .shaka-overflow-button-label{display:flex;justify-content:space-between;align-items:center;height:52px;flex:0 0 100%;cursor:default;}
+.youtube-theme .shaka-overflow-menu button .shaka-overflow-button-label span{flex-shrink:initial;padding-left:15px;font-size:13px;font-weight:500;display:flex;align-items:center;}
+.youtube-theme .shaka-overflow-menu span+span{color:#FFF;font-weight:400!important;font-size:12px!important;padding-right:8px;padding-left:0!important;}
+.youtube-theme .shaka-overflow-menu button i{display:none;}
+.youtube-theme .shaka-overflow-menu button:hover,.youtube-theme .shaka-settings-menu button:hover{background-color:rgba(255,255,255,.1);cursor:pointer;}
+.youtube-theme .shaka-back-to-overflow-button{padding:8px 0;border-bottom:1px solid rgba(255,255,255,.2);font-size:12px;color:#eee;height:52px;}
+.youtube-theme .shaka-volume-bar-container{position:relative;z-index:10;left:-1px;order:-1;opacity:0;width:0;transition:width .2s cubic-bezier(.4,0,1,1);height:3px;padding:0;}
+.youtube-theme .shaka-mute-button:hover+div{opacity:1;width:50px;padding:0 6px;}
+
+/* ── Loading bar ── */
+#bar{position:fixed;top:0;left:0;height:3px;width:0%;background:linear-gradient(90deg,#0ea5e9,#f59e0b);transition:width .35s ease;z-index:9001;border-radius:0 2px 2px 0;}
+
+/* ── Overlay ── */
+#ov{display:flex;position:fixed;inset:0;z-index:9000;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:30px;text-align:center;color:#e2e8f0;}
+#ov{background:#02040a;background-image:radial-gradient(circle at 25% 25%,rgba(14,165,233,.12),transparent 30%),radial-gradient(circle at 75% 75%,rgba(245,158,11,.08),transparent 30%);}
 #ov.off{display:none;}
-.ov-spin{width:44px;height:44px;border:4px solid #1e3050;border-top-color:#2563eb;border-radius:50%;animation:spin .8s linear infinite;}
+.ov-spin{width:44px;height:44px;border:4px solid rgba(14,165,233,.2);border-top-color:#0ea5e9;border-radius:50%;animation:spin .8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
-#ov-icon{font-size:44px;line-height:1;display:none;}
-#ov-title{font-size:20px;font-weight:900;}
-#ov-msg{font-size:13px;color:#64748b;max-width:320px;line-height:1.7;}
-.ov-btn{background:#1d4ed8;color:#fff;padding:13px 32px;border-radius:14px;font-weight:800;font-size:14px;cursor:pointer;border:none;transition:background .2s;display:none;}
-.ov-btn:hover{background:#1e40af;}
-.ov-btn2{background:transparent;color:#475569;padding:10px 28px;border-radius:14px;font-weight:700;font-size:13px;cursor:pointer;border:1px solid #1a2d47;transition:.2s;display:none;}
-.ov-btn2:hover{color:#94a3b8;border-color:#334155;}
+#ov-icon{font-size:48px;line-height:1;display:none;}
+#ov-title{font-size:22px;font-weight:900;background:linear-gradient(90deg,#38bdf8,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+#ov-msg{font-size:13px;color:#64748b;max-width:320px;line-height:1.8;}
+.ov-btn{background:linear-gradient(90deg,#0ea5e9,#0284c7);color:#fff;padding:13px 32px;border-radius:12px;font-weight:800;font-size:14px;cursor:pointer;border:none;transition:opacity .2s;display:none;box-shadow:0 0 20px -5px #0ea5e9;}
+.ov-btn:hover{opacity:.85;}
+.ov-btn2{background:transparent;color:#475569;padding:10px 28px;border-radius:12px;font-weight:700;font-size:13px;cursor:pointer;border:1px solid rgba(255,255,255,.1);transition:.2s;display:none;}
+.ov-btn2:hover{color:#94a3b8;border-color:rgba(255,255,255,.2);}
 
-/* Back button */
-#bk{display:none;position:fixed;top:14px;left:14px;z-index:8999;background:rgba(0,0,0,.65);color:#fff;border:1px solid rgba(255,255,255,.15);border-radius:999px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;backdrop-filter:blur(8px);transition:background .2s;}
-#bk:hover{background:rgba(0,0,0,.88);}
+/* ── Back button ── */
+#bk{display:none;position:fixed;top:14px;left:14px;z-index:8999;background:rgba(0,0,0,.65);color:#fff;border:1px solid rgba(255,255,255,.15);border-radius:999px;padding:8px 18px;font-size:13px;font-weight:700;cursor:pointer;backdrop-filter:blur(8px);transition:background .2s;font-family:system-ui,sans-serif;}
+#bk:hover{background:rgba(0,0,0,.9);}
+
+/* ── Watermark ── */
+#wm{position:fixed;top:14px;right:14px;z-index:8998;color:rgba(255,255,255,.35);font-size:11px;font-weight:800;letter-spacing:1px;pointer-events:none;}
 </style>
-<script src="https://semicolondriverelevated.com/1d/6a/57/1d6a575d756ceeb65888fb8b7328a1e6.js"></script>
 </head>
 <body>
+
 <div id="bar"></div>
 <button id="bk" onclick="history.back()">← Back</button>
+<div id="wm">@Shwe7ank</div>
 
-<div id="wrap">
-  <div class="shaka-video-container" data-shaka-player id="sc">
+<div class="video-container">
+  <div class="shaka-video-container youtube-theme" data-shaka-player id="sc">
     <video id="video" autoplay playsinline></video>
   </div>
 </div>
@@ -48,8 +87,8 @@ video{background:#000;display:block;}
 <div id="ov">
   <div class="ov-spin" id="spin"></div>
   <div id="ov-icon"></div>
-  <div id="ov-title">Loading stream…</div>
-  <div id="ov-msg">Connecting, please wait.</div>
+  <div id="ov-title">Loading Stream…</div>
+  <div id="ov-msg">Please wait while we connect to the stream.</div>
   <button class="ov-btn"  id="btn-back"  onclick="history.back()">← Go Back</button>
   <button class="ov-btn2" id="btn-retry" onclick="retry()">↻ Retry</button>
 </div>
@@ -61,162 +100,149 @@ const STREAM  = sp.get('url')   || '';
 const DRM_STR = sp.get('drm')   || '';
 const TITLE   = sp.get('title') || '';
 
-// ── Elements ──
+if (TITLE) document.title = TITLE + ' — Shwe7ank Fancode';
+
+// ── DOM ──
 const bar = document.getElementById('bar');
 const ov  = document.getElementById('ov');
-
 let player = null;
 
-// ── UI helpers ──────────────────────────────────────
-function pct(n) { bar.style.width = n + '%'; }
-
-function doneBar() {
-  bar.style.width = '100%';
-  setTimeout(() => {
-    bar.style.transition = 'none';
-    bar.style.width = '0%';
-    setTimeout(() => bar.style.transition = 'width .35s ease', 50);
-  }, 700);
+// ── Bar ──
+function pct(n){ bar.style.width=n+'%'; }
+function doneBar(){
+  bar.style.width='100%';
+  setTimeout(()=>{
+    bar.style.transition='none'; bar.style.width='0%';
+    setTimeout(()=>bar.style.transition='width .35s ease',50);
+  },700);
 }
 
-function loading(msg) {
-  document.getElementById('spin').style.display    = 'block';
-  document.getElementById('ov-icon').style.display = 'none';
-  document.getElementById('ov-title').textContent  = 'Loading stream…';
-  document.getElementById('ov-msg').textContent    = msg || 'Please wait.';
-  document.getElementById('btn-back').style.display  = 'none';
-  document.getElementById('btn-retry').style.display = 'none';
+// ── Overlay ──
+function loading(msg){
+  document.getElementById('spin').style.display    ='block';
+  document.getElementById('ov-icon').style.display ='none';
+  document.getElementById('ov-title').textContent  ='Loading Stream…';
+  document.getElementById('ov-msg').textContent    = msg||'Please wait.';
+  document.getElementById('btn-back').style.display ='none';
+  document.getElementById('btn-retry').style.display='none';
   ov.classList.remove('off');
 }
 
-function error(title, msg, showRetry) {
-  document.getElementById('spin').style.display    = 'none';
-  document.getElementById('ov-icon').style.display = 'block';
-  document.getElementById('ov-icon').textContent   = '⚠️';
-  document.getElementById('ov-title').textContent  = title;
-  document.getElementById('ov-msg').textContent    = msg;
-  document.getElementById('btn-back').style.display  = 'inline-block';
-  document.getElementById('btn-retry').style.display = showRetry ? 'inline-block' : 'none';
+function showErr(title, msg, canRetry){
+  document.getElementById('spin').style.display    ='none';
+  document.getElementById('ov-icon').style.display ='block';
+  document.getElementById('ov-icon').textContent   ='⚠️';
+  document.getElementById('ov-title').style['-webkit-background-clip']='unset';
+  document.getElementById('ov-title').style['-webkit-text-fill-color']='#f87171';
+  document.getElementById('ov-title').textContent  =title;
+  document.getElementById('ov-msg').textContent    =msg;
+  document.getElementById('btn-back').style.display ='inline-block';
+  document.getElementById('btn-retry').style.display=canRetry?'inline-block':'none';
   ov.classList.remove('off');
 }
 
-function hide() {
+function hideOv(){
   ov.classList.add('off');
-  document.getElementById('bk').style.display = 'block';
+  document.getElementById('bk').style.display='block';
   doneBar();
 }
 
-// ── Main ────────────────────────────────────────────
-async function start() {
-  if (!STREAM) {
-    error('No Stream', 'No stream URL found. Go back and pick a quality.', false);
-    return;
-  }
-
-  pct(20);
-  loading('Initialising player…');
-
+// ── Start ──
+async function start(){
+  if (!STREAM){ showErr('No Stream URL','Go back and select a quality to watch.',false); return; }
+  pct(20); loading('Initialising player…');
   shaka.polyfill.installAll();
-
-  if (!shaka.Player.isBrowserSupported()) {
-    error('Browser Not Supported', 'Please use Chrome, Edge, or Samsung Browser.', false);
+  if (!shaka.Player.isBrowserSupported()){
+    showErr('Browser Not Supported','Please use Chrome, Edge, or Samsung Browser for the best experience.',false);
     return;
   }
-
   pct(40);
   try { await load(STREAM, DRM_STR); }
-  catch(e) {
-    console.error(e);
-    error('Playback Failed', errMsg(e?.code, e?.message), true);
-  }
+  catch(e){ console.error(e); showErr('Playback Failed', errMsg(e?.code, e?.message), true); }
 }
 
-// ── Load ────────────────────────────────────────────
-async function load(url, drmStr) {
+// ── Load ──
+async function load(url, drmStr){
   const video = document.getElementById('video');
   const cont  = document.getElementById('sc');
 
-  // Destroy old instance
-  if (player) { try { await player.destroy(); } catch(_){} player = null; }
+  if (player){ try{ await player.destroy(); }catch(_){} player=null; }
 
   player = new shaka.Player(video);
 
-  // UI controls
+  // YouTube-style UI
   const ui = new shaka.ui.Overlay(player, cont, video);
   ui.configure({
-    controlPanelElements: [
-      'play_pause','mute','time_and_duration',
-      'spacer','quality','picture_in_picture',
-      'fullscreen','overflow_menu'
-    ],
-    overflowMenuButtons: ['quality','playback_rate'],
-    enableFullscreenOnRotation: true,
-    forceLandscapeOnFullscreen: true,
-    fadeDelay: 3,
+    seekBarColors:{ base:'rgba(255,255,255,.2)', buffered:'rgba(255,255,255,.4)', played:'rgb(255,0,0)' },
+    controlPanelElements:['play_pause','mute','time_and_duration','restart','spacer','quality','picture_in_picture','fullscreen','overflow_menu'],
+    overflowMenuButtons:['quality','playback_rate'],
+    enableFullscreenOnRotation:true,
+    forceLandscapeOnFullscreen:true,
+    fadeDelay:3,
   });
 
-  // DRM — clearkey
-  // drmStr format: "kid:key" or comma-separated "kid1:key1,kid2:key2"
-  if (drmStr && drmStr.trim()) {
-    const ck = {};
-    drmStr.split(',').forEach(pair => {
-      const p = pair.trim().split(':');
-      if (p.length === 2 && p[0] && p[1]) ck[p[0]] = p[1];
+  // DRM — ClearKey
+  if (drmStr && drmStr.trim()){
+    const ck={};
+    drmStr.split(',').forEach(pair=>{
+      const p=pair.trim().split(':');
+      if(p.length===2&&p[0]&&p[1]) ck[p[0]]=p[1];
     });
-    if (Object.keys(ck).length) player.configure({ drm: { clearKeys: ck } });
+    if(Object.keys(ck).length) player.configure({drm:{clearKeys:ck}});
   }
 
-  // Streaming config — robust buffering + retries
+  // Streaming config
   player.configure({
-    streaming: {
-      bufferingGoal: 30,
-      rebufferingGoal: 5,
-      bufferBehind: 30,
-      retryParameters: { maxAttempts: 6, baseDelay: 500, backoffFactor: 1.5, fuzzFactor: .5 },
+    streaming:{
+      bufferingGoal:30, rebufferingGoal:5, bufferBehind:30,
+      retryParameters:{maxAttempts:6,baseDelay:500,backoffFactor:1.5,fuzzFactor:.5},
     },
-    manifest: {
-      retryParameters: { maxAttempts: 4, baseDelay: 1000 },
+    manifest:{
+      retryParameters:{maxAttempts:4,baseDelay:1000},
     },
   });
 
-  // Error events
-  player.addEventListener('error', ev => {
-    const e = ev.detail;
-    if (e?.severity === shaka.util.Error.Severity.RECOVERABLE) return;
-    console.error('Shaka error:', e);
-    error(`Error (${e?.code||'?'})`, errMsg(e?.code, e?.message), true);
+  // Player error events
+  player.addEventListener('error', ev=>{
+    const e=ev.detail;
+    if(e?.severity===shaka.util.Error.Severity.RECOVERABLE) return;
+    console.error('Shaka error:',e);
+    showErr(`Error (${e?.code||'?'})`, errMsg(e?.code, e?.message), true);
   });
 
   pct(65);
-
-  // Load the HLS stream
-  // For direct quality m3u8 like 540p.m3u8 — Shaka loads it as single-rendition HLS.
-  // For adaptive index.m3u8 — Shaka handles ABR automatically.
   await player.load(url);
-
   pct(90);
 
-  // Play
-  try { await video.play(); } catch(_) { /* autoplay blocked — user taps play */ }
+  // Autoplay — try unmuted first, fallback to muted
+  video.muted = false;
+  try {
+    await video.play();
+  } catch(playErr){
+    console.warn('Autoplay blocked, trying muted:', playErr);
+    video.muted = true;
+    try { await video.play(); }
+    catch(_){ /* user must tap play manually */ }
+  }
 
-  hide();
+  hideOv();
 }
 
-// ── Retry ────────────────────────────────────────────
-async function retry() {
+// ── Retry ──
+async function retry(){
   loading('Retrying…'); pct(20);
   try { await load(STREAM, DRM_STR); }
-  catch(e) { error('Retry Failed', errMsg(e?.code, e?.message), true); }
+  catch(e){ showErr('Retry Failed', errMsg(e?.code, e?.message), true); }
 }
 
-// ── Error messages ────────────────────────────────────
-function errMsg(code, msg) {
-  const c = Number(code);
-  if (c >= 1000 && c < 2000) return 'Network error — check your connection or pick another quality.';
-  if (c >= 2000 && c < 3000) return 'Stream format error — this quality may be unavailable. Try another.';
-  if (c >= 3000 && c < 4000) return 'Decode error — your device may not support this stream.';
-  if (c >= 6000 && c < 7000) return 'DRM error — content protection failed. Try another quality.';
-  return msg || 'Unknown error. Go back and try a different quality.';
+// ── Error messages ──
+function errMsg(code, msg){
+  const c=Number(code);
+  if(c>=1000&&c<2000) return 'Network error — check your connection or pick another quality.';
+  if(c>=2000&&c<3000) return 'Stream format error — this quality may be unavailable. Try another.';
+  if(c>=3000&&c<4000) return 'Decode error — your device may not support this stream format.';
+  if(c>=6000&&c<7000) return 'DRM error — content protection failed. Try a different quality.';
+  return msg||'Unknown error. Go back and try a different quality or server.';
 }
 
 start();
