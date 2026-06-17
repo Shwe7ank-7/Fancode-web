@@ -1,251 +1,607 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-<meta name="referrer" content="no-referrer"/>
-<title>Shwe7ank Fancode — Player</title>
+<meta charset="UTF-8" />
+<title>@Shwe7ank</title>
+<meta name="referrer" content="no-referrer" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.6.0/shaka-player.ui.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.6.0/controls.min.css"/>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html,body{width:100%;height:100%;background:#000;font-family:system-ui,sans-serif;overflow:hidden;}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.6.0/controls.min.css" />
+<style type="text/css">
+  body {position:absolute;
+    margin: 0;
+    padding: 0px;
+    background-color: #000000;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    height:100%;width:100%;
+    overflow-y: hidden;
+  }
 
-/* ── Video fill ── */
-.video-container{position:absolute;width:100%;height:100%;background:#000;}
-.shaka-video-container{position:absolute;width:100%;height:100%;}
-video{width:100%;height:100%;background:#000;}
+  .video-container {
+    position: absolute ;
+    width: 100%;height:100%;
+    aspect-ratio: 16/9;
+    background-color: #000;
+    border-radius: 1px;
+    overflow: hidden;
+    box-shadow: 0 4px 2px rgba(0,0,0,0.5);
+  }
 
-/* ── Hide Shaka spinner ── */
-.shaka-spinner-container,.shaka-spinner,.shaka-spinner-svg{display:none!important;visibility:hidden!important;opacity:0!important;}
+  .shaka-video-container {
+    position: absolute ;
+    width: 100%;height:100%;
 
-/* ── YouTube-style seek bar ── */
-@font-face{font-family:'Roboto';font-style:normal;font-weight:400;font-display:swap;src:url(https://fonts.gstatic.com/s/roboto/v27/KFOmCnqEu92Fr1Me5Q.ttf) format('truetype');}
-@font-face{font-family:'Roboto';font-style:normal;font-weight:500;font-display:swap;src:url(https://fonts.gstatic.com/s/roboto/v27/KFOlCnqEu92Fr1MmEU9vAw.ttf) format('truetype');}
-.youtube-theme{font-family:'Roboto',sans-serif;}
-.youtube-theme .shaka-bottom-controls{width:100%;padding:0;display:flex;flex-direction:column;}
-.youtube-theme .shaka-controls-button-panel{height:56px;padding:0 10px;order:2;}
-.youtube-theme .shaka-range-container{margin:4px 10px;top:0;}
-.youtube-theme .shaka-controls-button-panel>*{margin:0;padding:3px 8px;color:#EEE;height:56px;}
-.youtube-theme .shaka-controls-button-panel>*:hover{color:#FFF;}
-.youtube-theme .shaka-current-time{padding:0 10px;font-size:12px;}
-.youtube-theme .shaka-seek-bar-container{height:3px;position:relative;top:-1px;border-radius:0;margin-bottom:0;}
-.youtube-theme .shaka-seek-bar-container .shaka-range-element{opacity:0;}
-.youtube-theme .shaka-seek-bar-container:hover{height:5px;top:0;cursor:pointer;}
-.youtube-theme .shaka-seek-bar-container:hover .shaka-range-element{opacity:1;}
-.youtube-theme .shaka-seek-bar-container input[type=range]::-webkit-slider-thumb{background:#FF0000;cursor:pointer;}
-.youtube-theme .shaka-seek-bar-container input[type=range]::-moz-range-thumb{background:#FF0000;cursor:pointer;}
-.youtube-theme .shaka-overflow-menu,.youtube-theme .shaka-settings-menu{border-radius:4px;background:rgba(28,28,28,.95);right:10px;bottom:50px;padding:8px 0;min-width:200px;}
-.youtube-theme .shaka-overflow-menu button,.youtube-theme .shaka-settings-menu button{color:#EEE;padding:0;}
-.youtube-theme .shaka-overflow-menu button .shaka-overflow-button-label{display:flex;justify-content:space-between;align-items:center;height:52px;flex:0 0 100%;cursor:default;}
-.youtube-theme .shaka-overflow-menu button .shaka-overflow-button-label span{flex-shrink:initial;padding-left:15px;font-size:13px;font-weight:500;display:flex;align-items:center;}
-.youtube-theme .shaka-overflow-menu span+span{color:#FFF;font-weight:400!important;font-size:12px!important;padding-right:8px;padding-left:0!important;}
-.youtube-theme .shaka-overflow-menu button i{display:none;}
-.youtube-theme .shaka-overflow-menu button:hover,.youtube-theme .shaka-settings-menu button:hover{background-color:rgba(255,255,255,.1);cursor:pointer;}
-.youtube-theme .shaka-back-to-overflow-button{padding:8px 0;border-bottom:1px solid rgba(255,255,255,.2);font-size:12px;color:#eee;height:52px;}
-.youtube-theme .shaka-volume-bar-container{position:relative;z-index:10;left:-1px;order:-1;opacity:0;width:0;transition:width .2s cubic-bezier(.4,0,1,1);height:3px;padding:0;}
-.youtube-theme .shaka-mute-button:hover+div{opacity:1;width:50px;padding:0 6px;}
 
-/* ── Loading bar ── */
-#bar{position:fixed;top:0;left:0;height:3px;width:0%;background:linear-gradient(90deg,#0ea5e9,#f59e0b);transition:width .35s ease;z-index:9001;border-radius:0 2px 2px 0;}
+  }
 
-/* ── Overlay ── */
-#ov{display:flex;position:fixed;inset:0;z-index:9000;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:30px;text-align:center;color:#e2e8f0;}
-#ov{background:#02040a;background-image:radial-gradient(circle at 25% 25%,rgba(14,165,233,.12),transparent 30%),radial-gradient(circle at 75% 75%,rgba(245,158,11,.08),transparent 30%);}
-#ov.off{display:none;}
-.ov-spin{width:44px;height:44px;border:4px solid rgba(14,165,233,.2);border-top-color:#0ea5e9;border-radius:50%;animation:spin .8s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg);}}
-#ov-icon{font-size:48px;line-height:1;display:none;}
-#ov-title{font-size:22px;font-weight:900;background:linear-gradient(90deg,#38bdf8,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-#ov-msg{font-size:13px;color:#64748b;max-width:320px;line-height:1.8;}
-.ov-btn{background:linear-gradient(90deg,#0ea5e9,#0284c7);color:#fff;padding:13px 32px;border-radius:12px;font-weight:800;font-size:14px;cursor:pointer;border:none;transition:opacity .2s;display:none;box-shadow:0 0 20px -5px #0ea5e9;}
-.ov-btn:hover{opacity:.85;}
-.ov-btn2{background:transparent;color:#475569;padding:10px 28px;border-radius:12px;font-weight:700;font-size:13px;cursor:pointer;border:1px solid rgba(255,255,255,.1);transition:.2s;display:none;}
-.ov-btn2:hover{color:#94a3b8;border-color:rgba(255,255,255,.2);}
+  video {
+    width: 100%;
+    height: 100%;
+    background-color: #000;
 
-/* ── Back button ── */
-#bk{display:none;position:fixed;top:14px;left:14px;z-index:8999;background:rgba(0,0,0,.65);color:#fff;border:1px solid rgba(255,255,255,.15);border-radius:999px;padding:8px 18px;font-size:13px;font-weight:700;cursor:pointer;backdrop-filter:blur(8px);transition:background .2s;font-family:system-ui,sans-serif;}
-#bk:hover{background:rgba(0,0,0,.9);}
+  }
 
-/* ── Watermark ── */
-#wm{position:fixed;top:14px;right:14px;z-index:8998;color:rgba(255,255,255,.35);font-size:11px;font-weight:800;letter-spacing:1px;pointer-events:none;}
+  .video-watermark {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    width: 80px;
+    height: 10px;
+    opacity: 0.7;
+    z-index: 1000;
+    pointer-events: none;
+  }
+
+  @media (max-width: 768px) {
+    body {width:100%;height:100%;
+      padding: 1px;
+    }
+
+    .video-container {
+      max-width: 100%;height:100%
+    }
+
+    .video-watermark {
+      width: 30px;
+      height: 30px;
+      top: 10px;
+      left: 10px;
+    }
+  }
+
+  @media (min-width: 769px) and (max-width: 1024px) {
+    .video-container {
+      max-width: 854px;
+    }
+  }
+
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+  background: #000;
+
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+
+/* YouTube Theme CSS */
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/roboto/v27/KFOmCnqEu92Fr1Me5Q.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/roboto/v27/KFOlCnqEu92Fr1MmEU9vAw.ttf) format('truetype');
+}
+.youtube-theme {
+  font-family: 'Roboto', sans-serif;
+}
+.youtube-theme .shaka-bottom-controls {
+  width: 100%;
+  padding: 0;
+  padding-bottom: 0;
+  z-index: 1;
+}
+.youtube-theme .shaka-bottom-controls {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+}
+.youtube-theme .shaka-ad-controls {
+  -webkit-box-ordinal-group: 2;
+      -ms-flex-order: 1;
+          order: 1;
+}
+.youtube-theme .shaka-controls-button-panel {
+  -webkit-box-ordinal-group: 3;
+      -ms-flex-order: 2;
+          order: 2;
+  height: 60px;
+  padding: 0 10px;
+}
+.youtube-theme .shaka-range-container {
+  margin: 4px 10px 4px 10px;
+  top: 0;
+}
+.youtube-theme .shaka-small-play-button {
+  -webkit-box-ordinal-group: -2;
+      -ms-flex-order: -3;
+          order: -3;
+}
+.youtube-theme .shaka-mute-button {
+  -webkit-box-ordinal-group: -1;
+      -ms-flex-order: -2;
+          order: -2;
+}
+.youtube-theme .shaka-controls-button-panel > * {
+  margin: 0;
+  padding: 3px 8px;
+  color: #EEE;
+  height: 60px;
+}
+.youtube-theme .shaka-controls-button-panel > *:focus {
+  outline: none;
+  -webkit-box-shadow: inset 0 0 0 2px rgba(27, 127, 204, 0.8);
+          box-shadow: inset 0 0 0 2px rgba(27, 127, 204, 0.8);
+  color: #FFF;
+}
+.youtube-theme .shaka-controls-button-panel > *:hover {
+  color: #FFF;
+}
+.youtube-theme .shaka-controls-button-panel .shaka-volume-bar-container {
+  position: relative;
+  z-index: 10;
+  left: -1px;
+  -webkit-box-ordinal-group: 0;
+      -ms-flex-order: -1;
+          order: -1;
+  opacity: 0;
+  width: 0px;
+  -webkit-transition: width 0.2s cubic-bezier(0.4, 0, 1, 1);
+  height: 3px;
+  transition: width 0.2s cubic-bezier(0.4, 0, 1, 1);
+  padding: 0;
+}
+.youtube-theme .shaka-controls-button-panel .shaka-volume-bar-container:hover,
+.youtube-theme .shaka-controls-button-panel .shaka-volume-bar-container:focus {
+  display: block;
+  width: 50px;
+  opacity: 1;
+  padding: 0 6px;
+}
+.youtube-theme .shaka-mute-button:hover + div {
+  opacity: 1;
+  width: 50px;
+  padding: 0 6px;
+}
+.youtube-theme .shaka-current-time {
+  padding: 0 10px;
+  font-size: 12px;
+}
+.youtube-theme .shaka-seek-bar-container {
+  height: 3px;
+  position: relative;
+  top: -1px;
+  border-radius: 0;
+  margin-bottom: 0;
+}
+.youtube-theme .shaka-seek-bar-container .shaka-range-element {
+  opacity: 0;
+}
+.youtube-theme .shaka-seek-bar-container:hover {
+  height: 5px;
+  top: 0;
+  cursor: pointer;
+}
+.youtube-theme .shaka-seek-bar-container:hover .shaka-range-element {
+  opacity: 1;
+  cursor: pointer;
+}
+.youtube-theme .shaka-seek-bar-container input[type=range]::-webkit-slider-thumb {
+  background: #FF0000;
+  cursor: pointer;
+}
+.youtube-theme .shaka-seek-bar-container input[type=range]::-moz-range-thumb {
+  background: #FF0000;
+  cursor: pointer;
+}
+.youtube-theme .shaka-seek-bar-container input[type=range]::-ms-thumb {
+  background: #FF0000;
+  cursor: pointer;
+}
+.youtube-theme .shaka-video-container * {
+  font-family: 'Roboto', sans-serif;
+}
+.youtube-theme .shaka-video-container .material-icons-round {
+  font-family: 'Material Icons Sharp';
+}
+.youtube-theme .shaka-overflow-menu,
+.youtube-theme .shaka-settings-menu {
+  border-radius: 2px;
+  background: rgba(28, 28, 28, 0.9);
+  text-shadow: 0 0 2px rgb(0 0 0%);
+  -webkit-transition: opacity 0.1s cubic-bezier(0, 0, 0.2, 1);
+  transition: opacity 0.1s cubic-bezier(0, 0, 0.2, 1);
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -webkit-user-select: none;
+  right: 10px;
+  bottom: 50px;
+  padding: 8px 0;
+  min-width: 200px;
+}
+.youtube-theme .shaka-settings-menu {
+  padding: 0 0 8px 0;
+}
+.youtube-theme .shaka-settings-menu button {
+  font-size: 12px;
+}
+.youtube-theme .shaka-settings-menu button span {
+  margin-left: 33px;
+  font-size: 13px;
+}
+.youtube-theme .shaka-settings-menu button[aria-selected="true"] {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+.youtube-theme .shaka-settings-menu button[aria-selected="true"] span {
+  -webkit-box-ordinal-group: 3;
+      -ms-flex-order: 2;
+          order: 2;
+  margin-left: 0;
+}
+.youtube-theme .shaka-settings-menu button[aria-selected="true"] i {
+  -webkit-box-ordinal-group: 2;
+      -ms-flex-order: 1;
+          order: 1;
+  font-size: 18px;
+  padding-left: 5px;
+}
+.youtube-theme .shaka-overflow-menu button {
+  padding: 0;
+}
+.youtube-theme .shaka-overflow-menu button i {
+  display: none;
+}
+.youtube-theme .shaka-overflow-menu button .shaka-overflow-button-label {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  cursor: default;
+  outline: none;
+  height: 60px;
+  -webkit-box-flex: 0;
+      -ms-flex: 0 0 100%;
+          flex: 0 0 100%;
+}
+.youtube-theme .shaka-overflow-menu button .shaka-overflow-button-label span {
+  -ms-flex-negative: initial;
+      flex-shrink: initial;
+  padding-left: 15px;
+  font-size: 13px;
+  font-weight: 500;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+.youtube-theme .shaka-overflow-menu span + span {
+  color: #FFF;
+  font-weight: 400 !important;
+  font-size: 12px !important;
+  padding-right: 8px;
+  padding-left: 0 !important;
+}
+.youtube-theme .shaka-overflow-menu span + span:after {
+  content: "navigate_next";
+  font-family: 'Material Icons Sharp';
+  font-size: 20px;
+}
+.youtube-theme .shaka-overflow-menu .shaka-pip-button span + span {
+  padding-right: 15px !important;
+}
+.youtube-theme .shaka-overflow-menu .shaka-pip-button span + span:after {
+  content: "";
+}
+.youtube-theme .shaka-back-to-overflow-button {
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  font-size: 12px;
+  color: #eee;
+  height: 60px;
+}
+.youtube-theme .shaka-back-to-overflow-button .material-icons-round {
+  font-size: 15px;
+  padding-right: 10px;
+}
+.youtube-theme .shaka-back-to-overflow-button span {
+  margin-left: 3px !important;
+}
+.youtube-theme .shaka-overflow-menu button:hover,
+.youtube-theme .shaka-settings-menu button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+}
+.youtube-theme .shaka-overflow-menu button:hover label,
+.youtube-theme .shaka-settings-menu button:hover label {
+  cursor: pointer;
+}
+.youtube-theme .shaka-overflow-menu button:focus,
+.youtube-theme .shaka-settings-menu button:focus {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: none;
+  outline: none;
+}
+.youtube-theme .shaka-overflow-menu button,
+.youtube-theme .shaka-settings-menu button {
+  color: #EEE;
+}
+.youtube-theme .shaka-captions-off {
+  color: #BFBFBF;
+}
+.youtube-theme .shaka-overflow-menu-button {
+  font-size: 18px;
+  margin-right: 5px;
+}
+.youtube-theme .shaka-fullscreen-button:hover {
+  font-size: 25px;
+  -webkit-transition: font-size 0.1s cubic-bezier(0, 0, 0.2, 1);
+  transition: font-size 0.1s cubic-bezier(0, 0, 0.2, 1);
+}
+
+/* Hide center loading spinner */
+.shaka-spinner-container,
+.shaka-spinner,
+.shaka-spinner-svg {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+/* Custom Seek Bar Colors */
+.youtube-theme .shaka-seek-bar {
+  background: rgba(255,255,255,.2) !important;
+}
+
+.youtube-theme .shaka-buffered-range {
+  background: rgba(255,255,255,.4) !important;
+}
+
+.youtube-theme .shaka-played-range {
+  background: rgb(255,0,0) !important;
+}
+
+/* Manual play button styles */
+.manual-play-button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 20px 30px;
+  border-radius: 28px;
+  cursor: pointer;
+  font-size: 18px;
+  z-index: 2000;
+  border: 0px solid #ff0000;
+  display: none;
+  transition: all 0.3s ease;
+}
+
+.manual-play-button:hover {
+  background: rgba(255, 0, 0, 0.8);
+  transform: translate(-50%, -50%) scale(1.05);
+}#myLogo {width:60px;height:40px;
+position: absolute;
+right: 5px;
+top: 10px;
+         }
 </style>
 </head>
 <body>
-
-<div id="bar"></div>
-<button id="bk" onclick="history.back()">← Back</button>
-<div id="wm">@Shwe7ank</div>
-
 <div class="video-container">
-  <div class="shaka-video-container youtube-theme" data-shaka-player id="sc">
-    <video id="video" autoplay playsinline></video>
+  <div class="shaka-video-container" data-shaka-player="">
+    <video id="video" autoplay="" muted="" playsinline="" preload="auto">
+    </video>
   </div>
 </div>
-
-<div id="ov">
-  <div class="ov-spin" id="spin"></div>
-  <div id="ov-icon"></div>
-  <div id="ov-title">Loading Stream…</div>
-  <div id="ov-msg">Please wait while we connect to the stream.</div>
-  <button class="ov-btn"  id="btn-back"  onclick="history.back()">← Go Back</button>
-  <button class="ov-btn2" id="btn-retry" onclick="retry()">↻ Retry</button>
-</div>
+<div class="manual-play-button" id="manualPlayButton" onclick="manualPlay()">▶ Tap to Play</div>
 
 <script>
-// ── Params ──
-const sp      = new URLSearchParams(window.location.search);
-const STREAM  = sp.get('url')   || '';
-const DRM_STR = sp.get('drm')   || '';
-const TITLE   = sp.get('title') || '';
+  const queryParams = new URLSearchParams(window.location.search);
+    const url = queryParams.get('url');
+    const drmParam = queryParams.get('drm');
+    const titleParam = queryParams.get('title');
 
-if (TITLE) document.title = TITLE + ' — Shwe7ank Fancode';
+    if (titleParam) { document.title = titleParam + ' — @Shwe7ank'; }
 
-// ── DOM ──
-const bar = document.getElementById('bar');
-const ov  = document.getElementById('ov');
-let player = null;
+const channelstreamInfo = {  
+  streamUrl: url, 
+  authBearer: "",   
+  streamPoster: ""
+};
 
-// ── Bar ──
-function pct(n){ bar.style.width=n+'%'; }
-function doneBar(){
-  bar.style.width='100%';
-  setTimeout(()=>{
-    bar.style.transition='none'; bar.style.width='0%';
-    setTimeout(()=>bar.style.transition='width .35s ease',50);
-  },700);
-}
+let player;
+const video = document.getElementById('video');
 
-// ── Overlay ──
-function loading(msg){
-  document.getElementById('spin').style.display    ='block';
-  document.getElementById('ov-icon').style.display ='none';
-  document.getElementById('ov-title').textContent  ='Loading Stream…';
-  document.getElementById('ov-msg').textContent    = msg||'Please wait.';
-  document.getElementById('btn-back').style.display ='none';
-  document.getElementById('btn-retry').style.display='none';
-  ov.classList.remove('off');
-}
-
-function showErr(title, msg, canRetry){
-  document.getElementById('spin').style.display    ='none';
-  document.getElementById('ov-icon').style.display ='block';
-  document.getElementById('ov-icon').textContent   ='⚠️';
-  document.getElementById('ov-title').style['-webkit-background-clip']='unset';
-  document.getElementById('ov-title').style['-webkit-text-fill-color']='#f87171';
-  document.getElementById('ov-title').textContent  =title;
-  document.getElementById('ov-msg').textContent    =msg;
-  document.getElementById('btn-back').style.display ='inline-block';
-  document.getElementById('btn-retry').style.display=canRetry?'inline-block':'none';
-  ov.classList.remove('off');
-}
-
-function hideOv(){
-  ov.classList.add('off');
-  document.getElementById('bk').style.display='block';
-  doneBar();
-}
-
-// ── Start ──
-async function start(){
-  if (!STREAM){ showErr('No Stream URL','Go back and select a quality to watch.',false); return; }
-  pct(20); loading('Initialising player…');
-  shaka.polyfill.installAll();
-  if (!shaka.Player.isBrowserSupported()){
-    showErr('Browser Not Supported','Please use Chrome, Edge, or Samsung Browser for the best experience.',false);
-    return;
-  }
-  pct(40);
-  try { await load(STREAM, DRM_STR); }
-  catch(e){ console.error(e); showErr('Playback Failed', errMsg(e?.code, e?.message), true); }
-}
-
-// ── Load ──
-async function load(url, drmStr){
-  const video = document.getElementById('video');
-  const cont  = document.getElementById('sc');
-
-  if (player){ try{ await player.destroy(); }catch(_){} player=null; }
-
-  player = new shaka.Player(video);
-
-  // YouTube-style UI
-  const ui = new shaka.ui.Overlay(player, cont, video);
-  ui.configure({
-    seekBarColors:{ base:'rgba(255,255,255,.2)', buffered:'rgba(255,255,255,.4)', played:'rgb(255,0,0)' },
-    controlPanelElements:['play_pause','mute','time_and_duration','restart','spacer','quality','picture_in_picture','fullscreen','overflow_menu'],
-    overflowMenuButtons:['quality','playback_rate'],
-    enableFullscreenOnRotation:true,
-    forceLandscapeOnFullscreen:true,
-    fadeDelay:3,
-  });
-
-  // DRM — ClearKey
-  if (drmStr && drmStr.trim()){
-    const ck={};
-    drmStr.split(',').forEach(pair=>{
-      const p=pair.trim().split(':');
-      if(p.length===2&&p[0]&&p[1]) ck[p[0]]=p[1];
-    });
-    if(Object.keys(ck).length) player.configure({drm:{clearKeys:ck}});
-  }
-
-  // Streaming config
-  player.configure({
-    streaming:{
-      bufferingGoal:30, rebufferingGoal:5, bufferBehind:30,
-      retryParameters:{maxAttempts:6,baseDelay:500,backoffFactor:1.5,fuzzFactor:.5},
-    },
-    manifest:{
-      retryParameters:{maxAttempts:4,baseDelay:1000},
-    },
-  });
-
-  // Player error events
-  player.addEventListener('error', ev=>{
-    const e=ev.detail;
-    if(e?.severity===shaka.util.Error.Severity.RECOVERABLE) return;
-    console.error('Shaka error:',e);
-    showErr(`Error (${e?.code||'?'})`, errMsg(e?.code, e?.message), true);
-  });
-
-  pct(65);
-  await player.load(url);
-  pct(90);
-
-  // Autoplay — try unmuted first, fallback to muted
-  video.muted = false;
+async function initializePlayer() {
   try {
-    await video.play();
-  } catch(playErr){
-    console.warn('Autoplay blocked, trying muted:', playErr);
-    video.muted = true;
-    try { await video.play(); }
-    catch(_){ /* user must tap play manually */ }
+    // Initialize Shaka Player first for better HLS support
+    player = new shaka.Player();
+    await player.attach(video);
+
+
+
+const container = document.querySelector('.shaka-video-container');
+const ui = new shaka.ui.Overlay(player, container, video);
+
+  // Custom UI configuration with seek bar colors
+  const config = {
+    'seekBarColors': {
+      base: 'rgba(255,255,255,.2)',
+      buffered: 'rgba(255,255,255,.4)',
+      played: 'rgb(255,0,0)',
+    },
+    'controlPanelElements': [
+      'play_pause',
+
+      'mute',
+      'time_and_duration',
+       'restart', 
+      'spacer',
+      'quality',
+        'language',
+
+      'picture_in_picture',
+      'fullscreen',
+
+      'overflow_menu'
+    ]
+  };
+
+  ui.configure(config);
+  const controls = ui.getControls();
+
+    // Configure player for better performance
+    player.configure({
+      streaming: {
+        bufferingGoal: 10,
+        rebufferingGoal: 2,
+        bufferBehind: 30
+      },
+      manifest: {
+        retryParameters: {
+          timeout: 30000,
+          maxAttempts: 2,
+          baseDelay: 1000,
+          backoffFactor: 2,
+          fuzzFactor: 0.5
+        }
+      }
+    });
+
+    // DRM ClearKey support (only configured if drm param present)
+    if (drmParam && drmParam.trim()) {
+      const clearKeys = {};
+      drmParam.split(',').forEach(pair => {
+        const parts = pair.trim().split(':');
+        if (parts.length === 2 && parts[0] && parts[1]) {
+          clearKeys[parts[0]] = parts[1];
+        }
+      });
+      if (Object.keys(clearKeys).length > 0) {
+        player.configure({ drm: { clearKeys: clearKeys } });
+      }
+    }
+
+    // Set video properties for autoplay
+    video.autoplay = true;
+    video.controls = false;
+    video.volume = 1;
+    video.muted = false;
+    video.preload = 'auto';
+
+    console.log(`Loading stream: ${channelstreamInfo.streamUrl}`);
+
+    // Load the stream
+    await player.load(channelstreamInfo.streamUrl);
+
+console.log('Stream loaded successfully.');
+
+    // Force autoplay with multiple attempts
+    const attemptAutoplay = async () => {
+      try {
+        await video.play();
+        console.log('Autoplay successful');
+      } catch (playError) {
+        console.log('Autoplay blocked, trying with muted audio');
+        video.muted = true;
+        try {
+          await video.play();
+          console.log('Autoplay successful with muted audio');
+        } catch (mutedError) {
+          console.log('Autoplay failed completely, user interaction required');
+          document.getElementById('manualPlayButton').style.display = 'block';
+        }
+      }
+    };
+
+    // Immediate autoplay attempt
+    if (video.readyState >= 2) {
+      await attemptAutoplay();
+    } else {
+      video.addEventListener('canplay', attemptAutoplay, { once: true });
+    }
+
+  } catch (error) {
+    console.error('Error initializing player:', error);
+
+    // Fallback to direct video source
+    video.src = channelstreamInfo.streamUrl;
+    video.autoplay = true;
+    video.muted = false;
+
+    try {
+      await video.play();
+    } catch (fallbackError) {
+      video.muted = true;
+      try {
+        await video.play();
+      } catch (e2) {
+        document.getElementById('manualPlayButton').style.display = 'block';
+      }
+    }
   }
-
-  hideOv();
 }
 
-// ── Retry ──
-async function retry(){
-  loading('Retrying…'); pct(20);
-  try { await load(STREAM, DRM_STR); }
-  catch(e){ showErr('Retry Failed', errMsg(e?.code, e?.message), true); }
+function manualPlay() {
+  video.muted = false;
+  video.play().catch(() => { video.muted = true; video.play(); });
+  document.getElementById('manualPlayButton').style.display = 'none';
 }
 
-// ── Error messages ──
-function errMsg(code, msg){
-  const c=Number(code);
-  if(c>=1000&&c<2000) return 'Network error — check your connection or pick another quality.';
-  if(c>=2000&&c<3000) return 'Stream format error — this quality may be unavailable. Try another.';
-  if(c>=3000&&c<4000) return 'Decode error — your device may not support this stream format.';
-  if(c>=6000&&c<7000) return 'DRM error — content protection failed. Try a different quality.';
-  return msg||'Unknown error. Go back and try a different quality or server.';
-}
 
-start();
+
+
+// Initialize player when page loads
+document.addEventListener('DOMContentLoaded', () => {
+  initializePlayer().catch(error => {
+    console.error('Error initializing player:', error);
+  });
+});
+</script>
+<script>
+  // alert('Join Our Telegram For More Live Links')
+     if (confirm("Join Our Telegram Channel @Shwe7ank") == true) {
+     window.open("https://t.me/Shwe7ank", '_blank');
+ }
 </script>
 </body>
 </html>
